@@ -757,6 +757,29 @@ export const ailePliee = (c, { TRAIT }) => `<g>
     </g>
   </g>`;
 
+// Aile D'ALICORNE (Celestia, Luna) : la même aile repliée, mais NETTEMENT plus
+// grande — c'est le seul attribut qui distingue visuellement une alicorne d'une
+// licorne ailée, et à la taille de `AILE_REPLIEE` elle se lisait comme un pli du
+// flanc. Elle part du garrot (212,129) et descend jusqu'à la cuisse (152,188),
+// avec quatre pennes au lieu de deux.
+// Borne : son bord avant reste à x > 152, sinon elle recouvre la marque de beauté
+// (canoniquement centrée sur x 141, rayon ~18, donc jusqu'à x 159 à y 152 — à
+// cette hauteur le bord de l'aile est à x 168, la marque passe).
+export const AILE_ALICORNE = "M212 129C203 128 191 132 179 140"
+  + "C167 148 157 158 152 167 156 170 162 171 169 169"
+  + "C165 174 162 179 162 183 168 184 175 181 181 176"
+  + "C181 181 182 185 183 188 189 185 196 179 201 172"
+  + "C208 162 213 145 212 129Z";
+export const aileAlicorne = (c, { TRAIT }) => `<g>
+    <path d="${AILE_ALICORNE}" fill="${c.robe}" stroke="${TRAIT}" stroke-width="3.2"/>
+    <path d="${AILE_ALICORNE}" fill="#000" fill-opacity=".10"/>
+    <g fill="none" stroke="${TRAIT}" stroke-width="2">
+      <path d="M206 133C195 139 183 149 175 159"/>
+      <path d="M209 142C200 148 190 157 184 166"/>
+      <path d="M210 152C203 158 195 166 190 173"/>
+    </g>
+  </g>`;
+
 // Aile DÉPLOYÉE (Rainbow Dash) : elle part du garrot (196,130) et se déploie
 // vers le haut-arrière jusqu'à (124,64). Le bord bas est festonné : quatre
 // pennes. La pointe reste à x < 171 pour rester HORS de la fenêtre de portrait.
@@ -774,4 +797,105 @@ export const aileDeployee = (c, { TRAIT }) => `<g>
       <path d="M178 137C165 132 150 122 137 112"/>
       <path d="M167 140C156 136 145 129 135 121"/>
     </g>
+  </g>`;
+
+// ── VAGUE 3 (princesses, Zecora, Discord, Trixie, Derpy, Cheerilee) ───────────
+
+// SOURIRE DOUX, fermé et LONG. Quatre personnages de la vague ont, sur leurs
+// références, la même bouche : une lèvre qui descend en pente régulière du
+// milieu de la joue jusqu'au pli du menton, sans crochet malicieux ni bande de
+// dents — Celestia (sereine), Luna (solennelle), Zecora (sage), Cheerilee
+// (chaleureuse). Ce n'est ni `sourireCoin` (qui remonte en reculant), ni
+// `sourireTimide` (court et plat), ni `sourirePose` (qui finit sur un repli).
+//
+// `l` allonge vers l'ARRIÈRE (le coin de lèvre recule sous la joue) ; `releve`
+// remonte le coin AVANT. Comme pour `sourireCoin`, le relevé se fait en
+// RECULANT le point de contrôle : l'encoche de bouche est rentrante, un crochet
+// ne peut pas monter à l'avant. Suppose `museauLisse` (couche 6 ter), qui
+// reporte la frontière avant de x 271 à x 278 entre y 97 et 105.
+export const sourireDoux = ({ TRAIT }, l = 1, releve = 0, w = 2.5) => {
+  const xa = 259 - 9 * (l - 1);                        // coin ARRIÈRE
+  const fy = 104.2 - 2.8 * releve;                     // coin AVANT
+  const cx = xa + 12 - 3 * releve, cy = 102.4 - 1.6 * releve;
+  return `<path d="M${xa} 96.2C${xa + 6} 100 ${cx} ${cy} 273.6 ${fy}"
+        fill="none" stroke="${TRAIT}" stroke-width="${w}"/>`;
+};
+
+// SOURIRE MALICIEUX À DENTS, coin arrière RELEVÉ. La bouche de Trixie et de
+// Derpy : ouverte, courte, franchement remontée vers l'arrière, avec une bande
+// de dents. `sourireDents` est posé au bout du museau et descend vers le menton
+// (c'est un sourire large et bas) ; celui-ci est ramassé sous la joue et son
+// coin arrière monte au-dessus de son coin avant, ce qui donne la lecture
+// « ravi » (Derpy) ou « fier » (Trixie) selon la paupière qu'on met dessus.
+export const sourireRavi = ({ TRAIT, BOUCHE }, l = 1) => {
+  const xa = 256 - 7 * l;                              // coin ARRIÈRE, le plus haut
+  return `<path d="M${xa} 93.8C${xa + 8} 92.6 269 97.6 272.4 103
+           C270.4 105.8 265 106.4 259.6 104.6
+           C${xa + 3} 102.6 ${xa - 1.4} 98.4 ${xa} 93.8Z"
+        fill="${BOUCHE}" stroke="${TRAIT}" stroke-width="2.2"/>
+   <path d="M${xa + 1.8} 95.4C${xa + 8.6} 94.4 267.6 98.4 270.6 102.6
+           C268.8 104.6 264.6 105 260 103.4
+           C${xa + 4.4} 101.4 ${xa + 1.4} 97.6 ${xa + 1.8} 95.4Z"
+        fill="#fff"/>
+   <path d="M${xa + 2.6} 98.4C${xa + 8} 100.4 265 102 270 102.6" fill="none"
+        stroke="${TRAIT}" stroke-width="1.1" stroke-opacity=".45"/>`;
+};
+
+// SOULIERS (Celestia, Luna). Les deux princesses sont chaussées aux quatre
+// sabots. Cotes des quatre sabots du canon, relevées sur `_commun.js` :
+//   arrière du fond  x 147 → 166, bas y 264 · avant du fond  x 207 → 221, y 262
+//   arrière proche   x 118 → 146, bas y 266 · avant proche   x 177 → 206, y 266
+// Les deux souliers du FOND sont assombris comme les membres du fond, sinon ils
+// avancent d'un plan et les quatre jambes se lisent à la même distance.
+const SOULIER = (xa, xb, y) =>
+  `M${xa} ${y - 17}C${xa - 1.6} ${y - 9} ${xa - 1} ${y - 1.6} ${xa + 2.6} ${y - 1}`
+  + `C${(xa + xb) / 2} ${y + 1.6} ${xb - 2.6} ${y - 1} ${xb + 1} ${y - 1.6}`
+  + `C${xb + 1.4} ${y - 9} ${xb} ${y - 17} ${xb} ${y - 17}Z`;
+export const souliersFond = (or, orT) => `<g fill="${ton(or, .8, -.09)}"
+    stroke="${ton(orT, .8, -.09)}" stroke-width="2.2">
+    <path d="${SOULIER(147.5, 165.5, 264)}"/><path d="${SOULIER(207.5, 220.5, 262)}"/>
+  </g>`;
+export const souliersProches = (or, orT) => `<g fill="${or}" stroke="${orT}" stroke-width="2.4">
+    <path d="${SOULIER(119, 145, 266)}"/><path d="${SOULIER(178, 205, 266.5)}"/>
+  </g>
+  <g fill="none" stroke="${orT}" stroke-width="1.6">
+    <path d="M120 254C128 257 137 257 145 254"/>
+    <path d="M179 254.5C187 257.5 196 257.5 204 254.5"/>
+  </g>`;
+
+// PEYTRAL (le grand collier des princesses). Il ceinture la BASE DU COU, pas la
+// poitrine : la silhouette du canon a son bord avant de cou qui descend de
+// (242,128) à (216,181), et tout point posé à droite de cette ligne sort du
+// corps. Frontière échantillonnée, à ne pas franchir :
+//   y   128  133  141  149  160  172  181
+//   x   242  241  238  234  229  222  216
+export const PEYTRAL = "M196 126C210 132 226 136 238 139"
+  + "C240 147 235 156 227 162"
+  + "C220 168 212 172 205 175"
+  + "C198 165 195 147 196 126Z";
+export const peytral = (f, t) => `<path d="${PEYTRAL}" fill="${f}" stroke="${t}"
+    stroke-width="2.8"/>
+  <path d="M199 133C211 138 224 142 235 144" fill="none" stroke="${t}"
+    stroke-width="1.6" stroke-opacity=".55"/>`;
+
+// COURONNE / TIARE des princesses. Une bande qui ceinture le front au ras de la
+// ligne de cheveux, une pointe centrale haute, deux pointes latérales, et une
+// gemme au milieu de la bande. Bornes de la fenêtre de portrait : la pointe
+// centrale ne peut pas monter au-dessus de y 10 (à y 8 elle affleure le bord du
+// mini-portrait de la carte d'accueil, cf. le chapeau d'Applejack).
+export const couronne = (f, t, gemme, gemmeT) => `<g>
+    <path d="M247 30C252 20 254 14 255 11 258 15 260 22 262 31
+             C258 33 252 33 247 30Z" fill="${f}" stroke="${t}" stroke-width="2.4"/>
+    <path d="M232 33C233 27 234 23 236 20 239 24 241 28 242 33Z"
+          fill="${f}" stroke="${t}" stroke-width="2"/>
+    <path d="M266 34C267 29 269 26 271 24 273 27 274 31 275 36Z"
+          fill="${f}" stroke="${t}" stroke-width="2"/>
+    <path d="M226 38C232 32 242 29 252 29 262 29 271 32 277 38
+             C272 44 262 47 252 47 242 47 232 44 226 38Z"
+          fill="${f}" stroke="${t}" stroke-width="2.6"/>
+    <path d="M252 32C256 34 258 37 258 40 258 43 256 45 252 45
+             C248 45 246 43 246 40 246 37 248 34 252 32Z"
+          fill="${gemme}" stroke="${gemmeT}" stroke-width="1.6"/>
+    <path d="M231 36C237 33 245 32 252 32" fill="none" stroke="${t}"
+          stroke-width="1.4" stroke-opacity=".5"/>
   </g>`;
