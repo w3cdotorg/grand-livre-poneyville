@@ -120,6 +120,10 @@ retoucher que ces quatre blocs.
 - Le cache des modules ES est agressif : ajouter `?v=n` sur `index.html` à chaque
   navigation, et **vérifier** qu'un morceau du nouveau tracé est bien dans le DOM
   (`el.outerHTML.includes('…')`) avant de juger une capture.
+- **Tout accès à `criniere[i]` avec i > 0 doit être gardé par `?? criniere[0]`.** Les
+  poneys monochromes ont une crinière avec un seul élément → `criniere[1]` = undefined →
+  remplissages `fill="undefined"` noirs. Utiliser `c.criniere[1] ?? c.criniere[0]` et
+  `c.criniere[2] ?? c.criniere[0]` partout, y compris dans `export const cutieMark`.
 
 ## 2026-08-24 — démarrage
 - (les entrées s'ajoutent en tête de section, datées)

@@ -10,7 +10,7 @@ const petite = (x, y, e) => `<path transform="translate(${x} ${y}) scale(${e})" 
 export default (c) => `<svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg" role="img">
   <!-- queue (3 mèches = les 3 couleurs de la crinière) -->
   <path d="M96 174 Q56 194 48 246 Q54 262 72 258 Q90 250 98 226 Q104 198 104 176 Z" fill="${c.criniere[0]}"/>
-  <path d="M92 188 Q66 210 62 244" stroke="${c.criniere[1]}" stroke-width="11" fill="none" stroke-linecap="round"/>
+  <path d="M92 188 Q66 210 62 244" stroke="${c.criniere[1] ?? c.criniere[0]}" stroke-width="11" fill="none" stroke-linecap="round"/>
   <path d="M98 196 Q80 216 78 246" stroke="${c.criniere[2] ?? c.criniere[0]}" stroke-width="8" fill="none" stroke-linecap="round"/>
 
   <!-- pattes du fond (légèrement assombries) -->
@@ -22,7 +22,7 @@ export default (c) => `<svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/
 
   <!-- marque de beauté sur le flanc (côté croupe, jamais côté poitrail) -->
   <g transform="translate(88 183) scale(.54)">
-    <path d="${ETOILE6}" fill="${c.criniere[1]}"/>
+    <path d="${ETOILE6}" fill="${c.criniere[1] ?? c.criniere[0]}"/>
     ${petite(6, 8, .38)}${petite(54, 12, .32)}${petite(50, 52, .3)}
   </g>
 
@@ -51,11 +51,11 @@ export default (c) => `<svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/
   <!-- crinière : frange sur le front. Le retour de la ligne de cheveux fait une pointe
        vers (178 84) entre les deux yeux : sans elle la frange fait « béret ». -->
   <path d="M96 106 Q94 54 138 45 Q184 41 198 76 Q192 82 178 84 Q152 70 128 78 Q108 92 96 106 Z" fill="${c.criniere[0]}"/>
-  <path d="M188 80 Q184 84 176 83 Q152 70 128 78 Q108 92 97 105 Q106 86 126 70 Q152 56 176 70 Q184 74 188 80 Z" fill="${c.criniere[1]}"/>
+  <path d="M188 80 Q184 84 176 83 Q152 70 128 78 Q108 92 97 105 Q106 86 126 70 Q152 56 176 70 Q184 74 188 80 Z" fill="${c.criniere[1] ?? c.criniere[0]}"/>
   <path d="M180 72 Q176 76 170 75 Q148 64 126 72 Q108 86 99 99 Q108 82 126 66 Q150 52 170 64 Q177 67 180 72 Z" fill="${c.criniere[2] ?? c.criniere[0]}"/>
   <!-- crinière : mèche derrière l'encolure (elle sort du contour de la tête, à gauche) -->
   <path d="M112 92 Q88 128 92 178 Q110 170 118 138 Q126 112 122 90 Z" fill="${c.criniere[0]}"/>
-  <path d="M110 108 Q96 138 100 168" stroke="${c.criniere[1]}" stroke-width="9" fill="none" stroke-linecap="round"/>
+  <path d="M110 108 Q96 138 100 168" stroke="${c.criniere[1] ?? c.criniere[0]}" stroke-width="9" fill="none" stroke-linecap="round"/>
 
   <!-- yeux (3/4 : l'œil proche est plus grand, l'œil lointain mord sur le museau) -->
   <ellipse cx="137" cy="103" rx="17" ry="22" fill="#fff"/>
@@ -80,6 +80,6 @@ export default (c) => `<svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/
 </svg>`;
 
 export const cutieMark = (c) => `<svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" role="img">
-  <path d="${ETOILE6}" fill="${c.criniere[1]}"/>
+  <path d="${ETOILE6}" fill="${c.criniere[1] ?? c.criniere[0]}"/>
   ${petite(8, 9, .5)}${petite(52, 8, .42)}${petite(55, 44, .38)}${petite(7, 46, .42)}${petite(44, 57, .3)}
 </svg>`;
