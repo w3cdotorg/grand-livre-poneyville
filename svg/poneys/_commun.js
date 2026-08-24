@@ -52,6 +52,14 @@ export const derives = (c) => {
     // et monochrome elle est invisible.
     CRIN_S2: ton(M(0), 1.05, -.12),
     PUPILLE: ton(c.yeux, 1.2, -.28),    // pupille
+    // CRAYON À CILS. Sur les six références plein pied de la vague 1, les cils
+    // sont NOIRS quelle que soit la couleur de l'œil — jamais du ton de l'iris.
+    // `PUPILLE` (-28 % de luminosité) reste un bleu vif sur l'œil clair de
+    // Pinkie et un orange franc sur celui de Granny Smith : des traits de crayon
+    // de couleur au-dessus de l'œil. Ce dérivé désature et descend beaucoup
+    // plus bas, ce qui donne un presque-noir pour toutes les palettes du livre
+    // tout en restant portable (il suit la teinte de l'œil de très loin).
+    CRAYON: ton(c.yeux, .7, -.46),
     IRIS_BAS: ton(c.yeux, .35, .42),    // bas d'iris éclairci
     BLANC: "#fff8ff",                   // blanc de l'œil
     BOUCHE: "#c7096e",                  // intérieur de la bouche
@@ -179,11 +187,29 @@ export const museau = (d, ouverte = true) => {
 // contenu, un crochet de huit unités se lit comme un hameçon et non comme un
 // coin de lèvre. Amplitude finale : 1,6 unité par cran, soit au plus trois
 // unités de relevé pour crochet = 2.
+// ── CORRECTION DE LA REFONTE VISAGES (24/08/2026), et c'est LE défaut de
+// silhouette de la vague 1. Le tracé du premier jet passait par (276,5 ; 101,2)
+// puis remontait jusqu'à (277,6 ; 95,2). Or la frontière AVANT du museau,
+// échantillonnée sur `CORPS`, vaut x 271,3 à y 99 et x 272,3 à y 101 : le
+// sourire sortait donc du chanfrein de 5 unités, traversait l'encoche de bouche
+// et dessinait un CROCHET dans le vide, avec un triangle de fond visible entre
+// lui et le museau. Au comparateur, Rainbow Dash n'avait pas une bouche, elle
+// avait un bec.
+//
+// Frontière relevée (x maximal de la silhouette, par y) :
+//   y  95    96    97    98    99   100   101   102   103   104   105
+//   x 274,8 273,4 272,4 271,5 271,3 271,7 272,3 273,3 274,7 276,3 278,4
+//
+// Conséquence géométrique, à retenir : **un crochet de sourire ne peut pas
+// monter à l'avant.** L'encoche est rentrante, tout ce qui est entre y 96 et
+// y 101 doit rester à x < 271. Le crochet monte donc en RECULANT (x constant à
+// 269, y qui décroît), ce qui donne exactement la même lecture — le coin de
+// lèvre relevé — sans percer le museau.
 export const sourireCoin = ({ TRAIT }, crochet = 1) => {
-  const ax = 277.2 + .2 * crochet, ay = 100 - .5 * crochet;
-  const bx = 277.6 + .2 * crochet, by = 99.2 - 1.1 * crochet;
-  const cx = 277.2 + .2 * crochet, cy = 98.4 - 1.6 * crochet;
-  return `<path d="M262 99C266 104.5 272 105.5 276.5 101.2C${ax} ${ay} ${bx} ${by} ${cx} ${cy}"
+  const ax = 270 + .2 * crochet, ay = 102.4 - .4 * crochet;
+  const bx = 270.2, by = 101.6 - .9 * crochet;
+  const cx = 269, cy = 100.8 - 1.4 * crochet;
+  return `<path d="M258.5 97.6C262.5 102.4 266.5 104 269.6 102.6C${ax} ${ay} ${bx} ${by} ${cx} ${cy}"
         fill="none" stroke="${TRAIT}" stroke-width="2.6"/>`;
 };
 
@@ -198,30 +224,45 @@ export const sourireCoin = ({ TRAIT }, crochet = 1) => {
 // x > 272 entre y 98 et 102 ; en haut, le bord bas de l'œil descend à y 94,4 à
 // x 250 ; en bas, la mâchoire passe à y 113,2 à x 261. D'où un rire LARGE (23) et
 // PEU HAUT (14) plutôt que rond : plus haut, il se lit comme posé sur le menton.
+// REFONTE DU 24/08 : avancé de 3 unités et remonté de 1. Le rire du premier jet
+// s'arrêtait à x 271,6 parce que l'encoche de bouche de `CORPS` interdisait
+// d'aller plus loin ; posé si en arrière, il se lisait comme un pansement sur la
+// joue et non comme une bouche. Avec `museauLisse` (couche 6 ter) la frontière
+// avant passe à x 277,6 à y 97, ce qui laisse la lèvre avant monter jusqu'à
+// x 274 — le rire s'appuie enfin sur le museau. **Cette bouche suppose donc
+// `museauLisse`** : sans lui elle percerait l'encoche.
 export const grandRire = ({ TRAIT, BOUCHE }) =>
-  `<path d="M249 96C256.5 91.6 266 92.4 271.6 98
-           C273 104 268.4 109.8 261 109.8
-           C252.6 109.8 246.8 103.6 249 96Z"
+  `<path d="M250 95C257.5 90.8 267 91.6 272.6 97
+           C274 103 269.4 108.8 262.4 108.8
+           C254 108.8 247.8 102.6 250 95Z"
         fill="${BOUCHE}" stroke="${TRAIT}" stroke-width="2.4"/>
-   <path d="M251 96.6C257.6 92.8 265.6 93.6 269.8 98.6
-           C271 103.6 267 108 261 108
-           C254.4 108 249.6 102.4 251 96.6Z"
+   <path d="M252 95.8C258.6 92 266.6 92.8 270.8 97.6
+           C272 102.6 268.4 107 262.4 107
+           C255.8 107 251 101.4 252 95.8Z"
         fill="#fff"/>
-   <path d="M250.6 101.4C256.4 104.4 265 104.8 270.4 101.4" fill="none"
+   <path d="M251.6 100.4C257.4 103.4 266 103.8 271.4 100.4" fill="none"
         stroke="${TRAIT}" stroke-width="1.3" stroke-opacity=".5"/>`;
 
 // PETIT SOURIRE TIMIDE : court, bas, presque horizontal. Il ne remonte pas —
 // c'est ce qui le distingue du sourire posé de Rarity.
+// Rentré et raccourci à la refonte du 24/08 : il finissait à (275,8 ; 105,2),
+// c'est-à-dire pile sur le contour du menton, et le sourire s'y confondait avec
+// la silhouette en dessinant un Y. Sur la référence c'est une toute petite
+// courbe qui s'arrête bien avant le bord.
 export const sourireTimide = ({ TRAIT }) =>
-  `<path d="M264.5 98.6C268.5 100.2 272.5 102.6 275.8 105.2" fill="none"
+  `<path d="M264 97.4C267.6 98.8 270.6 100.6 272.8 102.8" fill="none"
         stroke="${TRAIT}" stroke-width="2.6"/>`;
 
 // SOURIRE POSÉ : plus long, il remonte franchement vers l'avant et s'achève sur
 // un petit repli de lèvre. Le maintien, pas la joie.
+// Rentré de 3 unités à la refonte du 24/08 : le tracé finissait à (276,6 ; 103,4)
+// et le repli de lèvre à (277 ; 104), tous deux 2 unités DEHORS (frontière
+// x 274,7 à y 103). Le sourire posé se terminait donc par un petit crochet
+// suspendu à côté du museau, très visible en gros plan.
 export const sourirePose = ({ TRAIT }) =>
-  `<path d="M263 97.5C267.5 100.5 272 103 276.6 103.4" fill="none"
+  `<path d="M262 97C266.5 99.8 270 102.2 273.4 105.4" fill="none"
         stroke="${TRAIT}" stroke-width="2.4"/>
-   <path d="M274.8 105.6C275.8 105.2 276.6 104.6 277 104" fill="none"
+   <path d="M272.4 106.8C273.4 106.4 274.2 105.8 274.6 105.2" fill="none"
         stroke="${TRAIT}" stroke-width="1.8"/>`;
 
 // Un œil = masse sombre, blanc inséré, iris, bas d'iris, pupille, 2 reflets.
@@ -592,12 +633,108 @@ const RACINES_HAUTES = [
   [[-11.5, -14.5], [-13.5, -15.5], [-15, -16.5], [-16.5, -18]],
   [[-7.5, -16.3], [-9.5, -17.5], [-11, -18.7], [-12.5, -20.2]],
 ];
-export const cilsHauts = ({ PUPILLE }, n = 3, w = 2.4) =>
+// `l` allonge les cils en éloignant les trois points de contrôle de la RACINE
+// (ajouté à la refonte du 24/08 : Fluttershy et Rarity ont, sur leurs
+// références, des cils nettement plus longs que les autres — c'est même leur
+// signature. Défaut 1 = le rendu de la vague 2, inchangé).
+export const cilsHauts = ({ PUPILLE }, n = 3, w = 2.4, l = 1) =>
   `<g fill="none" stroke="${PUPILLE}" stroke-width="${w}">${
-    RACINES_HAUTES.slice(0, n).map((p) =>
-      `<path d="M${p[0][0]} ${p[0][1]}C${p[1][0]} ${p[1][1]} ${p[2][0]} ${p[2][1]} ${p[3][0]} ${p[3][1]}"/>`
-    ).join('')}
+    RACINES_HAUTES.slice(0, n).map((p) => {
+      const [rx, ry] = p[0];
+      const e = (q) => `${+(rx + (q[0] - rx) * l).toFixed(2)} ${+(ry + (q[1] - ry) * l).toFixed(2)}`;
+      return `<path d="M${rx} ${ry}C${e(p[1])} ${e(p[2])} ${e(p[3])}"/>`;
+    }).join('')}
   </g>`;
+
+// ── REFONTE VISAGES VAGUE 1 (24/08/2026) — outils partagés ────────────────────
+// La vague 1 avait été dessinée de mémoire ; ces trois outils viennent de la
+// relecture des six références plein pied (URLs en tête de chaque fichier).
+
+// CILS AU COIN HAUT-ARRIÈRE, PLACÉS. `cilsHauts` est écrit dans le repère local
+// de l'amande ; il fallait donc l'envelopper à la main dans chaque fichier. Ce
+// wrapper le pose au bon endroit, avec l'échelle d'œil du personnage, et permet
+// de choisir le crayon (`teinte`) — les références donnent des cils NOIRS pour
+// tout le monde, d'où `d.CRAYON` par défaut et non `d.PUPILLE`.
+export const cilsCoinHaut = (d, n = 3, w = 2.4, l = 1, P = OEIL_PROCHE, e = 1, teinte = d.CRAYON) =>
+  `<g transform="${P} scale(${e})">${cilsHauts({ PUPILLE: teinte }, n, w / e, l)}</g>`;
+
+// SOURIRE OUVERT À BANDE DE DENTS, posé AU BOUT DU MUSEAU (et non sur la joue
+// comme `grandRire`). C'est la bouche des références d'Applejack et de Rarity :
+// un croissant dont le coin ARRIÈRE remonte, une bande de dents blanches le long
+// du bord haut, et un liseré d'intérieur rose qui ne se voit qu'en bas et aux
+// coins. Relevé sur `Applejack_id_S3E1.png` : la bouche part du milieu de la
+// joue (0,42 de la longueur de tête derrière le bout du museau) et file jusqu'au
+// pli du menton, elle est donc DEUX FOIS plus longue que haute.
+// Bornes de l'encoche de bouche de `CORPS` : rien au-delà de x 272 entre y 98 et
+// 102, rien sous y 111. `l` allonge la bouche vers l'arrière (Rarity 1, la plus
+// mesurée ; Applejack 1,25, le franc sourire).
+// La FRONTIÈRE de l'encoche est quasi linéaire, `x = 271 + (y − 98)` : à y 100
+// le museau s'arrête à x 273, à y 104 à x 277. Le premier jet plaçait la lèvre
+// avant à (276,6 ; 106) — dedans — mais le point de contrôle (275 ; 103,4) en
+// sortait de deux unités et la bande de dents perçait le chanfrein. La lèvre
+// avant est donc bornée à x 272,2 et la bouche est APLATIE (19 de long pour
+// 10,5 de haut, le rapport 2:1 relevé sur la référence) : plus haute, elle se
+// lisait comme une langue tirée.
+// La lèvre AVANT vient se loger DANS l'encoche (tip à x 274) : posée derrière
+// elle, l'encoche restait vide et se lisait comme un bec. Et la bande de dents
+// occupe presque tout l'intérieur, le rose ne restant qu'en liseré et au coin
+// arrière — un aplat rose de 5 unités se lit comme du rouge à lèvres (même
+// leçon que le rire de Pinkie, redécouverte une troisième fois).
+export const sourireDents = ({ TRAIT, BOUCHE }, l = 1) => {
+  const xa = 264.5 - 9 * l;                     // coin ARRIÈRE, le plus haut
+  return `<path d="M${xa} 95.6C${xa + 6} 93.4 269 96.4 274 103.6
+           C273 106.2 268 107.4 262.6 106.4
+           C${xa + 2.1} 105.4 ${xa - 1.7} 100.6 ${xa} 95.6Z"
+        fill="${BOUCHE}" stroke="${TRAIT}" stroke-width="2.2"/>
+   <path d="M${xa + 1.6} 96.8C${xa + 6.4} 94.8 268.6 97.6 272.6 103.6
+           C271.6 105.2 267 106.2 262.6 105.2
+           C${xa + 3.6} 103.4 ${xa + 1.2} 99.6 ${xa + 1.6} 96.8Z"
+        fill="#fff"/>
+   <path d="M${xa + 2.4} 99.6C${xa + 6.4} 102 266 103.6 271.8 103.8" fill="none"
+        stroke="${TRAIT}" stroke-width="1.1" stroke-opacity=".45"/>`;
+};
+
+// ── MUSEAU LISSE (couche 6 ter) — la deuxième trouvaille de la refonte.
+// `CORPS` porte une ENCOCHE DE BOUCHE profonde de 10 unités : la silhouette
+// avance jusqu'à x 281 au bout du nez (y 89), rentre à x 271 (y 98), puis
+// ressort à x 279 au menton (y 106). C'est juste pour Twilight, dont la bouche
+// OUVERTE remplit l'encoche et la fait lire comme deux lèvres écartées. Sur les
+// quatre poneys de la vague 1 à bouche fermée ou reculée (Rainbow Dash, Pinkie,
+// Fluttershy, Rarity) l'encoche reste VIDE : le museau se termine alors par une
+// marche en escalier que le comparateur lit sans hésitation comme un BEC
+// d'oiseau. Aucune des six références ne montre ça — le chanfrein y est
+// continu, avec au plus un léger creux de lèvre.
+//
+// Le correctif ne rallonge pas le museau (le bout du nez reste à x 281 et le
+// menton à x 279,6, comme dans `CORPS`) : il RABOTE l'encoche de 10 unités à 3.
+// La pièce est un aplat de robe posé par-dessus le trait de l'encoche — il doit
+// donc déborder de 2 unités à l'intérieur pour couvrir la moitié interne du
+// `stroke-width: 3.4` de la silhouette — puis le nouveau bord, plus doux, est
+// retracé par-dessus.
+// Le bord INTÉRIEUR de la pièce doit passer 2 unités À GAUCHE de l'encoche sur
+// TOUTE sa hauteur, sinon le trait de l'encoche ressort au milieu du museau —
+// premier essai raté : le bord intérieur passait à x 274 à y 93,5 alors que
+// l'encoche y est à x 276, et le vieux trait restait visible en diagonale au
+// travers de la nouvelle joue. Encoche échantillonnée : (281 ; 89),
+// (276 ; 93,5), (273,1 ; 95,8), (271 ; 98), (271,6 ; 100,7), (273,5 ; 102,8),
+// (276 ; 104,5), (279 ; 106).
+export const museauLisse = (c, { TRAIT }) =>
+  `<path d="M281.6 88C280.2 92.4 277.6 97 278 100.4
+            C278.4 102.8 278.8 104.6 279 106
+            C276.6 106 273.8 104.4 271.4 102.6
+            C269 100.4 268.6 98.6 268.8 97.4
+            C269.6 94.6 274.4 90.4 279.4 88Z" fill="${c.robe}"/>
+   <path d="M281.6 88C280.2 92.4 277.6 97 278 100.4
+            C278.4 102.8 278.8 104.6 279 106" fill="none"
+         stroke="${TRAIT}" stroke-width="3.4"/>`;
+
+// TACHES DE ROUSSEUR, cotes relevées. Le premier jet les posait en triangle
+// large et bas sur la joue, où elles se lisaient comme des miettes. Sur
+// `Applejack_id_S3E1.png` elles forment un petit triangle SERRÉ (7 unités de
+// côté) collé sous le coin arrière-bas de l'œil, et leur diamètre ne fait que
+// 3,4 unités. Elles sont plus CLAIRES que la robe (contre-intuitif, revérifié :
+// #fff8d3 relevé à la pipette sur une robe #f5b765).
+export const TACHES_JOUE = [[236.5, 97.5, 1.7], [243.5, 98.6, 1.7], [240, 103, 1.5]];
 
 // ── AILES DE PÉGASE ───────────────────────────────────────────────────────────
 // L'aile se substitue à la 2e patte du fond côté flanc : elle s'insère APRÈS le
