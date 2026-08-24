@@ -11,8 +11,8 @@ test('ids uniques et en kebab-case', () => {
   for (const id of ids) assert.match(id, KEBAB);
 });
 
-test('effectifs : 25 personnages, 10 lieux', () => {
-  assert.equal(PERSONNAGES.length, 25);
+test('effectifs : 26 personnages, 10 lieux', () => {
+  assert.equal(PERSONNAGES.length, 26);
   assert.equal(LIEUX.length, 10);
 });
 

@@ -156,6 +156,17 @@ export const PERSONNAGES = [
     texte: "Scootaloo est une jeune pégase qui adore filer en trottinette. Elle admire beaucoup Rainbow Dash. Avec ses amies Apple Bloom et Sweetie Belle, elle fait partie des Chercheuses de talent."
   },
   {
+    id: "diamond-tiara",
+    nom: "Diamond Tiara",
+    espece: "terrestre",
+    couleurs: { robe: "#f3b8cd", criniere: ["#b39ddb", "#f5f2fa"], yeux: "#8fc9ee" },
+    cutieMark: "une tiare d'argent",
+    lieuId: "ecole-poneyville",
+    liens: { famille: [], amis: [] },
+    texte: "Diamond Tiara est une élève de l'école de Poneyville. Elle porte une jolie tiare, comme sa marque de beauté. Elle aime commander, mais elle apprend à devenir plus gentille.",
+    leSaisTu: "Elle est dans la même classe que les Chercheuses de talent."
+  },
+  {
     id: "zecora",
     nom: "Zecora",
     espece: "zebre",
@@ -364,7 +375,7 @@ export const LIEUX = [
   {
     id: "ecole-poneyville",
     nom: "L'école de Poneyville",
-    habitants: ["cheerilee", "scootaloo"],
+    habitants: ["cheerilee", "scootaloo", "diamond-tiara"],
     carte: { x: 65, y: 60 },
     texte: "L'école de Poneyville est reconnaissable à sa cloche rouge. C'est là que les petits poneys du village viennent apprendre. La maîtresse d'école s'appelle Cheerilee."
   }

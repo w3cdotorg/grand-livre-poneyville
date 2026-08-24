@@ -10,7 +10,7 @@
 |---|---|
 | Visuels | SVG dessinés main, style inspiré de FiM (aplats, silhouettes simples, marques de beauté) — 100 % originaux, aucun asset officiel Hasbro. |
 | Texte | 2-3 phrases par fiche, lues par le parent. Pas de synthèse vocale. |
-| Périmètre | Large d'emblée : 25 personnages (dont 6 animaux de compagnie) et 10 lieux. |
+| Périmètre | Large d'emblée : 26 personnages (dont 6 animaux de compagnie) et 10 lieux. |
 | Navigation | Accueil = carte dessinée + boutons galerie « Les poneys » / « Les lieux ». Navigation croisée fiche ↔ fiche. |
 | Technique | Option A : statique, vanilla JS modules ES, zéro dépendance, zéro build, GitHub Pages. |
 | Langue | Tout en français. Terminologie VF (« forêt Désenchantée ») ; les poneys gardent leurs noms de la VF (Twilight Sparkle, Rainbow Dash…). « Poneyville » s'écrit avec « poney ». "marque de beauté" (amendement 24/08). |
@@ -93,7 +93,7 @@ Les tests d'intégrité garantissent : toute référence (lieuId, liens, habitan
 
 ## Contenu
 
-**Personnages (19)** : Twilight Sparkle, Applejack, Rainbow Dash, Pinkie Pie, Fluttershy, Rarity, Spike, Big Macintosh, Apple Bloom, Sweetie Belle, Scootaloo, Zecora, princesse Celestia, princesse Luna, Granny Smith, Discord, Trixie, Derpy, Cheerilee.
+**Personnages (20)** : Twilight Sparkle, Applejack, Rainbow Dash, Pinkie Pie, Fluttershy, Rarity, Spike, Big Macintosh, Apple Bloom, Sweetie Belle, Scootaloo, Zecora, princesse Celestia, princesse Luna, Granny Smith, Discord, Trixie, Derpy, Cheerilee, Diamond Tiara (ajout 24/08).
 **Animaux de compagnie (6)** : Angel (Fluttershy), Gummy (Pinkie Pie), Winona (Applejack), Opale (Rarity), Tank (Rainbow Dash), Owlowiscious (Twilight).
 **Lieux (10)** : la bibliothèque Golden Oak, Sweet Apple Acres, la Carousel Boutique, Sugarcube Corner, la chaumière de Fluttershy, la forêt Désenchantée, la hutte de Zecora, Canterlot, Cloudsdale, l'école de Poneyville.
 
