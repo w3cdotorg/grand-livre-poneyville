@@ -101,7 +101,7 @@ Ton des textes : simple, chaleureux, factuel-univers (« Twilight adore les livr
 
 ## Dessin des SVG
 
-- Style commun documenté dans NOTES.md dès le premier poney validé : proportions FiM simplifiées (grosse tête ~40 % de la hauteur, gros yeux, corps rond, pattes courtes), viewBox commun `0 0 300 300` pour les personnages, palette par personnage dans `data.js` (source unique des couleurs, les SVG l'importent).
+- **Amendement du 24/08** — style commun documenté dans NOTES.md dès le premier poney validé : proportions **show-accurate**, relevées sur l'image de référence vectorielle fournie par le propriétaire (`.superpowers/sdd/2026-08-24-grand-livre-poneyville/reference-twilight.png`) et reproduites le plus fidèlement possible — tête ≈ 1/3 de la hauteur, encolure fine, jambes longues, très grands yeux, contours d'un ton plus soutenu que la robe ; viewBox commun `0 0 300 300` pour les personnages, palette par personnage dans `data.js` (source unique des couleurs, les SVG l'importent).
 - Chaque personnage : pose plein pied 3/4, marque de beauté visible, paupières animables (CSS `@keyframes` sur un groupe `#paupieres`).
 - Portraits de galerie : recadrage du même SVG via `viewBox` réduit (pas de second dessin).
 - Lieux : scènes simples et lisibles (bâtiment + 2-3 éléments de contexte), même style d'aplats.

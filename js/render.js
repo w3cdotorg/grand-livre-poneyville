@@ -10,7 +10,9 @@ const ESPECES = {
 
 const svgDe = async (p) => (await import(`../svg/poneys/${p.id}.js`)).default(p.couleurs);
 const svgLieu = async (l) => (await import(`../svg/lieux/${l.id}.js`)).default();
-const portrait = (svg) => svg.replace('viewBox="0 0 300 300"', 'viewBox="60 15 180 180"');
+// Fenêtre de recadrage des portraits de galerie : elle cadre la tête du modèle
+// show-accurate (voir NOTES.md § « Guide de style poneys »).
+const portrait = (svg) => svg.replace('viewBox="0 0 300 300"', 'viewBox="171 6 124 124"');
 
 const vignettePoney = async (id) => {
   const p = PERSONNAGE[id];

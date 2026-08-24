@@ -5,7 +5,7 @@ export const PERSONNAGES = [
     id: "twilight",
     nom: "Twilight Sparkle",
     espece: "licorne",
-    couleurs: { robe: "#c9a7e0", criniere: ["#2a2f6e", "#ec5fa4", "#7147a8"], yeux: "#7b3fa0" },
+    couleurs: { robe: "#d291eb", criniere: ["#152878", "#fc0b8a", "#600a92"], yeux: "#561c81" },
     cutieMark: "une grande étoile rose entourée de petites étoiles blanches",
     lieuId: "bibliotheque",
     liens: {

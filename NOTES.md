@@ -4,126 +4,181 @@ Journal des découvertes techniques et choix de dessin, au fil de l'eau.
 
 ## Guide de style poneys
 
-Établi en dessinant Twilight Sparkle (`svg/poneys/twilight.js`), qui sert de **modèle de
-référence** : les 24 autres poneys reprennent ces coordonnées et ne changent que la
-crinière, la queue, la marque de beauté et l'attribut d'espèce (corne / ailes / rien).
+Établi en redessinant Twilight Sparkle (`svg/poneys/twilight.js`) d'après l'**image de
+référence** fournie par le propriétaire le 24/08/2026 :
+`.superpowers/sdd/2026-08-24-grand-livre-poneyville/reference-twilight.png`.
 
-Le plus simple pour démarrer un nouveau poney est de copier `twilight.js` et de ne
-retoucher que ces quatre blocs.
+Ce fichier est le **modèle anatomique** des 24 autres personnages. Le plus simple pour
+démarrer un nouveau poney est de le copier et de ne retoucher que la crinière, la queue,
+la marque de beauté et l'attribut d'espèce (corne / ailes / rien).
 
-### Pose et cadrage
+### Le repère : tout est relisable sur la référence
 
-- `viewBox="0 0 300 300"`, pose **3/4 plein pied, tournée vers la droite** (museau à
-  droite, croupe et queue à gauche).
-- La silhouette occupe **y 22 → 276** : rien au-dessus de y=22 (la pointe de corne) ni
-  en dessous de y=276 (le bas des sabots).
-- Le portrait de galerie est le recadrage `viewBox="60 15 180 180"` du **même** SVG
-  (fait par `js/render.js`). Donc : tout ce qui compte pour le portrait doit vivre dans
-  x 60→240 / y 15→195, et la pointe de corne / d'oreille ne doit **jamais** dépasser
-  y=20 sinon elle est coupée dans la vignette et sur la carte d'accueil.
-- Proportions : tête ⌀108 pour une silhouette de 254 de haut, soit ~42 % — plus la
-  crinière au-dessus. Le corps (124 × 86) est **volontairement plus petit que la tête** :
-  c'est ce rapport qui fait « mignon ». Un corps plus gros et le poney devient un ourson.
+La référence (905 × 813 px) se projette sur le viewBox 300 × 300 par
 
-### Coordonnées clés retenues
+    x_svg = 0,31 · x_ref + 8        y_svg = 0,31 · y_ref + 18
 
-| Élément | Géométrie |
+Toutes les coordonnées du fichier sont donc directement comparables au PNG. **C'est la
+clé de la méthode** : on ne dessine pas « à l'œil », on relève des extrema ligne par
+ligne sur la référence (`PIL`, un scan horizontal par couleur) et on les reporte.
+
+### Proportions show-accurate (le nouveau canon)
+
+Fini les « proportions FiM simplifiées » du brief initial (grosse tête ~40 %) : la
+référence est un vecteur fidèle à la série.
+
+| Élément | Géométrie (viewBox 300 × 300) |
 | --- | --- |
-| Tête | `circle cx=152 cy=98 r=54` |
-| Museau | `ellipse cx=194 cy=122 rx=24.5 ry=20` (naseau à 205,113 ; sourire 184→206 vers y=132) |
-| Corps | `ellipse cx=140 cy=202 rx=62 ry=43` |
-| Cou | `M124 122 Q112 158 126 186 L184 184 Q190 168 185 152 Q194 138 190 118 Z` |
-| Pattes du fond | `rect` x=96 et x=156, `y=192 w=27 h=84 rx=13.5`, + calque `#000 / .1` |
-| Pattes de devant | `rect` x=126 et x=176, mêmes dimensions ; sabots = bande `y=260 h=16` en `#000 / .13` |
-| Œil proche (grand) | blanc `137,103 rx17 ry22` — iris `140,107 rx11 ry13` — pupille `140,109 rx5 ry6.5` (`#2a1436`) |
-| Œil lointain (petit) | blanc `181,102 rx12.5 ry17` — iris `183,105 rx8 ry10` — pupille `184,107 rx3.6 ry5` |
-| Reflets | `144,99 r4.6` + `134,113 r2.6` (opacité .8) sur l'œil proche ; `186,98 r3.2` sur l'autre |
-| Paupières | mêmes centres que les blancs, rayons **+1 / +1** : `137,103 rx18 ry23` et `181,102 rx13.5 ry18` |
-| Ligne de cils | `M121 96 Q124 84 137 81`, épaisseur 5, couleur `criniere[0]` |
-| Oreille | `M106 70 Q100 32 122 40 Q138 48 132 72 Z` + conque `#000 / .13` |
-| Corne (licornes) | `M164 62 Q170 40 191 22 Q195 46 192 68 Q176 72 164 62 Z` + reflet `#fff / .22` + 3 stries `#000 / .16` |
-| Marque de beauté (flanc) | `translate(88 183) scale(.54)` d'un motif dessiné dans un carré 60×60 |
-| Queue | masse `M96 174 Q56 194 48 246 Q54 262 72 258 Q90 250 98 226 Q104 198 104 176 Z` + 2 mèches en `stroke` |
+| Silhouette totale | x 8 → 288, y 18 → 269 |
+| Tête + crinière | x 179 → 288, y 18 → 120 — soit **~1/3** de la hauteur |
+| Tête seule (museau compris) | x 181 → 282, y 42 → 117 |
+| Naseau / bout du museau | (281, 85) ; sourire ouvert x 267 → 279, y 94 → 105 |
+| Œil proche | amande 39,7 × 32,9 centrée (235,5 ; 77,9) |
+| Œil lointain | même amande en `scale(-.41 .81)` centrée (266 ; 65,8) |
+| Oreille | pointe (188, 56) → pointe basse (205, 101) : **longue**, pas un petit nub |
+| Corne (licornes) | pointe (246, 19), base x 233 → 248 à y 46, 4 stries fines |
+| Barrel / dos | dos plat y ≈ 125 de x 148 à 160, creux à y 132 vers x 175, garrot (194, 126) |
+| Ventre | point bas y ≈ 185 entre x 166 et 178 |
+| Croupe | bord gauche x ≈ 126 de y 150 à 180 |
+| Pattes arrière | proche x 118 → 149, du fond x 147 → 166 ; sabots à y 266 |
+| Pattes avant | proche x 177 → 206, du fond x 200 → 222 ; sabots à y 266 |
+| Marque de beauté | centre (141,3 ; 154,4), étoile 15 × 25 + 5 étincelles |
+| Queue | crescent : sommet (88, 84), extérieur jusqu'à x 9 vers y 196, pointe (95, 250) |
+
+Le cou est **fin** et long (gorge de (243, 121) à (216, 181)), les jambes sont des
+colonnes hautes légèrement galbées. Un corps trop rond ou des pattes courtes ramènent
+immédiatement au style « peluche » qu'on a abandonné.
 
 ### Ordre des couches (strict)
 
-1. **queue** (derrière tout : masse `criniere[0]`, puis mèches `criniere[1]` et `criniere[2]` en `stroke-linecap="round"`)
-2. **pattes du fond** — dessinées deux fois : robe, puis le même `rect` en `#000` opacité `.1`. C'est ce voile qui les fait lire « derrière » alors qu'elles sont de la même couleur que le corps.
-3. **corps**
-4. **marque de beauté** (sur le corps, sous les pattes de devant)
-5. **pattes de devant** + sabots
-6. **cou**, puis **tête**
-7. **museau**, naseau, sourire
-8. **oreille**, puis **corne / ailes** — avant la crinière, pour que la frange recouvre leur base : c'est ce qui fait que la corne « pousse » dans les cheveux au lieu d'être collée dessus
-9. **crinière** : frange (masse `criniere[0]`, puis bande `criniere[1]`, puis bande `criniere[2]` par-dessus), puis mèche d'encolure
-10. **yeux** (blanc → iris → pupille → reflets)
-11. **paupières** (`<g class="paupieres">`)
-12. **ligne de cils** (au-dessus des paupières, pour rester visible pendant le clignement)
+1. **queue** : masse `criniere[0]`, puis bandes `criniere[1]` et `criniere[2]`, puis les
+   séparations de mèches, puis **le contour retracé par-dessus** (voir pièges)
+2. **membres du fond** (arrière puis avant) en robe assombrie + contour assombri
+3. **oreille** — avant la tête : c'est le contour de la tête, dessiné ensuite, qui creuse
+   le pli interne de l'oreille
+4. **corps + cou + tête + museau : UN SEUL tracé fermé.** Aucune couture possible entre
+   tête, encolure et poitrail
+5. **marque de beauté** (sur le flanc, côté croupe)
+6. **membres proches** : remplissage sans contour, puis le seul contour **visible** en
+   tracé ouvert
+7. **naseau**, **bouche ouverte** (intérieur + langue)
+8. **yeux** (masse sombre → blanc inséré → iris → bas d'iris éclairci → pupille → 2 reflets)
+9. **paupières** (`<g class="paupieres">`)
+10. **le contour de la joue retracé**, par-dessus l'œil lointain, qui affleure le museau
+11. **corne / ailes** — avant la crinière, pour que la frange recouvre leur base
+12. **crinière** : frange, mèche rejetée en arrière, mèche d'encolure — chacune : masse,
+    bandes, séparations, contour retracé
+13. **cils**
+
+### Couleurs : tout dérive de `c`
+
+`c.robe`, `c.criniere[i]`, `c.yeux` sont les seules entrées. Les dérivés se calculent en
+HSL par l'utilitaire `ton(hex, facteurSaturation, deltaLuminosité)` :
+
+| Dérivé | Formule | Rendu sur Twilight |
+| --- | --- | --- |
+| contour de la robe | `ton(robe, .64, -.21)` | `#a64cc4` |
+| membres du fond | `ton(robe, .65, -.10)` | `#b17bcd` |
+| contour des membres du fond | `ton(robe, .55, -.25)` | `#9251ad` |
+| contour de la crinière | `ton(criniere[0], 1.3, -.165)` | `#030f36` |
+| séparation de mèches | `ton(criniere[0], 1, -.045)` | `#132566` |
+| pupille | `ton(yeux, 1.2, -.28)` | `#040000` |
+| bas d'iris éclairci | `ton(yeux, .35, .42)` | `#cbabdb` |
+
+Seules trois constantes locales restent : blanc de l'œil `#fff8ff`, intérieur de bouche
+`#c7096e`, langue `#fc5e1f`. **Tout accès `criniere[i]` avec i > 0 doit être gardé par
+`?? criniere[0]`** — les poneys monochromes n'ont qu'une couleur, sinon `fill="undefined"`
+donne des aplats noirs. Vérifié avec la palette d'Applejack : le modèle tient.
+
+### Fenêtre de portrait
+
+`portrait()` dans `js/render.js` recadre le **même** SVG en `viewBox="171 6 124 124"`
+(retenu le 24/08 : la boîte tête+crinière fait 109 × 102 centrée sur (233,5 ; 68,5), la
+fenêtre de 124 laisse ~7 % de marge de chaque côté). Conséquence : tout ce qui compte
+pour la vignette de galerie et pour le mini-portrait de la carte d'accueil doit vivre
+dans x 171 → 295 / y 6 → 130. Une pointe de corne au-dessus de y = 10 serait coupée.
+
+Les 24 placeholders gris sont mal cadrés par cette fenêtre — c'est assumé, ils
+disparaîtront au fur et à mesure des vrais dessins.
 
 ### Les paupières et le clignement
 
 `css/style.css` anime `.paupieres` en `scaleY` avec `transform-box: fill-box` et
 `transform-origin: center top`. Conséquences **non négociables** :
 
-- Les paupières se dessinent **en position fermée**, c'est-à-dire recouvrant entièrement
-  les blancs des yeux (rayons +1 sur le blanc). Au repos le CSS les met à `scaleY(0)`.
-  Le point de départ du brief ne couvrait que la moitié haute de l'œil : l'œil restait
-  mi-ouvert pendant le clignement.
-- L'origine du pli est le **haut de la bounding box du groupe entier**, donc le haut de
-  la paupière la plus haute. Les deux paupières ne se replient donc pas exactement en
-  phase — invisible à l'œil (le clignement dure ~135 ms), mais inutile d'essayer de les
-  aligner parfaitement.
-- Vérification en Playwright : forcer les deux états au lieu d'attendre le hasard —
-  `.paupieres{animation:none;transform:scaleY(0)}` pour les yeux ouverts,
-  `scaleY(1)` pour les yeux fermés.
+- Les paupières sont **l'amande de l'œil agrandie de 7 %**, dessinées en position
+  fermée. Au repos le CSS les met à `scaleY(0)`.
+- Elles n'ont **pas de contour** : un `stroke` sur un groupe mis à `scaleY(0)` laisse
+  parfois un filet horizontal visible.
+- L'origine du pli est le haut de la bounding box du groupe entier : les deux paupières
+  ne se replient pas exactement en phase, invisible sur 135 ms.
+- Vérification : forcer les deux états plutôt qu'attendre le hasard —
+  `.paupieres{animation:none;transform:scaleY(0)}` yeux ouverts, `scaleY(1)` fermés.
+  En Chrome headless, `--virtual-time-budget=4320` tombe pile dans le clignement.
 
 ### Variantes par espèce
 
-- **Licorne / alicorne** : la corne ci-dessus, à sa place exacte. Le reflet clair et les
-  3 stries ne sont pas décoratifs — sans eux la corne se lit comme une deuxième oreille.
-- **Pégase / alicorne** : aile au lieu de la 2e patte du fond côté flanc, à insérer
-  **après le corps et avant les pattes de devant**, autour de `(120..185, 165..205)`, en
-  robe + un voile `#000 / .08` pour la détacher.
-- **Terrestre / autres** : ni corne ni aile — garder l'oreille telle quelle. Ne pas
-  compenser en agrandissant la crinière, ça déséquilibre le portrait.
+- **Licorne / alicorne** : la corne ci-dessus, à sa place exacte. Les 4 stries fines et
+  le contour ne sont pas décoratifs : sans eux la corne se lit comme une oreille.
+- **Pégase / alicorne** : aile à la place de la 2e patte du fond côté flanc, à insérer
+  **après le corps et avant les pattes de devant**, autour de `(150..215, 130..185)`,
+  en robe + contour, plus un voile `#000 / .08`.
+- **Terrestre** : ni corne ni aile, garder l'oreille telle quelle.
 - **Non-poneys** (Spike, Discord, animaux) : la grille tête/corps/pattes tient encore,
   mais tête et museau sont à retailler ; garder impérativement `class="paupieres"`
-  (les tests l'exigent) et le cadrage tête dans `60 15 180 180`.
+  (les tests l'exigent) et le cadrage tête dans `171 6 124 124`.
 
 ### Pièges rencontrés
 
-- **Une oreille et une corne de même taille = deux oreilles.** La lecture ne vient pas de
-  la position mais du contraste de forme : oreille courte et arrondie en arrière,
-  corne fine, haute et striée à l'avant.
-- **Tout trait sombre au-dessus de l'œil lointain fait un sourcil fâché.** Une seule
-  ligne de cils, sur l'œil proche, et qui **suit** le bord du blanc de l'œil.
-- **Les cils détachés de l'œil font des agrafes** : posés dans le vide ils tombent sur la
-  crinière et se lisent comme des rayures. Un cil doit partir du bord de l'œil.
-- **Pas de segment droit dans un contour visible.** Le premier cou finissait par un
-  `L` horizontal exposé entre la mâchoire et le poitrail : effet marche d'escalier. Les
-  segments droits d'un tracé doivent être noyés à l'intérieur d'une autre forme.
-- **Une frange = un béret** si sa ligne de cheveux est un simple arc. Il faut une
-  **pointe vers le bas** entre les deux yeux (ici `Q192 82 178 84`) pour que ça se lise
-  comme des cheveux.
-- **Les bandes de couleur de la crinière doivent rester à l'intérieur de la masse.**
-  Elles sont dessinées comme des formes fermées qui longent la ligne de cheveux ; leur
-  extrémité droite a dû être rentrée de ~10 unités (198 → 188 → 180) parce qu'elles
-  dépassaient en pointe hors de la masse sombre.
-- **La marque de beauté va sur la croupe**, côté queue (x≈88..120), pas côté poitrail. Le
-  point de départ du brief la plaçait à droite, c'est-à-dire sur l'épaule.
-- **Ombres portables d'un poney à l'autre** : utiliser `fill="#000" fill-opacity="…"`
-  plutôt que d'assombrir une couleur, pour que ça marche avec n'importe quelle robe
-  sans calculer de teinte.
+- **Un `C` SVG mange les coordonnées par paquets de 3 points.** Un `C` suivi de 5 paires
+  est un tracé **invalide** : le navigateur abandonne silencieusement la fin du chemin.
+  C'est passé inaperçu une itération entière (frange amputée). Systématiquement
+  valider : compter les nombres de chaque commande et vérifier le multiple attendu.
+- **Un `stroke` centré fait un contour deux fois trop épais.** La référence a une bande
+  de contour de ~2,5 unités ; un `stroke-width: 5` en produit 5 (2,5 dehors + 2,5 sur le
+  remplissage) et étouffe les masses — la crinière devenait un ruban fin dans une bordure
+  grasse. Valeurs retenues : **3,4** pour le corps, **3,2** pour crinière / queue /
+  oreille / pattes, **2,8** pour la corne, **1,4-1,5** pour les séparations de mèches.
+- **Les bandes de couleur d'une mèche sont des TRAITS épais le long de la courbe**, pas
+  des tracés fermés : leurs bords restent ainsi parallèles à la mèche. Elles débordent
+  toujours un peu → **retracer le contour de la mèche par-dessus** (le même `d`, en
+  `fill="none"`). C'est le seul moyen propre de rattraper le débord sans `clipPath`.
+- **Une frange = un béret** si sa ligne de cheveux est un simple arc. Il faut la pointe
+  vers le bas (ici (212, 74)) qui mord sur l'œil proche.
+- **L'iris doit affleurer le bord haut-droit de l'amande.** C'est ce contact qui produit
+  le liseré sombre du regard MLP. On le fait avec un tracé d'iris aplati le long de ce
+  bord — pas avec un `clipPath` (les IDs se dupliquent, le même SVG apparaît 3 fois par
+  page).
+- **Tout trait sombre au-dessus de l'œil lointain fait un sourcil fâché.** Trois cils
+  courts au coin **externe** de l'œil proche, et rien d'autre.
+- **Le contour du museau repasse par-dessus l'œil lointain.** Sans ce second passage
+  l'œil déborde de la joue : dans la référence il affleure vraiment le bord.
+- **Le coin mâchoire/gorge est un angle presque horizontal** : de (255, 115) à (243, 116)
+  le bord perd 12 unités en 1. Une courbe douce y fait un menton de cheval.
+- **Le contour d'une patte proche ne doit pas être fermé** : le trait traverserait le
+  flanc. Remplissage fermé sans contour + tracé ouvert pour le contour visible.
+- **Les étincelles blanches de la marque de beauté sont invisibles sur le médaillon**
+  (fond clair de la fiche). Le `cutieMark` porte donc un disque de `c.robe` derrière :
+  c'est la marque « telle qu'elle est sur la robe ».
+- **La marque de beauté va sur la croupe**, côté queue, pas côté poitrail.
+- **Ombres portables d'un poney à l'autre** : passer par `ton()` en HSL plutôt que par
+  des hex écrits à la main, pour que ça marche avec n'importe quelle robe.
 - Playwright : `browser_take_screenshot` sur un élément **timeout** tant que le
-  clignement tourne (« waiting for element to be stable »). Couper l'animation d'abord,
-  ou faire une capture de viewport.
-- Le cache des modules ES est agressif : ajouter `?v=n` sur `index.html` à chaque
-  navigation, et **vérifier** qu'un morceau du nouveau tracé est bien dans le DOM
-  (`el.outerHTML.includes('…')`) avant de juger une capture.
-- **Tout accès à `criniere[i]` avec i > 0 doit être gardé par `?? criniere[0]`.** Les
-  poneys monochromes ont une crinière avec un seul élément → `criniere[1]` = undefined →
-  remplissages `fill="undefined"` noirs. Utiliser `c.criniere[1] ?? c.criniere[0]` et
-  `c.criniere[2] ?? c.criniere[0]` partout, y compris dans `export const cutieMark`.
+  clignement tourne. Pour la boucle de fidélité, plus rapide et plus fiable : rendre le
+  SVG dans une page HTML locale et capturer avec Chrome headless
+  (`--headless --screenshot --window-size`), en superposant la référence à 55 %
+  d'opacité — la comparaison devient métrique et non plus impressionniste.
+- Le cache des modules ES est agressif : ajouter `?v=n` et **vérifier** qu'un morceau du
+  nouveau tracé est bien dans le DOM (`el.outerHTML.includes('…')`) avant de juger.
 
 ## 2026-08-24 — démarrage
+- **Twilight redessinée d'après référence (show-accurate).** Le propriétaire a fourni un
+  vecteur de référence ; le guide de style ci-dessus est réécrit en conséquence et
+  remplace les « proportions FiM simplifiées » du spec (amendement acté dans
+  `docs/superpowers/specs/…-design.md`). Méthode : relevé métrique de la référence en
+  Python (extrema par ligne et par colonne, par couleur), report dans le repère
+  `0,31·ref + (8, 18)`, puis 6 tours de boucle rendu → superposition → diff numérique.
+  Hex de Twilight repipetés sur le PNG dans `data.js` :
+  robe `#c9a7e0 → #d291eb`, crinière `[#2a2f6e, #ec5fa4, #7147a8] → [#152878, #fc0b8a, #600a92]`,
+  yeux `#7b3fa0 → #561c81`. Fenêtre de portrait : `60 15 180 180 → 171 6 124 124`.
 - (les entrées s'ajoutent en tête de section, datées)
