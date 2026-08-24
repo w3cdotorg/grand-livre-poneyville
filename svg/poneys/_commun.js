@@ -258,6 +258,36 @@ export const oeil = (c, { PUPILLE, BLANC, IRIS_BAS }, o = {}) => (t) => {
 export const OEIL_PROCHE = "translate(235.5 77.9)";
 export const OEIL_LOIN = "translate(266 65.8) scale(-.41 .81)";
 
+// ── PLACEMENT DE L'ŒIL POUR LES POULICHES ─────────────────────────────────────
+// Relevé sur les références plein pied (`refs/apple-bloom-plein-pied.png`,
+// `sweetie-belle-plein-pied.png`), en fraction de la HAUTEUR DE TÊTE — la seule
+// cote comparable d'une pose à l'autre, le sommet du crâne et le menton étant
+// toujours identifiables alors que « l'arrière du crâne » est sous la crinière :
+//
+// | mesure                    | canon (Twilight) | Apple Bloom | Sweetie Belle |
+// | largeur d'œil / h. tête   | 0,53             | 0,655       | 0,61          |
+// | hauteur d'œil / h. tête   | 0,44             | 0,55        | 0,51          |
+// | centre de l'œil, en y     | 0,48             | 0,62        | 0,68          |
+//
+// D'où, pour une pouliche, DEUX corrections : l'amande descend dans le crâne,
+// et elle grossit — mais seulement de 6 %, et c'est le point clé. Premier jet à
+// 1,15 sur la tête ADULTE : deux gros yeux plantés au milieu d'un long museau.
+// L'œil ne paraissait petit que parce que la TÊTE était trop grande ; la tête de
+// pouliche raccourcie (crâne y 39 → menton y 94, 55 unités au lieu de 75), 6 %
+// suffisent à atteindre les 0,63 de largeur-sur-hauteur-de-tête de la référence.
+export const OEIL_PROCHE_P = "translate(234 80)";
+// L'œil LOINTAIN, lui, ne suit PAS l'agrandissement en largeur : large, il vient
+// se poser en travers du chanfrein raccourci. Il reste étroit (.30), haut sur le
+// museau, et sa cote est bornée par le crâne, pas par la symétrie avec le proche.
+// Et il est ÉCRASÉ (.66 en hauteur) : à pleine hauteur, posé au milieu d'un
+// museau court, il se lit comme un second œil greffé sur le nez au lieu de
+// l'œil de l'autre côté de la tête. Sa place est calée pour que son bord avant
+// affleure le contour de la joue, qui le RECOUPE ensuite (couche 10) — c'est ce
+// recoupement, et lui seul, qui le fait lire « de l'autre côté ».
+export const OEIL_LOIN_P = "translate(267 69) scale(-.30 .66)";
+export const OEIL_P = 1.06;
+
+
 // ── Couche 8 bis : PAUPIÈRES D'EXPRESSION (fixes, pas celles du clignement) ───
 //
 // PREMIÈRE TENTATIVE, ÉCARTÉE : l'amande entière, agrandie de 7 % et remontée
@@ -328,21 +358,30 @@ export const PLI_B = (mange) => enBezier(melange(BORD_BAS, BORD_HAUT, mange));
 export const PAUPIERE_B = (mange) =>
   `${enBezier(BORD_BAS)}${enBezierInverse(melange(BORD_BAS, BORD_HAUT, mange))}Z`;
 
-export const paupiereHaute = (c, { TRAIT }, ouv, teinte = c.robe) => `<g fill="${teinte}">
-    <path d="${PAUPIERE_H(ouv)}" transform="${OEIL_PROCHE} ${OEIL_BLANC}"/>
-    <path d="${PAUPIERE_H(ouv)}" transform="${OEIL_LOIN} ${OEIL_BLANC}"/>
-    <path d="${PLI_H(ouv)}" transform="${OEIL_PROCHE} ${OEIL_BLANC}"
-          fill="none" stroke="${TRAIT}" stroke-width="2.2"/>
+// `e` accompagne le facteur d'échelle des YEUX quand un personnage déroge à
+// l'œil canonique (Big Macintosh a l'œil à .85, les pouliches à 1.05) : la
+// paupière fixe doit suivre exactement la même mise à l'échelle que l'amande,
+// sinon elle flotte. `paupieres(c, e)` applique déjà le même `e` au clignement.
+// `P` et `L` permettent de déroger au placement canonique de l'œil (pouliches,
+// et les personnages dont le relevé de référence descend l'œil dans le crâne) :
+// la paupière fixe doit être calée sur l'amande, où qu'elle soit.
+export const paupiereHaute = (c, { TRAIT }, ouv, teinte = c.robe, e = 1,
+  P = OEIL_PROCHE, L = OEIL_LOIN) => `<g fill="${teinte}">
+    <path d="${PAUPIERE_H(ouv)}" transform="${P} scale(${e}) ${OEIL_BLANC}"/>
+    <path d="${PAUPIERE_H(ouv)}" transform="${L} scale(${e}) ${OEIL_BLANC}"/>
+    <path d="${PLI_H(ouv)}" transform="${P} scale(${e}) ${OEIL_BLANC}"
+          fill="none" stroke="${TRAIT}" stroke-width="${2.2 / e}"/>
   </g>`;
 
 // PAUPIÈRE INFÉRIEURE. `mange` est la fraction d'œil remontée par le bas. Elle
 // ne sert qu'au plissement (Rainbow Dash) et reste discrète — .1 à .2. Au-delà,
 // combinée à la paupière haute, l'œil se ferme et le poney a l'air endormi.
-export const paupiereBasse = (c, { TRAIT }, mange, teinte = c.robe) => `<g fill="${teinte}">
-    <path d="${PAUPIERE_B(mange)}" transform="${OEIL_PROCHE} ${OEIL_BLANC}"/>
-    <path d="${PAUPIERE_B(mange)}" transform="${OEIL_LOIN} ${OEIL_BLANC}"/>
-    <path d="${PLI_B(mange)}" transform="${OEIL_PROCHE} ${OEIL_BLANC}"
-          fill="none" stroke="${TRAIT}" stroke-width="1.9"/>
+export const paupiereBasse = (c, { TRAIT }, mange, teinte = c.robe, e = 1,
+  P = OEIL_PROCHE, L = OEIL_LOIN) => `<g fill="${teinte}">
+    <path d="${PAUPIERE_B(mange)}" transform="${P} scale(${e}) ${OEIL_BLANC}"/>
+    <path d="${PAUPIERE_B(mange)}" transform="${L} scale(${e}) ${OEIL_BLANC}"/>
+    <path d="${PLI_B(mange)}" transform="${P} scale(${e}) ${OEIL_BLANC}"
+          fill="none" stroke="${TRAIT}" stroke-width="${1.9 / e}"/>
   </g>`;
 
 // SOURCIL. Uniquement au-dessus de l'œil PROCHE : au-dessus du lointain il fait
@@ -375,9 +414,10 @@ export const taches = (robe, l) => `<g fill="${TACHE(robe)}">${
 // sur un groupe à scaleY(0) laisse un filet horizontal visible.
 // `teinte` permet de déroger à la robe : Rarity a du fard à paupières, qui
 // n'apparaît justement qu'au clignement.
-export const paupieres = (c, e = 1, teinte = c.robe) => `<g class="paupieres">
-    <path d="${AMANDE}" transform="translate(235.5 77.9) scale(${1.07 * e})" fill="${teinte}"/>
-    <path d="${AMANDE}" transform="translate(266 65.8) scale(${-.44 * e} ${.87 * e})" fill="${teinte}"/>
+export const paupieres = (c, e = 1, teinte = c.robe,
+  P = OEIL_PROCHE, L = OEIL_LOIN) => `<g class="paupieres">
+    <path d="${AMANDE}" transform="${P} scale(${1.07 * e})" fill="${teinte}"/>
+    <path d="${AMANDE}" transform="${L} scale(${1.07 * e})" fill="${teinte}"/>
   </g>`;
 
 // Couche 10 : le contour de la joue repasse PAR-DESSUS l'œil lointain — sans
@@ -409,6 +449,153 @@ export const cils = ({ PUPILLE }, l = 1, n = 3, w = 2.6) =>
   `<g fill="none" stroke="${PUPILLE}" stroke-width="${w}">${
     RACINES_CILS.slice(0, n).map(([x, y]) =>
       `<path d="M${x} ${y}C${x - 2 - 2 * (l - 1)} ${y + 1 + (l - 1)} ${x - 4 - 4 * (l - 1)} ${y + 2 + 2 * (l - 1)} ${x - 5 - 5 * (l - 1)} ${y + 3.5 + 3 * (l - 1)}"/>`
+    ).join('')}
+  </g>`;
+
+// ── GABARIT DE POULICHE ───────────────────────────────────────────────────────
+// Les quatre pouliches de l'école (Apple Bloom, Sweetie Belle, Scootaloo,
+// Diamond Tiara) ne peuvent pas se contenter du gabarit adulte réduit : le
+// portrait de galerie est une fenêtre FIXE (`171 6 124 124`) où la tête de
+// chacun doit tomber et qu'elle doit remplir. Donc la tête reste EXACTEMENT
+// canonique — même boîte, même œil, même museau, mêmes helpers d'expression —
+// et c'est le CORPS qui rapetisse autour d'elle. C'est aussi la bonne lecture :
+// une pouliche est un poney à grosse tête, cou court et pattes courtes.
+//
+// Relevé sur les trois références d'infobox (`refs/apple-bloom-id.png`,
+// `sweetie-belle-id.png`, `scootaloo-id.png`), en fraction de la LONGUEUR DE
+// TÊTE (bout du museau → arrière du crâne, 101 unités ici) :
+//
+// | mesure                        | adulte    | pouliche  |
+// | tête / hauteur totale         | 33 %      | **39 %**  |
+// | profondeur / longueur du tronc| 0,51      | **0,61**  (tronc plus creux que long) |
+// | gorge (mâchoire → poitrail)   | 65 unités | **30**    (le cou est presque absent) |
+// | longueur de patte             | 81        | **60**    |
+// | sabots                        | y 266     | **y 232** |
+//
+// Conséquence assumée : la pouliche laisse ~68 unités de vide en bas du viewBox
+// (l'adulte en laisse 31), donc elle se REND plus petite que les adultes dans
+// une vignette de même taille. C'est exactement le contrôle demandé au brief.
+// ── LA TÊTE D'UNE POULICHE N'EST PAS LA TÊTE ADULTE. Premier jet écarté : la
+//    tête canonique de `CORPS` collée sur un tronc d'enfant. Face à la référence
+//    plein pied, le défaut sautait aux yeux — le chanfrein adulte descend
+//    jusqu'à x 282 et le menton jusqu'à y 116, ce qui laisse, sous un grand œil
+//    de pouliche, une plage de museau vide de 25 unités : le profil se lit comme
+//    un lama. Relevé sur `refs/scootaloo-plein-pied.png` (gros plan de trois
+//    quarts) : le bout du museau ne dépasse le bord avant de l'œil que de 0,3
+//    LARGEUR D'ŒIL (l'adulte : 0,65), et le crâne est un DÔME, pas une pente.
+//    D'où cette tête à museau court (bout à x 275 au lieu de 282), crâne bombé
+//    (sommet y 39 au lieu de 42) et menton remonté (y 94 au lieu de 106).
+//    Conséquence en cascade : `naseauPouliche` et `jouePouliche` remplacent
+//    leurs versions canoniques, et la bouche descend dans la fenêtre
+//    x 256 → 272 / y 84 → 96.
+export const CORPS_POULICHE = "M196 112C199 104 201 96 201 88 200 78 200 70 202 62"
+  + "C205 51 214 43 232 39 248 40 258 45 263 52"   // crâne bombé
+  + "C267 58 271 65 274 71 275 74 275 77 274 79"   // chanfrein COURT
+  + "C271 82 267 84 265 87 265 90 269 92 272 94"   // encoche de bouche + menton
+  + "C270 97 266 100 261 102 254 104 246 105 239 106"
+  + "C236 106 234 106.5 232 107"                   // coin mâchoire / gorge
+  // ── gorge COURTE (30 unités au lieu de 65), poitrail rond, ventre bas
+  + "C231 113 230 119 228 126"
+  + "C224 135 219 142 214 148"
+  + "C207 156 199 162 191 166"
+  + "C183 169 175 171 168 170"
+  + "C161 169 154 166 150 161"
+  + "C146 156 145 150 146 144"
+  + "C148 136 152 129 158 124"
+  + "C166 118 176 114 185 112"
+  + "C189 112 193 112 196 112Z";
+
+// Naseau et contour de joue de la tête de pouliche (le museau étant plus court
+// et plus haut, les tracés canoniques tomberaient dans le vide).
+export const naseauPouliche = ({ TRAIT }) =>
+  `<path d="M266.5 76C268.5 78.5 271.5 79 273.5 77" fill="none"
+        stroke="${TRAIT}" stroke-width="2.1"/>`;
+export const jouePouliche = ({ TRAIT }) =>
+  `<path d="M263 52C267 58 271 65 274 71" fill="none" stroke="${TRAIT}" stroke-width="3.4"/>`;
+
+// Patte de pouliche : colonne courte et droite à sabot arrondi, en tracé
+// OUVERT du haut du bord AVANT (x + l) au haut du bord ARRIÈRE (x − l), comme
+// les pattes adultes — les deux extrémités disparaissent sous le tronc, et
+// c'est le `Z` du remplissage (jamais tracé) qui referme le haut.
+// `yAv` et `yAr` diffèrent : la ligne de cuisse/épaule d'une pouliche remonte
+// nettement plus haut côté flanc que côté croupe.
+export const pattePouliche = (x, l, yAv, yAr, y1) =>
+  `M${x + l} ${yAv}`
+  + `C${x + l + 1} ${yAv + 8} ${x + l + 1.5} ${y1 - 16} ${x + l + 1} ${y1 - 6}`
+  + `C${x + l + 1} ${y1 - 2} ${x + l - 1} ${y1} ${x} ${y1}`
+  + `C${x - l + 1} ${y1} ${x - l - 1} ${y1 - 2} ${x - l - 1} ${y1 - 6}`
+  + `C${x - l - 1.5} ${y1 - 16} ${x - l - 1} ${yAr + 8} ${x - l} ${yAr}`;
+
+// Les pattes du FOND sont décalées de ~20 unités vers l'avant, comme chez
+// l'adulte (la paire de gauche est la paire proche, donc la plus en arrière).
+// Les paires se TOUCHENT (bords à 158 et 212) : écartées de quatre unités, les
+// quatre pattes se lisent comme quatre poteaux plantés sous une caisse.
+// SABOTS À y 218, pas 232 : mesuré sur les deux références plein pied, la patte
+// visible d'une pouliche fait 0,62 hauteur de tête (l'adulte 1,08), soit 46
+// unités sous un ventre à y 170. C'était l'erreur la plus voyante du premier
+// jet — des pattes d'adulte sous un tronc d'enfant.
+// Et ÉPAISSES : sur les références plein pied les pattes d'une pouliche sont
+// des petits fûts trapus, pas les colonnes galbées d'une adulte.
+export const PATTE_AR_FOND_P = pattePouliche(166, 8.5, 142, 146, 214);
+export const PATTE_AV_FOND_P = pattePouliche(219, 8.5, 138, 142, 214);
+export const PATTE_AR_BORD_P = pattePouliche(150, 10, 148, 152, 218);
+export const PATTE_AV_BORD_P = pattePouliche(203, 10, 150, 156, 218);
+
+// ── OREILLE DE POULICHE : la feuille adulte écrasée à 65 % en hauteur (pointe
+//    basse ramenée de y 101 à y 85). Relevé sur les références : l'oreille d'une
+//    pouliche fait 0,38 hauteur de tête, celle d'une adulte 0,60.
+export const OREILLE_P = "M188 56C183 58 181.5 60.6 181.5 63.8"
+  + "C182 68.4 185 72.3 190 76.8 195 80.7 201 83.4 205 85.3"
+  + "C203 78.8 201 71 200 64.5 199 60 194 57.3 188 56Z";
+
+// ── CADRAGE DES POULICHES. Une pouliche à tête canonique et pattes courtes ne
+//    remplit que les deux tiers hauts du viewBox : 82 unités de vide en bas, et
+//    le dessin FLOTTE dans sa fiche. Tout le personnage est donc posé dans un
+//    groupe à l'échelle 1,15 — le brief l'autorise explicitement (« les
+//    pouliches peuvent être dessinées plus grandes dans le viewBox, comme
+//    Spike »). Les proportions d'enfant sont intactes, la tête remplit MIEUX la
+//    fenêtre de portrait (86 unités de haut dans une fenêtre de 124, contre 75),
+//    et les sabots retombent à y 242 au lieu de 218.
+//    Bornes qui fixent les deux nombres : le bas de la tête (canon y 117) doit
+//    rester au-dessus de y 130 (bord bas de la fenêtre) → ty = −8,5 ; la tête
+//    (canon x 181 → 282) doit tenir dans x 171 → 295 → tx = −33.
+export const CADRE_MINI = 'transform="translate(-33 -8.5) scale(1.15)"';
+
+export const membresFondPouliche = ({ FOND, FOND_T }) =>
+  `<g fill="${FOND}" stroke="${FOND_T}" stroke-width="3"><path d="${PATTE_AR_FOND_P}Z"/>
+    <path d="${PATTE_AV_FOND_P}Z"/></g>`;
+
+export const membresProchesPouliche = (c, { TRAIT }) =>
+  `<g fill="${c.robe}"><path d="${PATTE_AR_BORD_P}Z"/><path d="${PATTE_AV_BORD_P}Z"/></g>
+  <g fill="none" stroke="${TRAIT}" stroke-width="3">
+    <path d="${PATTE_AR_BORD_P}"/><path d="${PATTE_AV_BORD_P}"/>
+  </g>`;
+
+// ── CILS AU COIN HAUT-ARRIÈRE ─────────────────────────────────────────────────
+// Les cils de `cils()` sortent du coin BAS-arrière de l'œil : c'est juste pour
+// la pose de la référence de Twilight (tête relevée vers le ciel), et c'est
+// documenté comme tel. Sur les six références plein pied de la vague 2, la tête
+// est DE NIVEAU et les cils sortent tous du coin HAUT-arrière, en éventail vers
+// le haut et l'arrière. Rendus au coin bas sur ces personnages, ils se lisent
+// comme trois griffures sur la joue — c'est même le défaut le plus visible du
+// premier jet de la vague.
+//
+// Ces cils sont écrits dans le repère LOCAL de l'amande (celui de `AMANDE`), à
+// poser dans un groupe `translate(cx cy) scale(e)` : ils suivent ainsi
+// n'importe quel placement d'œil sans être réécrits. Le bord haut de l'amande
+// va de (−19,5 ; −3,9) à (−1,5 ; −16,5) : les racines sont dessus.
+// Cils COURTS et RABATTUS EN ARRIÈRE (et non dressés) : dressés, ils se lisent
+// comme trois épingles plantées dans la paupière. Sur les références ils
+// épousent le bord de l'œil sur les deux premiers tiers de leur longueur.
+const RACINES_HAUTES = [
+  [[-15.5, -11.5], [-17.5, -12.5], [-19, -13.5], [-20.5, -15]],
+  [[-11.5, -14.5], [-13.5, -15.5], [-15, -16.5], [-16.5, -18]],
+  [[-7.5, -16.3], [-9.5, -17.5], [-11, -18.7], [-12.5, -20.2]],
+];
+export const cilsHauts = ({ PUPILLE }, n = 3, w = 2.4) =>
+  `<g fill="none" stroke="${PUPILLE}" stroke-width="${w}">${
+    RACINES_HAUTES.slice(0, n).map((p) =>
+      `<path d="M${p[0][0]} ${p[0][1]}C${p[1][0]} ${p[1][1]} ${p[2][0]} ${p[2][1]} ${p[3][0]} ${p[3][1]}"/>`
     ).join('')}
   </g>`;
 
