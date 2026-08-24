@@ -1,0 +1,12 @@
+:root {
+  --fond: #eaf6ff;
+  --carton: #ffffff;
+  --encre: #3d3554;
+  --accent: #b388e0;
+  --rayon: 24px;
+  font-family: ui-rounded, "SF Pro Rounded", Quicksand, "Comic Sans MS", sans-serif;
+}
+* { box-sizing: border-box; margin: 0; }
+body { background: var(--fond); color: var(--encre); min-height: 100vh; }
+#app { max-width: 1024px; margin: 0 auto; padding: 16px; }
+a { color: inherit; text-decoration: none; -webkit-tap-highlight-color: transparent; }

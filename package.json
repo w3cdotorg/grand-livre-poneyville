@@ -1,0 +1,6 @@
+{
+  "name": "grand-livre-poneyville",
+  "private": true,
+  "type": "module",
+  "scripts": { "test": "node --test test/" }
+}
