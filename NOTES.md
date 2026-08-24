@@ -159,9 +159,17 @@ marche est **l'API MediaWiki**, qui répond 200 sans authentification :
     # chercher un plan d'expression précis (namespace 6 = Fichier)
     api.php?action=query&list=search&srsearch=Rainbow+Dash+smug+smirk&srnamespace=6&srlimit=8
     # l'URL directe d'un fichier nommé
-    api.php?action=query&prop=imageinfo&iiprop=url&iiurlwidth=800&titles=File:...
+    api.php?action=query&prop=imageinfo&iiprop=url|size&titles=File:...
+    # ★ LE PLUS EFFICACE pour trouver une image d'infobox (refonte du 24/08) :
+    #   lister les fichiers PAR PRÉFIXE. `list=search` ne les sort pas, il noie
+    #   la requête dans les FANMADE et les captures d'épisode.
+    api.php?action=query&list=allimages&aiprefix=Rarity+id&ailimit=30
+    api.php?action=query&list=allimages&aiprefix=Rarity+ID&ailimit=30
 
-Écarter les titres préfixés `FANMADE` (ce ne sont pas des captures de la série).
+Écarter les titres préfixés `FANMADE` (ce ne sont pas des captures de la série),
+et les suffixes `EG`, `EGDS`, `CYOE` : ce sont les versions Equestria Girls
+(humaines), pas les poneys. Les deux casses (`id` et `ID`) doivent être
+interrogées séparément, l'API est sensible à la casse sur `aiprefix`.
 Les dix références retenues sont dans
 `.superpowers/sdd/2026-08-24-grand-livre-poneyville/refs/`. Les **regarder** :
 deux relevés seulement contredisaient l'intuition, et tous les deux comptaient —
@@ -234,13 +242,13 @@ unités de relevé au maximum.
 
 | Personnage | Paupière haute | Bouche | Cils | Autre |
 | --- | --- | --- | --- | --- |
-| Twilight (référence) | aucune | `museau` ouvert + langue | 3 × 1 | — |
-| Applejack | aucune (regard franc) | `sourireCoin(1)` | **2** × 1, sobres | 3 **taches de rousseur** claires |
-| Rainbow Dash | **.64** + basse .1 | `sourireCoin(2)` | 3 × 1 | **sourcil** relevé, en `PUPILLE` |
-| Pinkie Pie | aucune | **`grandRire`** (dents) | 3 × 1 | iris **.84**, regard (1,6 ; 3), 2 étincelles |
-| Fluttershy | **.72** (tombante) | `sourireTimide` | 3 × **2**, fins (2,2) | regard baissé (,6 ; 3,2) |
-| Rarity | **.6**, peinte du **fard** | `sourirePose` | **4** × **2**, épais (3,2) | fard = `ton(yeux, .5, .4)` |
-| Spike (dragon) | aucune | gueille ouverte, crocs | aucun | — |
+| Twilight (référence) | aucune | `museau` ouvert + langue | 3 × 1, coin **bas** | — |
+| Applejack | aucune (regard franc) | **`sourireDents(1,25)`** | 3 **hauts** × 1 | 3 **taches de rousseur** claires et serrées, `museau` à encoche |
+| Rainbow Dash | **.72** + basse .07 | `sourireCoin(2)` + `museauLisse` | 3 **hauts** × 1 | **sourcil** plat, en `CRAYON` ; œil à cerne noir |
+| Pinkie Pie | aucune | **`grandRire`** (dents) + `museauLisse` | 3 **hauts** × 1 | iris **.84**, regard (1,6 ; 3), 2 étincelles, œil à cerne noir |
+| Fluttershy | **.72** (tombante) | `sourireTimide` + `museauLisse` | 3 **hauts** × **1,6**, fins (2,2) | regard baissé (,6 ; 3,2), **sourcil** arqué, œil à cerne noir |
+| Rarity | **.72**, peinte du **fard** | `sourirePose` + `museauLisse` | 3 **hauts** × **1,6**, épais (2,5) | fard = `ton(yeux, .5, .4)`, **sourcil** fin, corne à contour renforcé |
+| Spike (dragon) | aucune | gueule ouverte, crocs | aucun | crête à 3 grandes palmes, `CADRE_SPIKE` |
 | Big Macintosh | **.60** (lourde) | sourire fermé épais + **fossette** de coin | **aucun** | 3 taches de rousseur, œil descendu de 4 |
 | Apple Bloom | aucune | petit rire ouvert, dents | 3 **hauts** | nœud rose géant, PAS de taches |
 | Sweetie Belle | aucune | petite bouche ronde ouverte | 2 **hauts** | iris **.86**, regard (0 ; 0,8) |
@@ -253,6 +261,14 @@ tombant, .6 = mi-clos élégant, .64 + .1 par le bas = plissé d'assurance, .2 =
 presque fermé. **Ne pas descendre sous .5** : en vignette de galerie (60 px) l'œil
 devient une fente et le poney a l'air endormi, pas expressif. C'est la cote qui a
 coûté trois itérations sur Rainbow Dash.
+
+**Correction de la refonte du 24/08 : ne pas descendre sous .70 non plus, quand
+la paupière est la SEULE chose qui porte l'expression.** Rainbow Dash à `.64`
+plus `.10` par le bas et Rarity à `.6` avaient, dans la galerie, les deux yeux
+les plus fermés d'une série où ces deux personnages ont justement les plus grands
+yeux. Sur relevé, un œil mi-clos de la série garde une PUPILLE RONDE ENTIÈRE : la
+paupière mange la moitié du BLANC, pas la moitié de l'iris. `.72` est la valeur
+qui donne ça.
 
 **Le fard de Rarity devait être visible YEUX OUVERTS.** Il ne l'était qu'au
 clignement, soit caché 99 % du temps. La solution tient en un seul geste : peindre
@@ -353,6 +369,17 @@ couleur du template disparaissent donc purement et simplement :
   `fill="none"`). C'est le seul moyen propre de rattraper le débord sans `clipPath`.
 - **Une frange = un béret** si sa ligne de cheveux est un simple arc. Il faut la pointe
   vers le bas (ici (212, 74)) qui mord sur l'œil proche.
+- **La bouche doit rester DANS le museau, et l'encoche vide se lit comme un bec.**
+  Les deux moitiés du même piège, trouvées à la refonte du 24/08 : `sourireCoin`
+  sortait de cinq unités du chanfrein, et l'encoche de bouche laissée vide
+  terminait le museau en marche d'escalier. Frontière avant échantillonnée et
+  correctif (`museauLisse`, couche 6 ter) au § de la refonte, plus bas. À retenir
+  d'un mot : **un crochet de sourire ne peut pas monter à l'avant**, l'encoche
+  est rentrante.
+- **Un trait sombre dérivé de `c.yeux` n'est pas un crayon à cils.** Les cils de
+  la série sont noirs pour tout le monde ; utiliser `CRAYON` et non `PUPILLE`.
+  Même remarque pour le liseré de l'amande et la pupille sur un iris coloré :
+  `oeil(c, { ...d, PUPILLE: d.CRAYON })`.
 - **L'iris doit affleurer le bord haut-droit de l'amande.** C'est ce contact qui produit
   le liseré sombre du regard MLP. On le fait avec un tracé d'iris aplati le long de ce
   bord — pas avec un `clipPath` (les IDs se dupliquent, le même SVG apparaît 3 fois par
@@ -627,6 +654,245 @@ et le clignement suivent une amande déplacée. Valeurs par défaut = le canon.
    défaut principal.
 4. Le châle à pommes de Granny Smith et la trottinette de Scootaloo ne sont pas
    dessinés (hors périmètre).
+
+## 2026-08-24 — refonte des visages de la vague 1 (les 6 dessinés de mémoire)
+
+Constat du propriétaire : « à part Twilight Sparkle, c'est un peu moche ». Il
+avait raison, et le diagnostic est net : Twilight a été relevée sur une vraie
+image, la vague 2 aussi, mais les **six de la vague 1** (Applejack, Rainbow Dash,
+Pinkie Pie, Fluttershy, Rarity, Spike) ont été dessinés **de connaissance**. Ils
+sont donc repassés, un par un, sous le régime de la règle « aucun visage ne se
+dessine de mémoire » : une image officielle **plein pied** téléchargée, regardée,
+relevée à la grille, puis deux à quatre tours de comparateur.
+
+### Références utilisées (toutes via l'API MediaWiki, toutes dans `refs/`)
+
+| Personnage | Plein pied | Complément d'expression |
+| --- | --- | --- |
+| Applejack | [`File:Applejack id S3E1.png`](https://mlp.fandom.com/wiki/File:Applejack_id_S3E1.png) (360 × 430) | `File:Applejack ID S3E12.png`, `refs/applejack-sourire.png` |
+| Rainbow Dash | [`File:Rainbow Dash ID S3E7.png`](https://mlp.fandom.com/wiki/File:Rainbow_Dash_ID_S3E7.png) (378 × 403) | `refs/rainbow-dash-smirk.png` |
+| Pinkie Pie | [`File:Pinkie Pie ID S4E11.png`](https://mlp.fandom.com/wiki/File:Pinkie_Pie_ID_S4E11.png) (449 × 458) | `refs/pinkie-pie-grin.png` |
+| Fluttershy | [`File:Fluttershy ID S1E17.png`](https://mlp.fandom.com/wiki/File:Fluttershy_ID_S1E17.png) (550 × 466, **tête à gauche**) | `File:Fluttershy ID S4E6.png` |
+| Rarity | [`File:Rarity id S1E08.png`](https://mlp.fandom.com/wiki/File:Rarity_id_S1E08.png) (840 × 720, la plus détaillée) | `refs/rarity-sweet.png`, `refs/rarity-canterlot.png` |
+| Spike | [`File:Spike ID S4E24.png`](https://mlp.fandom.com/wiki/File:Spike_ID_S4E24.png) (341 × 487) | `File:Spike ID S8E11.png` |
+
+**Comment les trouver** (le `list=search` de la § protocole ne les sort pas) :
+`list=allimages&aiprefix=<Nom>+id` et `aiprefix=<Nom>+ID`, qui listent les
+fichiers par préfixe exact. Écarter les suffixes `EG`, `EGDS`, `CYOE` : ce sont
+les versions Equestria Girls (humaines), pas les poneys.
+
+### LES DEUX BOUCHES PERÇAIENT LE MUSEAU — la trouvaille de la passe
+
+Elle vaut pour tout le livre. `CORPS` porte une **encoche de bouche** profonde de
+10 unités : la silhouette avance jusqu'à x 281 au bout du nez (y 89), **rentre à
+x 271** (y 98), puis ressort à x 279 au menton (y 106). Frontière avant
+échantillonnée sur le tracé :
+
+| y | 95 | 96 | 97 | 98 | 99 | 100 | 101 | 102 | 103 | 104 | 105 | 106 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| x max | 274,8 | 273,4 | 272,4 | 271,5 | **271,3** | 271,7 | 272,3 | 273,3 | 274,7 | 276,3 | 278,4 | 279,0 |
+
+Deux conséquences, et les deux étaient violées :
+
+1. **`sourireCoin` sortait de cinq unités.** Son tracé passait par
+   (276,5 ; 101,2) puis remontait le crochet jusqu'à (277,6 ; 95,2), c'est-à-dire
+   dans le vide, en laissant un triangle de fond visible entre lui et le museau.
+   Au comparateur, Rainbow Dash n'avait pas une bouche, elle avait **un bec**.
+   Le correctif n'est pas de raccourcir le crochet : **un crochet de sourire ne
+   peut pas monter à l'avant**, l'encoche étant rentrante. Il monte donc **en
+   reculant** (x constant à 269, y qui décroît) — même lecture, coin de lèvre
+   relevé, sans percer le chanfrein. `sourirePose` était dehors de deux unités,
+   même correction.
+2. **L'encoche laissée VIDE se lit comme un bec.** Elle n'est juste que pour
+   Twilight, dont la bouche ouverte la remplit et la fait lire comme deux lèvres
+   écartées. Sur les quatre poneys à bouche fermée ou reculée elle terminait le
+   museau par une marche en escalier — et **aucune des six références ne montre
+   ça**, le chanfrein y est continu. D'où **`museauLisse`** (couche 6 ter) : une
+   pièce de robe qui **rabote l'encoche de 10 unités à 3**, sans rallonger le
+   museau (bout du nez toujours à x 281, menton à 279,6).
+   Piège du correctif, qui a coûté un tour : **le bord intérieur de la pièce doit
+   passer 2 unités À GAUCHE de l'encoche sur toute sa hauteur**, pour couvrir la
+   moitié interne du `stroke-width: 3.4` de la silhouette. Au premier essai il
+   passait à x 274 à y 93,5 alors que l'encoche y est à x 276 : le vieux trait
+   ressortait **en diagonale au travers de la joue**.
+
+### Les cils : la convention de la vague 2 s'applique aux sept
+
+C'était la réserve n° 1 de la vague 2, elle est close. Les six ont maintenant
+`cilsCoinHaut` (coin **haut-arrière**, en éventail). Ce qui a fallu faire en
+plus, et que la réserve annonçait : **remonter les franges**. Cotes de la zone à
+dégager, pour un œil canonique — les trois cils occupent **x 215 → 228,
+y 57,7 → 66,4**, donc le bord bas de la crinière doit rester au-dessus de y 56
+entre x 213 et x 230.
+
+Et un relevé de couleur qui change tout : **les cils de la série sont NOIRS**,
+quelle que soit la couleur de l'œil. `PUPILLE` donnait un bleu vif chez Pinkie,
+un magenta chez Rainbow Dash, un turquoise chez Fluttershy — des traits de
+crayon de couleur sur la joue. D'où le dérivé **`CRAYON` = `ton(yeux, .7, -.46)`**
+dans `derives()`, presque noir pour les 26 palettes du livre et portable.
+
+### L'ŒIL À CERNE NOIR
+
+Corollaire du même relevé, et c'est le gain le plus visible de la passe. Dans
+`oeil()`, **`PUPILLE` sert à la fois de liseré d'amande et de pupille**. Sur un
+iris de la même famille de teinte, les trois se confondent :
+
+- Rainbow Dash : liseré magenta foncé + iris magenta + pupille magenta = **une
+  seule tache magenta cernée d'un gros trait**, l'effet trait d'eye-liner ;
+- Pinkie : trois bleus, l'œil se lit comme **une spirale** ;
+- Fluttershy : trois verts-canard.
+
+Sur les références, liseré et pupille sont **noirs** et l'iris seul est coloré.
+Le correctif ne touche pas `oeil()` : on lui passe un `d` modifié,
+`oeil(c, { ...d, PUPILLE: d.CRAYON })` — la fonction ne lit `PUPILLE` que pour
+ces deux usages. Twilight, dont `PUPILLE` vaut déjà `hsl(274 77% 3%)`, était
+déjà juste : c'est **pour ça** qu'elle marchait et pas les autres.
+
+### La frange ne peut pas filer jusqu'au museau : l'œil LOINTAIN est là
+
+Relevé en essayant de donner à Applejack la mèche qui retombe sur le chanfrein
+qu'on voit sur sa référence. **L'œil lointain occupe x 258 → 274 / y 52 → 79**,
+c'est-à-dire précisément le front avant. Poussée jusqu'à x 272, la frange
+l'avalait aux trois quarts et n'en laissait qu'un triangle vert qui se lisait
+comme une écaille. C'est aussi la raison — jamais écrite — pour laquelle la
+frange du template s'arrête à x 251 : **dans cette pose, le front avant
+appartient à l'œil de l'autre côté de la tête.**
+
+### Deux revirements assumés sur la passe expressions
+
+La passe expressions avait conclu, cotes en main, que **seule Rainbow Dash**
+pouvait porter un sourcil. Le raisonnement était juste, mais il portait sur des
+crinières fausses :
+
+- **Fluttershy** : sa ligne de cheveux descendait en diagonale de (254,44) à
+  (214,84) et couvrait tout l'arrière de l'œil. Sur la référence elle court
+  **haut sur le crâne** et laisse **11 unités de front nu** au-dessus de l'œil —
+  et l'arc doux qui s'y dessine est le trait le plus caractéristique de son
+  visage. Crinière remontée de 20 unités ; bénéfice collatéral, elle cesse de se
+  lire comme un bonnet de bain.
+- **Rarity** : sa frange était coiffée **en avant**, bord bas à (216,82), donc
+  par-dessus l'arrière de l'œil. Les deux références montrent l'inverse, une
+  masse **balayée en arrière** qui dégage le front. Frange refaite ; il reste
+  7 unités entre son bord bas et le sommet de l'amande, où le sourcil tient à
+  condition d'être **mince (1,9)**. Et il faut alors **raccourcir les cils**
+  (l = 1,6 et non 2) : plus longs, le cil arrière traverse le sourcil et les deux
+  se brouillent.
+
+Le sourcil de Rainbow Dash, lui, était **peint en `PUPILLE`, soit magenta vif**,
+et nettement arqué. C'est un sourcil de colère, et c'était le défaut n° 1 du
+personnage : elle avait l'air méchante, pas crâneuse. Quatre cotes relevées sur
+le smirk, et les quatre comptent : **court** (une demi-largeur d'œil), **fin**
+(2,2), **plat** (deux unités de dénivelé, pas cinq) et **noir**.
+
+### Autres relevés par personnage
+
+- **Applejack.** Son chapeau était un melon posé à plat : bord horizontal
+  descendant jusqu'à y 59, tout le front couvert, pas une mèche devant. Sur la
+  référence il est posé **en arrière et basculé**, son bord remonte vers l'avant,
+  la calotte est haute, et c'est la frange qui occupe le front sous le bord. Sa
+  frange était aussi **à l'envers** : elle couvrait le front ARRIÈRE et laissait
+  le front avant nu, exactement l'inverse du relevé. Sa bouche n'est **jamais
+  fermée** sur les références : sourire ouvert à **bande de dents**
+  (`sourireDents`), le rose ne restant qu'en liseré — un aplat rose de 5 unités
+  se lit comme du rouge à lèvres, troisième fois qu'on redécouvre cette leçon.
+  Ses taches sont **plus claires que la robe** (#fff8d3 à la pipette sur une robe
+  #f5b765, contre-intuitif et revérifié) et en **petit triangle serré** de
+  7 unités de côté, diamètre 3,4 : le grand triangle bas du premier jet se lisait
+  comme trois miettes tombées sur la joue.
+  Enfin, **borne de cadrage** : la calotte calée à y 8 n'avait que 2 unités de
+  marge sur 124 et, dans le mini-portrait de la carte d'accueil (76 px), elle
+  affleurait le bord du cadre et se lisait comme coupée. Descendue de 3.
+- **Rainbow Dash.** Les six pointes de la crête **dépassaient de la masse** : le
+  contour retracé par-dessus ne découpe rien (piège déjà documenté), donc chaque
+  tête de mèche sortait en épine du bord haut-arrière et la crête se lisait comme
+  une crête de coq punk — c'est ce qui la rendait agressive. Pointes rentrées de
+  10 à 14 unités. Et le **liseré violet foncé autour de chaque bande** a sauté :
+  dans la référence il n'y a **pas de contour entre deux couleurs de crinière**,
+  seule la masse en porte un.
+- **Pinkie Pie.** Ses boucles étaient **trop nombreuses et trop petites** (14
+  disques de rayon 10 à 13 sur la seule tête) : à la taille de la vignette elles
+  se fondaient en un relief régulier de petits lobes, un **chou-fleur**. Le
+  relevé donne des boucles de 0,21 à 0,23 hauteur de tête (rayon 15 à 17) et
+  **quatre par rang, pas six**. Deux tours ont été nécessaires : à cinq boucles
+  de rayon 13-15 la couronne se lisait encore comme **une guirlande de perles**
+  autour du crâne. Ce qui fait la crinière de Pinkie, ce sont peu de GROS lobes.
+  Son grand rire, lui, a pu **avancer de 3 unités** — c'est `museauLisse` qui
+  lui a rendu la place ; posé aussi en arrière, il se lisait comme un pansement
+  sur la joue.
+- **Fluttershy.** Ses trois papillons de marque de beauté doivent être écartés
+  d'au moins **1,9 largeur de papillon**, sinon leurs quatre lobes se touchent :
+  dans le médaillon 60 × 60 les trois fusionnaient en **un nœud de vermicelles**.
+  Et son petit sourire finissait **pile sur le contour du menton**, où il se
+  confondait avec la silhouette en dessinant un Y : rentré et raccourci.
+- **Rarity.** `TRAIT` dérive d'une robe quasi blanche (#f2f0f7) : il en sort un
+  gris-lavande très clair avec lequel **la corne disparaissait purement et
+  simplement** du front — on ne voyait plus que ses quatre stries flotter.
+  Constante locale `CORNE_T = ton(robe, 1.05, -.34)`. Et la frange doit
+  s'arrêter à **x 240** : poussée à 255 elle avalait les deux tiers de la corne
+  et se lisait comme un béret de travers — sur les références la corne se dresse
+  **devant** la crinière, dégagée sur toute sa longueur.
+- **Spike.** Trois écarts flagrants, tous corrigés.
+  1. **La crête.** Quatre petites pointes de 6 unités le long du crâne : une
+     scie, pas un dragon. Ce sont **trois grandes palmes en flamme**, larges de
+     0,25 à 0,37 longueur de crâne, qui montent à **0,57 hauteur de crâne**
+     au-dessus du sommet de la tête, la plus haute à l'avant, **penchées en
+     arrière**. Dressées droit et pointues (deuxième tour), elles se lisaient
+     comme une **couronne en papier**. Elles ne tiennent dans la fenêtre de
+     portrait qu'au prix du **`CADRE_SPIKE`** : `translate(31 25.4) scale(.87)`,
+     dont les deux nombres sont bornés par la fenêtre (pointe de crête à y 8,
+     menton à y 122, tête recentrée sur x 189 → 286 — le `scale` seul la ramenait
+     à x 158, hors cadre). Comme pour les pouliches, le groupe englobe
+     `class="paupieres"` sans casser le clignement.
+  2. **Le cou de girafe.** 12 unités de large (gorge x 208 / nuque x 196 à y 120)
+     sous un crâne de 111, et 47 unités de long. Le cou d'un bébé dragon fait
+     **0,7 de la largeur de base du crâne** et il est court. Porté à 24 de large
+     et 23 de long. Cause co-responsable, moins évidente : **le plastron
+     démarrait à y 126** alors que le menton est à y 107, ce qui laissait
+     19 unités de robe nue sous la gorge et rallongeait le cou d'autant.
+  3. **Deux verts distincts.** L'aileron d'oreille n'est **pas** du vert de la
+     crête : il est du **vert pâle du ventre**, délavé comme la face interne
+     d'une aile — seul relevé de couleur qui contredisait l'intuition sur Spike.
+     Il est aussi **deux fois plus grand** que le premier jet (0,42 longueur de
+     crâne au lieu de 0,22) et nervuré. Plus : cinq **écailles** en travers du
+     plastron (sans elles il se lit comme une bavette), et un **naseau en
+     virgule** enroulée là où le point du premier jet se lisait comme un grain de
+     beauté.
+
+### Additions à `_commun.js` (toutes additives)
+
+`CRAYON` (clé de plus dans `derives`), `cilsCoinHaut`, `sourireDents`,
+`TACHES_JOUE`, `museauLisse`, et un paramètre optionnel `l` sur `cilsHauts` (et
+donc sur `cilsCoinHaut`) pour allonger les cils. `sourireCoin`, `sourirePose`,
+`sourireTimide` et `grandRire` ont été **corrigés** — ils ne sont utilisés que
+par la vague 1, respectivement Rainbow Dash, Rarity, Fluttershy et Pinkie.
+Contrôle de non-régression : les **sept** personnages non touchés (Twilight et
+les six de la vague 2) rendus avec l'ancien `_commun.js` et le nouveau donnent
+des SVG **rigoureusement identiques** (comparaison par hachage du dessin et du
+médaillon).
+
+### Réserves de la passe
+
+1. **La pose reste celle du template** (trois quarts côté, tête relevée) alors
+   que les six références sont de trois quarts *avant*. La comparaison s'est donc
+   faite sur des **rapports** relevés à la grille, pas en superposition pixel à
+   pixel. Un profil paraît toujours moins « mignon » qu'un trois quarts avant :
+   c'est la limite de la pose, pas du dessin, et elle vaut pour les treize.
+2. **Le corps de Spike reste faible** : bras en tube posé sur le plastron,
+   jambe en fût à pied de botte, queue terminée en nageoire plutôt qu'en fer de
+   lance. La tête, la crête, l'aileron, le plastron et le cou sont refaits, le
+   reste mériterait sa propre passe.
+3. **Les crinières monochromes gardent leur lecture concentrique.** Sur
+   Fluttershy, reflet et séparations suivent le contour de la masse (c'est le
+   seul moyen propre sans `clipPath`), ce qui donne des arcs parallèles au bord
+   là où la référence a des mèches. Visible de près, pas en vignette.
+4. **L'aile de Rainbow Dash reste déployée** alors que sa référence plein pied la
+   montre repliée sur le flanc. Choix conservé : c'est le personnage le plus
+   dynamique du livre, et `ailePliee` occupe la place de la marque de beauté.
+5. **La frange de Rarity reste une masse à bord bas régulier**, là où la
+   référence a un balayage à mèches. Reprendre sa crinière en volutes avant
+   sortait du périmètre « visages ».
+6. Les **13 placeholders gris** sont toujours mal cadrés par la fenêtre de
+   portrait, comme depuis la tâche 6ter.
 
 ## Carte d'accueil
 
