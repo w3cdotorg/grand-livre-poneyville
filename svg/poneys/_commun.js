@@ -899,3 +899,29 @@ export const couronne = (f, t, gemme, gemmeT) => `<g>
     <path d="M231 36C237 33 245 32 252 32" fill="none" stroke="${t}"
           stroke-width="1.4" stroke-opacity=".5"/>
   </g>`;
+
+// ── SILHOUETTE D'ALICORNE : la tête canonique de `CORPS`, mot pour mot, sur un
+//    cou et un tronc allongés. Les segments 2 à 6 (crâne, chanfrein, encoche de
+//    bouche, mâchoire) sont copiés à l'identique de `CORPS` : c'est ce qui
+//    garantit que `museauLisse`, `naseau`, `joue` et les deux placements d'œil
+//    tombent exactement où il faut.
+export const CORPS_ALICORNE = "M190 144C196 132 201 112 202 100 200 86 200 74 202 62"
+  + "C206 52 218 45 238 42 256 45 265 53 269 62"
+  + "C272 68 274 74 278 79 281 83 282 87 281 89"
+  + "C279 92 273 95 271 98 271 102 275 104 279 106"
+  + "C277 108 273 110 268 112 264 113 259 114.5 255 115"
+  + "C250 115.5 246 115.5 243 116 242.5 120 242.5 124 242 129"
+  + "C241 137 238 148 233 158"                       // gorge LONGUE
+  + "C228 170 221 182 214 192"                       // poitrail
+  + "C205 198 195 199 185 199 177 199 172 198 168 196"
+  + "C160 196 153 197 146 197 138 197 131 195 127 190"
+  + "C124 182 123 170 124 160 125 148 129 138 135 133"
+  + "C140 130 144 130 148 130 156 132 166 137 173 138"
+  + "C179 139 185 141 190 144Z";
+
+// Les membres canoniques, allongés de 10 % et affinés de 8 % : le gabarit de
+// Celestia. Luna reprend le même corps un cran moins étiré (`CADRE_JAMBES_LUNA`)
+// — le brief demande explicitement que Celestia soit la plus grande des deux.
+export const CADRE_JAMBES = 'transform="translate(13.6 -1.8) scale(.92 1.097)"';
+export const CADRE_JAMBES_LUNA = 'transform="translate(11 -1.2) scale(.935 1.06)"';
+
