@@ -13,7 +13,7 @@ export const PERSONNAGES = [
       amis: ["applejack", "rainbow-dash", "pinkie-pie", "fluttershy", "rarity", "spike"],
       animal: "owlowiscious"
     },
-    carte: { x: 48, y: 55 },
+    carte: { x: 30, y: 51 },
     texte: "Twilight Sparkle est une licorne qui adore les livres et la magie. Elle habite dans la bibliothèque de Poneyville avec son ami Spike. C'est l'élève préférée de la princesse Celestia.",
     leSaisTu: "Un jour, Twilight aura des ailes et deviendra une princesse !"
   },
@@ -29,7 +29,7 @@ export const PERSONNAGES = [
       amis: ["twilight", "rainbow-dash", "pinkie-pie", "fluttershy", "rarity"],
       animal: "winona"
     },
-    carte: { x: 18, y: 58 },
+    carte: { x: 10, y: 51 },
     texte: "Applejack est une pouliche terrestre honnête et très forte. Elle travaille dur à la ferme Sweet Apple Acres pour récolter les pommes. Elle aime sa famille par-dessus tout.",
     leSaisTu: "Applejack sait attraper presque n'importe quoi avec son lasso !"
   },
@@ -49,7 +49,7 @@ export const PERSONNAGES = [
       amis: ["twilight", "applejack", "pinkie-pie", "fluttershy", "rarity"],
       animal: "tank"
     },
-    carte: { x: 20, y: 12 },
+    carte: { x: 36, y: 18 },
     texte: "Rainbow Dash est une pégase, la plus rapide de toute Equestria. Elle adore voler dans le ciel et dégager les nuages. Son rêve est de rejoindre les Wonderbolts.",
     leSaisTu: "Rainbow Dash peut faire un arc-en-ciel supersonique quand elle vole très très vite !"
   },
@@ -65,7 +65,7 @@ export const PERSONNAGES = [
       amis: ["twilight", "applejack", "rainbow-dash", "fluttershy", "rarity"],
       animal: "gummy"
     },
-    carte: { x: 58, y: 50 },
+    carte: { x: 74, y: 51 },
     texte: "Pinkie Pie est une pouliche terrestre pleine de joie de vivre. Elle travaille à la pâtisserie Sugarcube Corner et adore organiser des fêtes. Elle habite juste au-dessus, dans le grenier.",
     leSaisTu: "Pinkie Pie a un « Pinkie sens » qui la prévient quand quelque chose va tomber !"
   },
@@ -81,7 +81,7 @@ export const PERSONNAGES = [
       amis: ["twilight", "applejack", "rainbow-dash", "pinkie-pie", "rarity"],
       animal: "angel"
     },
-    carte: { x: 68, y: 72 },
+    carte: { x: 88, y: 67 },
     texte: "Fluttershy est une pégase timide et très douce. Elle habite près de la forêt Désenchantée et s'occupe de tous les animaux. Elle prend soin d'eux avec beaucoup de patience.",
     leSaisTu: "Le regard calme de Fluttershy peut apaiser même un dragon !"
   },
@@ -97,7 +97,7 @@ export const PERSONNAGES = [
       amis: ["twilight", "applejack", "rainbow-dash", "pinkie-pie", "fluttershy"],
       animal: "opale"
     },
-    carte: { x: 40, y: 48 },
+    carte: { x: 52, y: 51 },
     texte: "Rarity est une licorne élégante et généreuse. Elle est couturière et crée de jolies robes dans sa boutique, la Carousel Boutique. Elle adore tout ce qui brille.",
     leSaisTu: "La magie de Rarity lui permet de trouver des gemmes cachées sous la terre !"
   },
@@ -313,70 +313,70 @@ export const LIEUX = [
     id: "bibliotheque",
     nom: "La bibliothèque Golden Oak",
     habitants: ["twilight", "spike", "owlowiscious"],
-    carte: { x: 48, y: 55 },
+    carte: { x: 30, y: 59 },
     texte: "La bibliothèque Golden Oak est une maison creusée dans un grand chêne vivant. Elle est remplie de livres du sol au plafond. C'est ici qu'habitent Twilight, Spike et Owlowiscious."
   },
   {
     id: "sweet-apple-acres",
     nom: "Sweet Apple Acres",
     habitants: ["applejack", "big-macintosh", "apple-bloom", "granny-smith", "winona"],
-    carte: { x: 18, y: 58 },
+    carte: { x: 13, y: 27 },
     texte: "Sweet Apple Acres est la grande ferme de la famille Apple. Des vergers de pommiers s'étendent à perte de vue. Une grande grange rouge trône au milieu des champs."
   },
   {
     id: "carousel-boutique",
     nom: "La Carousel Boutique",
     habitants: ["rarity", "sweetie-belle", "opale"],
-    carte: { x: 40, y: 48 },
+    carte: { x: 48, y: 27 },
     texte: "La Carousel Boutique est la boutique de couture de Rarity. Elle est ronde comme un manège, avec un toit tout en pointe. C'est là que Rarity crée ses plus belles robes."
   },
   {
     id: "sugarcube-corner",
     nom: "Sugarcube Corner",
     habitants: ["pinkie-pie", "gummy"],
-    carte: { x: 58, y: 50 },
+    carte: { x: 74, y: 27 },
     texte: "Sugarcube Corner est la pâtisserie de Poneyville. Elle ressemble à une maison en pain d'épices, toute décorée de bonbons. Pinkie Pie habite juste au-dessus, dans le grenier."
   },
   {
     id: "chaumiere-fluttershy",
     nom: "La chaumière de Fluttershy",
     habitants: ["fluttershy", "angel"],
-    carte: { x: 68, y: 72 },
+    carte: { x: 78, y: 75 },
     texte: "La chaumière de Fluttershy est une petite maison au bord de la forêt Désenchantée. Elle est entourée de terriers et de nichoirs pour tous ses amis animaux. C'est un endroit calme et paisible."
   },
   {
     id: "foret-desenchantee",
     nom: "La forêt Désenchantée",
     habitants: ["zecora"],
-    carte: { x: 55, y: 88 },
+    carte: { x: 46, y: 75 },
     texte: "La forêt Désenchantée est un lieu mystérieux où la nature pousse toute seule. Les arbres y sont un peu tordus et les plantes poussent librement. Les poneys de Poneyville n'y vont pas très souvent."
   },
   {
     id: "hutte-zecora",
     nom: "La hutte de Zecora",
     habitants: ["zecora"],
-    carte: { x: 42, y: 90 },
+    carte: { x: 18, y: 75 },
     texte: "La hutte de Zecora est une cabane installée dans un gros arbre, au cœur de la forêt Désenchantée. Elle est remplie de masques colorés et de potions mystérieuses. C'est là que Zecora prépare ses remèdes."
   },
   {
     id: "canterlot",
     nom: "Canterlot",
     habitants: ["celestia", "luna"],
-    carte: { x: 80, y: 18 },
+    carte: { x: 84, y: 10 },
     texte: "Canterlot est la capitale d'Equestria. Son château blanc et or est accroché à flanc de montagne. C'est là que vivent les princesses Celestia et Luna."
   },
   {
     id: "cloudsdale",
     nom: "Cloudsdale",
     habitants: ["rainbow-dash", "tank"],
-    carte: { x: 20, y: 12 },
+    carte: { x: 20, y: 10 },
     texte: "Cloudsdale est la ville des pégases, posée tout en haut sur les nuages. C'est ici que l'on fabrique la météo et les arcs-en-ciel. Rainbow Dash y vit avec sa tortue Tank."
   },
   {
     id: "ecole-poneyville",
     nom: "L'école de Poneyville",
     habitants: ["cheerilee", "scootaloo", "diamond-tiara"],
-    carte: { x: 65, y: 60 },
+    carte: { x: 62, y: 59 },
     texte: "L'école de Poneyville est reconnaissable à sa cloche rouge. C'est là que les petits poneys du village viennent apprendre. La maîtresse d'école s'appelle Cheerilee."
   }
 ];
