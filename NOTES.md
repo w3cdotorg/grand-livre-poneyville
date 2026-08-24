@@ -481,6 +481,245 @@ couleur du template disparaissent donc purement et simplement :
   forcées à `scaleY(1)` et le médaillon**, capturée en Chrome headless. Beaucoup plus
   rapide que Playwright, et elle montre d'un coup les trois cadrages qui comptent.
 
+## 2026-08-25 — vague 5 : les dix lieux
+
+Les dix scènes de `svg/lieux/` remplacent leurs ré-exports de placeholder.
+**Il ne reste plus AUCUN placeholder dans le livre** : vingt-six personnages,
+dix lieux, une carte.
+
+### Références utilisées (toutes via l'API MediaWiki, toutes dans `refs/`)
+
+| Lieu | Référence principale | Complément |
+| --- | --- | --- |
+| bibliothèque | [`File:Golden Oak Library S3E1.png`](https://mlp.fandom.com/wiki/File:Golden_Oak_Library_S3E1.png) | [`File:Golden Oak Library exterior S4E23.png`](https://mlp.fandom.com/wiki/File:Golden_Oak_Library_exterior_S4E23.png) |
+| Sweet Apple Acres | [`File:Sweet Apple Acres S2E5.png`](https://mlp.fandom.com/wiki/File:Sweet_Apple_Acres_S2E5.png) | [`File:Sweet Apple Acres S4E17.png`](https://mlp.fandom.com/wiki/File:Sweet_Apple_Acres_S4E17.png) (crépuscule : la structure, pas les couleurs) |
+| Carousel Boutique | [`File:Carousel Boutique exterior at midday S7E5.png`](https://mlp.fandom.com/wiki/File:Carousel_Boutique_exterior_at_midday_S7E5.png) | — |
+| Sugarcube Corner | [`File:Sugarcube Corner S1E18.png`](https://mlp.fandom.com/wiki/File:Sugarcube_Corner_S1E18.png) (1920 × 1080) | [`File:Sugarcube Corner exterior S1E04.png`](https://mlp.fandom.com/wiki/File:Sugarcube_Corner_exterior_S1E04.png) |
+| chaumière | [`File:Fluttershy's cottage exterior S6E11.png`](https://mlp.fandom.com/wiki/File:Fluttershy's_cottage_exterior_S6E11.png) | — |
+| forêt Désenchantée | [`File:Everfree Forest S4E02.png`](https://mlp.fandom.com/wiki/File:Everfree_Forest_S4E02.png) | (voir § « ce qu'on jette ») |
+| hutte de Zecora | [`File:Zecora's hut exterior S7E19.png`](https://mlp.fandom.com/wiki/File:Zecora's_hut_exterior_S7E19.png) | [`File:Zecora's house S6E4.png`](https://mlp.fandom.com/wiki/File:Zecora's_house_S6E4.png) |
+| Canterlot | [`File:Canterlot castle close-up S1E26.png`](https://mlp.fandom.com/wiki/File:Canterlot_castle_close-up_S1E26.png) — **le gros plan donne les bulbes** | [`File:Canterlot castle wide view S1E26.png`](https://mlp.fandom.com/wiki/File:Canterlot_castle_wide_view_S1E26.png) |
+| Cloudsdale | [`File:Cloudsdale and the rainbow overhead S1E16.png`](https://mlp.fandom.com/wiki/File:Cloudsdale_and_the_rainbow_overhead_S1E16.png) — **le temple, cadré net** | [`File:Cloudsdale S01E16.png`](https://mlp.fandom.com/wiki/File:Cloudsdale_S01E16.png) (la cité entière) |
+| école | [`File:Ponyville Schoolhouse S4E05.png`](https://mlp.fandom.com/wiki/File:Ponyville_Schoolhouse_S4E05.png) | [`File:Ponyville Schoolhouse exterior S6E14.png`](https://mlp.fandom.com/wiki/File:Ponyville_Schoolhouse_exterior_S6E14.png) |
+
+Sur la recherche elle-même, deux remarques qui prolongent celles de la vague 4 :
+
+- **`aiprefix` marche mieux pour un lieu que pour un animal.** Les décors sont
+  nommés par leur lieu (`Golden Oak Library …`, `Sugarcube Corner exterior …`),
+  et le mot **`exterior`** dans le titre est le meilleur filtre du lot : il écarte
+  d'un coup tous les plans d'intérieur. `Zecora's hut` ne rend qu'UN fichier, mais
+  `Zecora's` tout court en rend soixante.
+- **Prendre le plan de JOUR, comme pour Owlowiscious.** Les versions
+  `at night` / `at sunset` existent pour presque tous les lieux et faussent tout :
+  la grange de `S4E17` (coucher de soleil) est magenta et son toit lavande, alors
+  qu'en plein jour elle est rouge brique à toit brun-rouge.
+
+### LE DÉTAIL QUI SURVIT À LA VIGNETTE — la règle de la vague
+
+Un lieu est vu à **trois tailles** : ~150 px dans la galerie `#/lieux`, ~130 px
+dans la vignette « Où ça se passe » d'une fiche de personnage, et ~950 px sur sa
+propre fiche. La règle qui en découle, et qui a commandé toutes les compositions :
+
+> **Chaque lieu doit avoir UN signe reconnaissable à 150 px, et ce signe se
+> dessine GRAND, quitte à trahir l'échelle de la référence.**
+
+| Lieu | Le signe |
+| --- | --- |
+| bibliothèque | les fenêtres rondes ROSES à carreaux rayonnants + la porte rouge |
+| Sweet Apple Acres | le pignon rouge + le clocheton blanc à girouette-pomme |
+| Carousel Boutique | l'étage-manège ouvert, chevaux compris, sous son dais d'or |
+| Sugarcube Corner | la tour-gâteau à trois bougies et le glaçage blanc en boucles |
+| chaumière | la motte d'herbe VERTE qui retombe sur les murs + les nichoirs |
+| forêt | l'arche de troncs au-dessus du chemin clair, sur fond bleu nuit |
+| hutte de Zecora | les fioles pendues et les deux fenêtres rondes allumées |
+| Canterlot | les BULBES d'or (pas des cônes) sur la montagne mauve |
+| Cloudsdale | l'arc-en-ciel entier + la colonnade rose |
+| école | la dentelle blanche festonnée à cœurs + la cloche rouge |
+
+Corollaire pour Sweet Apple Acres : le clocheton de la référence est minuscule,
+et il a été **grossi** — mais pas trop. Première version à 60 unités de fût, la
+grange devenait une CHAPELLE ; à 28 unités elle redevient une grange. Le rapport
+qui marche est **clocheton ≈ 0,35 × hauteur du pignon**.
+
+### `svg/lieux/_decor.js` : le `_commun.js` des lieux
+
+Dix scènes qui partagent un ciel, une herbe, un arbre et une fleur : sans module
+commun, le même buisson aurait été réécrit dix fois et les dix ciels auraient
+divergé au premier ajustement. Le module exporte la palette `C` — **recopiée
+telle quelle du `C` de `svg/carte.js`**, c'est ce qui garantit qu'une fiche et sa
+pastille sur la carte sont du même monde — plus les briques `cielFond`, `soleil`,
+`nuage`, `volute`, `oiseau`, `papillon`, `arbre`, `pommier`, `sapin`, `buisson`,
+`fleurs`, `herbes`, `luciole`, `cloture`, `pierre`, `champignon`.
+
+Deux règles apprises en l'écrivant :
+
+- **Une brique dessinée dans un `scale(s)` doit corriger son `stroke-width` par
+  `1/s`.** Un buisson à `scale(.5)` avec `stroke-width="2.2"` rend un trait de
+  1,1 : à côté d'un bâtiment tracé à 2,4, il paraît effacé. Toutes les briques à
+  paramètre d'échelle écrivent donc `stroke-width="${n(2.2 / s)}"`.
+- **CHAQUE SCÈNE DOIT PRÉFIXER SON DÉGRADÉ DE CIEL.** La galerie `#/lieux` met
+  les dix SVG dans le MÊME document ; deux `<linearGradient id="ciel">` s'y
+  résolvent tous les deux sur le premier, et neuf lieux héritent du ciel du
+  premier. D'où la signature `cielFond(id, haut, bas)` et les dix identifiants
+  `bib-ciel`, `saa-ciel`, `cb-ciel`, `sc-ciel`, `fs-ciel`, `fd-ciel`, `hz-ciel`,
+  `ct-ciel`, `cd-ciel`, `ep-ciel`. C'est le même piège que les `clipPath` des
+  personnages, à l'échelle de la page.
+
+Échelle des contours, en 400 × 300 : **2,4** pour les masses principales, **1,8**
+pour les volumes secondaires, **1,2-1,4** pour les détails. (La carte est en
+1000 × 700 et monte à 3,4 ; le rapport tient parce que ses bâtiments sont quatre
+fois plus petits en proportion du cadre.)
+
+### LE PIGNON EST ROUGE, PAS LE TOIT — la trouvaille de la vague
+
+Première version de la grange : un rectangle rouge surmonté d'un grand triangle
+sombre. Résultat, une chapelle. La référence montre l'inverse : **la façade monte
+en rouge jusqu'au faîtage**, et le toit ne se voit que par ses deux bandeaux de
+rampant et le débord de l'égout. Le remède tient en trois tracés :
+
+1. un PENTAGONE rouge `M146 252 L146 200 L200 164 L254 200 L254 252 Z` ;
+2. par-dessus, un tracé ouvert `M138 204 L200 162 L262 204` en `stroke-width="9"`
+   sombre — c'est le toit, et il **déborde** de 8 unités de chaque côté ;
+3. un liseré crème de 2,4 juste à l'intérieur, qui fait la planche de rive.
+
+Le même schéma resert tel quel pour l'appentis et pour l'école. **À retenir :
+sur une maison vue de face, un toit se dessine comme une BORDURE, pas comme une
+surface.**
+
+### LE STROKE NE SAIT PAS GALBER UN TRONC
+
+Les troncs tordus de la forêt ont d'abord été tracés au `stroke` épais : ils
+gardaient une épaisseur rigoureusement constante d'un bout à l'autre et se
+lisaient comme des **tuyaux d'arrosage bleus**. Un tronc est large en bas et fin
+en haut ; il faut une **forme pleine** (deux courbes qui se rapprochent + un
+petit chapeau) — `troncPlein()` dans `foret-desenchantee.js`. Le `stroke` reste
+bon pour les BRANCHES, qui sont réellement d'épaisseur constante.
+
+Corollaire de composition : les deux troncs penchaient d'abord **vers
+l'extérieur** et faisaient un V, c'est-à-dire une ouverture vide. Penchés vers
+l'INTÉRIEUR, leurs feuillages se rejoignent au-dessus du chemin et fabriquent une
+**arche** : la forêt devient une porte, et le lieu cesse d'être hostile sans
+qu'on ait eu à l'éclaircir.
+
+### LA FORÊT DÉSENCHANTÉE : CE QU'ON GARDE, CE QU'ON JETTE
+
+`Everfree Forest S4E02.png` est un plan de nuit hérissé de lianes noires à
+**épines cyan**, sans une seule source de lumière chaude. Pour un lecteur de
+4-5 ans, chaque épine se lit comme une griffe. Arbitrage, assumé et noté ici pour
+que personne ne « corrige » la fiche vers la référence :
+
+| Gardé | Jeté |
+| --- | --- |
+| troncs tordus, ciel violet, brume, chemin clair | les épines, sans exception |
+| le feuillage en larges palmes retombantes | les palmes en POINTE — elles sont redessinées en LOBES |
+| la palette froide (`C.foret` de la carte) | le noir : le plus sombre est `#22364a` |
+| — | ajoutés : lune, lucioles, champignons lumineux, fleurs bleues, clairière éclairée au bout du chemin |
+
+Aucun œil dans le noir, aucune branche griffue : c'est la même consigne que pour
+la bande de forêt de la carte d'accueil, et elle est tenue de la même façon.
+
+### Autres relevés, lieu par lieu
+
+- **Bibliothèque.** Les racines sont un piège : dessinées trop larges et à bord
+  bas rectiligne, le chêne se met sur des **SKIS**. Il faut deux bosses courtes
+  qui remontent vite, et deux touffes d'herbe posées par-dessus la jonction.
+  Le tronc a été élargi (x 164 → 236) pour loger porte + deux fenêtres rondes
+  sans que leurs auvents se chevauchent.
+- **Carousel Boutique.** La robe du mannequin était peinte en `criniere[0]`
+  (le violet de Rarity) : deux ovales sombres bouchaient les vitrines et toute la
+  boutique devenait lourde du bas. Robe en `robe` (son blanc lavande), ceinture en
+  `criniere[0]` : le violet reste, mais en accent. Même correction pour la porte,
+  passée de `criniere[0]` à `C.lilas`. C'est le seul lieu du livre qui importe
+  `js/data.js`.
+- **Sugarcube Corner.** Le toit de pain d'épices monte à y 170 ; la tour-gâteau
+  a donc dû être remontée **en bloc** de 12 unités (`<g transform="translate(0 -12)">`),
+  sinon ses fenêtres passaient derrière le glaçage. La frange de glaçage est une
+  file de boucles générée (`feston(x, y, k, p)`) : dix boucles de 14,8, tracées
+  deux fois — blanc épais puis un liseré gris à 55 % qui leur donne du relief.
+- **Chaumière.** Un pont de pierre sans rivière ne se lit pas : il ressemble à un
+  caillou gris. Il a fallu ajouter le ruban d'eau, et **percer le pont** (l'arche
+  remplie de la couleur de l'eau) pour qu'on comprenne qu'on passe dessus.
+- **Hutte de Zecora.** Le houppier posé en bande brune horizontale en travers du
+  fût donnait un **CHAMPIGNON**. Le fût monte donc en se rétrécissant jusque dans
+  le feuillage, et ce sont les branches qui vont chercher les côtés. Piège jumeau :
+  une fiole accrochée au-delà du bord du feuillage pend **dans le vide** — les
+  deux dernières ont été rentrées à l'intérieur du houppier.
+- **Canterlot.** L'éperon rocheux était peint en `C.mont`, la teinte du massif :
+  il disparaissait dedans et le château semblait posé sur une ombre. Il est passé
+  à `#8f80b2`, plus sombre, avec une arête claire sur le dessus et un bord
+  inférieur LOBÉ (un bord régulier faisait une coque de bateau). Et surtout :
+  **les cascades se dessinent APRÈS la pelouse**, sinon les bandes d'herbe du
+  premier plan les recouvrent — elles étaient invisibles pendant deux tours.
+- **Cloudsdale.** Temple blanc sur nuage blanc : sans le liseré d'ombre bleutée
+  sous le socle (`<ellipse ... fill="C.nuageT" opacity=".35">`), il flotte et on
+  ne voit qu'une masse laiteuse. Le bas de la grande plate-forme était vide : deux
+  petites tours à toit rose (celles de la mini-Cloudsdale de la carte) et quatre
+  volutes suffisent à le meubler.
+- **École.** La cloche est ROUGE — c'est écrit dans le texte de la fiche
+  (`js/data.js`) et dessiné sur la carte. Sur la référence elle est sombre : le
+  texte du livre l'emporte.
+
+### COHÉRENCE CARTE ↔ FICHES : quatre écarts assumés
+
+Vérifié à l'écran, fiche par fiche, contre les mini-bâtiments de `svg/carte.js`.
+Six lieux sur dix concordent complètement (bibliothèque, Sweet Apple Acres,
+Carousel Boutique, Canterlot, Cloudsdale, forêt). Pour les quatre autres, **la
+référence officielle l'a emporté sur la carte**, conformément au mandat :
+
+| Lieu | Sur la carte | Sur la fiche (= la référence) |
+| --- | --- | --- |
+| chaumière | toit de PAILLE | toit d'HERBE verte |
+| hutte de Zecora | toit de paille conique sur un tronc | arbre creux, sans toit rapporté |
+| école | murs crème, toit bleu | murs framboise, toit rouge (seule la cloche rouge est commune) |
+| Sugarcube Corner | toit rouge à glaçage | toit chocolat à glaçage (le cupcake du sommet est commun) |
+
+**Ces quatre écarts se corrigent du côté de la CARTE**, pas des fiches — mais
+`svg/carte.js` était hors du périmètre de la tâche. C'est la seule réserve
+sérieuse de la vague, et elle est reportée telle quelle plus bas.
+
+### Vérifications
+
+- Validateur d'arité de la vague 1, rejoué sur les dix modules à chaque
+  itération : **910 tracés, 0 invalide**. Le motif de capture est celui corrigé
+  sur la carte (`/[\s"]d="([^"]+)"/g`), plus trois contrôles de contrat par lieu :
+  `viewBox="0 0 400 300"`, racine `<svg>`, et présence d'un `rect 400 × 300`
+  (le fond pleine surface).
+- `npm test` : **10/10**.
+- Non-régression : `find svg/poneys svg/carte.js | xargs shasum -a 256 | shasum`
+  → `b953be64c21d7b1cfba3e2d3396e25cd2f402cec3af5e4c404e28a980ce08458`, identique
+  avant et après la vague.
+- Playwright sur `./serve.sh` : galerie `#/lieux` (10 vignettes, **zéro
+  « dessin à venir » dans tout le DOM**), les dix fiches, les vignettes
+  « Où ça se passe » de `#/poney/twilight`, `#/poney/zecora` et `#/poney/celestia`,
+  et la carte d'accueil `#/` pour la comparaison des mini-bâtiments.
+- **LE CACHE DES MODULES ES MORD ENCORE, ET PLUS FORT SUR PLUSIEURS FICHIERS.**
+  Six lieux sur dix rendaient encore le placeholder après le rechargement de la
+  page : `python3 -m http.server` n'envoie pas de `Cache-Control`, le navigateur
+  applique donc une fraîcheur heuristique et **ne revalide même pas**. Le remède,
+  quand on ne peut pas toucher `js/render.js` pour ajouter un `?v=` :
+  `await fetch(url, { cache: 'reload' })` sur chaque module depuis la page, ce qui
+  met à jour l'entrée du cache HTTP, puis recharger. Vérifier ensuite par
+  `document.body.innerHTML.includes('dessin à venir')` — c'est ce test-là, et pas
+  la capture d'écran, qui a révélé le problème.
+
+### Réserves de la vague
+
+- **Les quatre écarts carte ↔ fiches ci-dessus.** À trancher par le propriétaire :
+  soit on retouche `svg/carte.js` (toit d'herbe pour la chaumière, arbre creux
+  pour la hutte, murs framboise pour l'école, toit chocolat pour la pâtisserie),
+  soit on accepte que la carte soit une version « simplifiée » du livre.
+- Les fiches **forêt** et **hutte** sont beaucoup plus sombres que les huit
+  autres : voulu (ce sont les deux lieux de nuit), mais dans la galerie `#/lieux`
+  la rangée est visiblement contrastée. Si cela gêne, éclaircir le bas des deux
+  ciels plutôt que les feuillages.
+- Le masque de Zecora au-dessus de la porte se lit un peu comme une **abeille**
+  à petite taille (ovale clair, deux yeux, bandes). Une référence de masque en
+  gros plan (`File:Zecora's 'hello' and 'welcome' masks S1E09.png`) permettrait de
+  le refaire plus juste.
+- Le `refs/` n'est pas suivi par git (il ne l'était déjà pas aux vagues
+  précédentes) : les dix-sept images de la vague sont sur le disque, mais seules
+  leurs URL, ci-dessus, sont versionnées.
+
 ## 2026-08-25 — vague 4 : les six animaux de compagnie
 
 Angel, Gummy, Winona, Opale, Tank et Owlowiscious. **Les vingt-six personnages
