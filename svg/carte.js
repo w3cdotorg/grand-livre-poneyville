@@ -15,10 +15,15 @@
 //   Carousel Boutique (480, 189) → manège           (359–471, 229–345)
 //   Sugarcube Corner  (740, 189) → pâtisserie       (608–708, 245–345)
 //   bibliothèque      (300, 413) → chêne Golden Oak (228–372, 388–556)
-//   école             (620, 413) → école + cloche   (558–672, 420–518)
-//   hutte de Zecora   (180, 525) → hutte            (139–241, 528–650)
+//   école             (620, 413) → école + cloche   (551–679, 420–518)
+//   hutte de Zecora   (180, 525) → arbre creux      (121–249, 522–650)
 //   forêt             (460, 525) → sapins           (bande y 500–700)
 //   chaumière         (780, 525) → chaumière        (726–854, 512–604)
+//
+// QUATRE MINIS SONT ACCORDÉS À LEUR FICHE (`svg/lieux/…`), qui fait foi : la chaumière
+// a un toit d'HERBE, la hutte de Zecora est un ARBRE CREUX, l'école est FRAMBOISE et
+// Sugarcube Corner a un toit CHOCOLAT. Chacun garde son signe d'origine (cloche rouge,
+// cupcake). Voir NOTES.md § « Recalage de la carte sur les fiches ».
 //
 // Les six mini-portraits des Mane 6 (posés à `carte.y − 8`, donc 56 unités SVG
 // plus haut que leur point) : Rainbow Dash (360, 70) au-dessus de Cloudsdale,
@@ -37,7 +42,7 @@ const C = {
   eau: '#8ed6f0', eauT: '#57add4',
   feuille: '#5aa844', feuilleT: '#3b7a2b', tronc: '#a5764a', troncT: '#77502e',
   pomme: '#cf3b32', grange: '#c8483c', grangeT: '#8f2f2a',
-  bois: '#c79a5e', boisT: '#9a6f39', paille: '#e0bd6f', pailleT: '#b08c3f',
+  bois: '#c79a5e', boisT: '#9a6f39',
   foret: '#2f5f56', foretT: '#1d443f', sapinA: '#38736a', sapinB: '#2b5b55',
   clairiere: '#6fae63', luciole: '#ffef9f',
   rose: '#f4a6c8', lilas: '#c39be0', ciel2: '#7fc6ea', creme: '#ffeccd',
@@ -194,6 +199,65 @@ const sweetAppleAcres = () => `<g>
     </g>
   </g>`;
 
+// Sugarcube Corner : le TOIT DE PAIN D'ÉPICES chocolat (et non un toit rouge), sa
+// frange de glaçage blanc et ses pépites, les colombages, les fenêtres roses à losanges
+// et le cupcake de l'enseigne — conservé, c'est le signe du lieu. Palette alignée sur
+// `svg/lieux/sugarcube-corner.js`.
+const S = { choco: '#8f5330', chocoT: '#69381f', pepite: '#5e3018', glacage: '#fffdf7',
+  creme: '#fbf0d8', poutre: '#a9764c', rose: '#f39ac2', roseT: '#d1618f', vitre: '#f7c9df' };
+const sugarcube = () => `<g transform="translate(658 345)">
+      <rect x="-50" y="-64" width="100" height="64" rx="5" fill="${S.creme}" stroke="${S.poutre}" stroke-width="3.4"/>
+      <path d="M-50 -34L50 -34M-28 -64L-28 0M28 -64L28 0" stroke="${S.poutre}" stroke-width="3"/>
+      <path d="M-58 -64C-40 -78 -22 -60 0 -74C22 -88 40 -70 58 -64Z" fill="${S.choco}" stroke="${S.chocoT}" stroke-width="3.4" stroke-linejoin="round"/>
+      <path d="M-44 -68C-34 -72 -24 -66 -14 -70M6 -74C16 -76 26 -70 36 -70" fill="none" stroke="${S.poutre}" stroke-width="2.2" opacity=".7"/>
+      <circle cx="-34" cy="-62" r="2.6" fill="${S.pepite}"/><circle cx="-8" cy="-68" r="2.6" fill="${S.pepite}"/>
+      <circle cx="20" cy="-72" r="2.6" fill="${S.pepite}"/><circle cx="44" cy="-64" r="2.6" fill="${S.pepite}"/>
+      <path d="M-58 -64C-36 -56 -18 -68 0 -60C20 -51 38 -60 58 -64" fill="none" stroke="${S.glacage}" stroke-width="7" stroke-linecap="round"/>
+      <path d="M-14 0L-14 -30C-14 -40 14 -40 14 -30L14 0Z" fill="${C.or}" stroke="${C.orT}" stroke-width="2.6" stroke-linejoin="round"/>
+      <path d="M-20 0L-20 -34M20 0L20 -34" stroke="${S.rose}" stroke-width="6" stroke-linecap="round"/>
+      <path d="M-20 -30L-20 -24M-20 -14L-20 -8M20 -30L20 -24M20 -14L20 -8" stroke="${S.glacage}" stroke-width="4" stroke-linecap="round"/>
+      <path d="M-42 -30L-42 -40C-42 -50 -24 -50 -24 -40L-24 -30Z" fill="${S.vitre}" stroke="${S.poutre}" stroke-width="2.4" stroke-linejoin="round"/>
+      <path d="M24 -30L24 -40C24 -50 42 -50 42 -40L42 -30Z" fill="${S.vitre}" stroke="${S.poutre}" stroke-width="2.4" stroke-linejoin="round"/>
+      <path d="M-42 -32L-24 -44M-42 -44L-24 -32M24 -32L42 -44M24 -44L42 -32" stroke="${S.roseT}" stroke-width="1.6" opacity=".7"/>
+      <g transform="translate(0 -84)">
+        <path d="M-16 8C-16 -6 16 -6 16 8Z" fill="${S.creme}" stroke="${S.poutre}" stroke-width="2.6" stroke-linejoin="round"/>
+        <path d="M-15 -1C-15 -14 -4 -18 0 -10C4 -18 15 -12 13 -1Z" fill="${S.rose}" stroke="${S.roseT}" stroke-width="2.4" stroke-linejoin="round"/>
+        <circle cx="0" cy="-16" r="5" fill="${C.pomme}"/>
+      </g>
+    </g>`;
+
+// L'école de Poneyville : murs FRAMBOISE et toit d'écailles assorti (et non des murs
+// crème sous un toit bleu), dentelle blanche sur la rive du pignon, fenêtres hautes
+// coiffées d'un cœur rose — et la CLOCHE ROUGE, qui reste le point d'ancrage entre la
+// carte et la fiche. Palette alignée sur `svg/lieux/ecole-poneyville.js`.
+const E = { mur: '#e0596b', murT: '#a83a52', toit: '#c03a48', toitT: '#8e2637',
+  dentelle: '#fff4f2', coeur: '#f9a8c6', vitre: '#fff2c9' };
+const coeurE = (x, y, s = 1) => `<path transform="translate(${x} ${y}) scale(${n(s)})"
+    d="M0 6C-8 0 -10 -6 -6 -9C-3 -11 -1 -9 0 -7C1 -9 3 -11 6 -9C10 -6 8 0 0 6Z"
+    fill="${E.coeur}" stroke="${E.murT}" stroke-width="${n(1.6 / s)}" stroke-linejoin="round"/>`;
+const ecole = () => `<g transform="translate(615 518)">
+      <rect x="-56" y="-62" width="112" height="62" rx="5" fill="${E.mur}" stroke="${E.murT}" stroke-width="3.4"/>
+      <path d="M-64 -62L0 -98L64 -62Z" fill="${E.toit}" stroke="${E.toitT}" stroke-width="3.4" stroke-linejoin="round"/>
+      <path d="M-48 -70C-40 -76 -32 -76 -26 -72M48 -70C40 -76 32 -76 26 -72" fill="none" stroke="${E.toitT}" stroke-width="2.2" opacity=".55"/>
+      <path d="M-64 -62L0 -98L64 -62" fill="none" stroke="${E.dentelle}" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
+      ${coeurE(-30, -74, 0.9)}${coeurE(30, -74, 0.9)}
+      <g transform="translate(0 -100)">
+        <rect x="-13" y="-24" width="26" height="24" rx="4" fill="${E.dentelle}" stroke="${E.murT}" stroke-width="2.6"/>
+        <path d="M-8 -6C-8 -18 8 -18 8 -6Z" fill="${C.pomme}" stroke="${E.toitT}" stroke-width="2.2" stroke-linejoin="round"/>
+      </g>
+      <path d="M-16 0L-16 -32C-16 -44 16 -44 16 -32L16 0Z" fill="${E.dentelle}" stroke="${E.murT}" stroke-width="2.6" stroke-linejoin="round"/>
+      <path d="M-9 0L-9 -30C-9 -38 9 -38 9 -30L9 0Z" fill="${C.bois}" stroke="${C.boisT}" stroke-width="2.4" stroke-linejoin="round"/>
+      <rect x="-46" y="-52" width="17" height="32" rx="3" fill="${E.vitre}" stroke="${E.dentelle}" stroke-width="2.6"/>
+      <rect x="29" y="-52" width="17" height="32" rx="3" fill="${E.vitre}" stroke="${E.dentelle}" stroke-width="2.6"/>
+      <path d="M-37.5 -52L-37.5 -20M37.5 -52L37.5 -20" stroke="${C.orT}" stroke-width="1.6" opacity=".5"/>
+      ${coeurE(-37.5, -58, 1)}${coeurE(37.5, -58, 1)}
+      <g transform="translate(0 -46)">
+        <path d="M-15 4C-15 -12 15 -12 15 4Z" fill="${E.dentelle}" stroke="${E.murT}" stroke-width="2.6" stroke-linejoin="round"/>
+        <path d="M-8 2C-8 -8 8 -8 8 2Z" fill="${C.pomme}" stroke="${E.toitT}" stroke-width="2.2" stroke-linejoin="round"/>
+        <circle cx="0" cy="4" r="2.6" fill="${E.toitT}"/>
+      </g>
+    </g>`;
+
 // Le village : manège de Rarity, pâtisserie, mairie ronde, école, quelques maisons.
 const village = () => `<g>
     <g transform="translate(415 345)">
@@ -210,18 +274,7 @@ const village = () => `<g>
       <circle cx="30" cy="-46" r="8" fill="${C.ciel2}" stroke="${C.murT}" stroke-width="2.4"/>
       <path d="M-44 -20C-16 -26 16 -26 44 -20" fill="none" stroke="${C.lilas}" stroke-width="4"/>
     </g>
-    <g transform="translate(658 345)">
-      <rect x="-50" y="-64" width="100" height="64" rx="5" fill="${C.creme}" stroke="${C.murT}" stroke-width="3.4"/>
-      <path d="M-58 -64C-40 -78 -22 -60 0 -74C22 -88 40 -70 58 -64Z" fill="${TOITS[0]}" stroke="${C.murT}" stroke-width="3.4" stroke-linejoin="round"/>
-      <path d="M-58 -64C-36 -56 -18 -68 0 -60C20 -51 38 -60 58 -64" fill="none" stroke="${C.mur}" stroke-width="7" stroke-linecap="round"/>
-      <rect x="-12" y="-32" width="24" height="32" rx="4" fill="${C.bois}" stroke="${C.boisT}" stroke-width="2.6"/>
-      <rect x="-42" y="-44" width="18" height="16" rx="4" fill="${C.ciel2}" stroke="${C.murT}" stroke-width="2.4"/>
-      <rect x="24" y="-44" width="18" height="16" rx="4" fill="${C.ciel2}" stroke="${C.murT}" stroke-width="2.4"/>
-      <g transform="translate(0 -92)">
-        <path d="M-16 8C-16 -6 16 -6 16 8Z" fill="${C.rose}" stroke="${C.murT}" stroke-width="2.6" stroke-linejoin="round"/>
-        <circle cx="0" cy="-8" r="6" fill="${C.pomme}"/>
-      </g>
-    </g>
+    ${sugarcube()}
     <g transform="translate(858 352)">
       <path d="M-46 0C-48 -24 -46 -42 -40 -58L40 -58C46 -42 48 -24 46 0Z"
         fill="${C.mur}" stroke="${C.murT}" stroke-width="3.4" stroke-linejoin="round"/>
@@ -232,24 +285,9 @@ const village = () => `<g>
       <path d="M0 -44L0 -38L5 -34" fill="none" stroke="${C.murT}" stroke-width="2.4" stroke-linecap="round"/>
       <rect x="-10" y="-24" width="20" height="24" rx="4" fill="${C.bois}" stroke="${C.boisT}" stroke-width="2.6"/>
     </g>
-    <g transform="translate(615 518)">
-      <rect x="-56" y="-62" width="112" height="62" rx="5" fill="${C.creme}" stroke="${C.murT}" stroke-width="3.4"/>
-      <path d="M-64 -62L0 -98L64 -62Z" fill="${TOITS[2]}" stroke="${C.murT}" stroke-width="3.4" stroke-linejoin="round"/>
-      <g transform="translate(0 -100)">
-        <rect x="-13" y="-24" width="26" height="24" rx="4" fill="${C.mur}" stroke="${C.murT}" stroke-width="2.6"/>
-        <path d="M-8 -6C-8 -18 8 -18 8 -6Z" fill="${C.pomme}" stroke="${C.grangeT}" stroke-width="2.2" stroke-linejoin="round"/>
-      </g>
-      <rect x="-14" y="-34" width="28" height="34" rx="4" fill="${C.bois}" stroke="${C.boisT}" stroke-width="2.6"/>
-      <rect x="-46" y="-48" width="20" height="18" rx="4" fill="${C.ciel2}" stroke="${C.murT}" stroke-width="2.4"/>
-      <rect x="26" y="-48" width="20" height="18" rx="4" fill="${C.ciel2}" stroke="${C.murT}" stroke-width="2.4"/>
-      <g transform="translate(0 -46)">
-        <path d="M-15 4C-15 -12 15 -12 15 4Z" fill="${C.mur}" stroke="${C.murT}" stroke-width="2.6" stroke-linejoin="round"/>
-        <path d="M-8 2C-8 -8 8 -8 8 2Z" fill="${C.pomme}" stroke="${C.grangeT}" stroke-width="2.2" stroke-linejoin="round"/>
-        <circle cx="0" cy="4" r="2.6" fill="${C.grangeT}"/>
-      </g>
-    </g>
+    ${ecole()}
     ${maison(524, 262, 52, 34, TOITS[3])}${maison(724, 264, 46, 30, TOITS[4])}
-    ${maison(772, 452, 62, 40, TOITS[1])}${maison(486, 470, 54, 36, TOITS[4])}
+    ${maison(772, 452, 62, 40, TOITS[1])}${maison(486, 470, 54, 36, TOITS[2])}
   </g>`;
 
 // Fleurs et buissons : le liant entre les zones, sur les pentes que les pastilles laissent nues.
@@ -301,42 +339,74 @@ const foret = () => {
   ${lucioles.map(([x, y]) => luciole(x, y)).join('')}`;
 };
 
-// La hutte de Zecora, dans un gros arbre creux, et ses masques.
+// La hutte de Zecora : un ARBRE CREUX (et non une cabane à toit de paille) — fût
+// nervuré évasé en racines, houppier qui part en pointe du fût (une bande posée en
+// travers donnerait un champignon, cf. la fiche), porte en ogive bordeaux, fenêtre
+// ronde dorée barrée d'une croix, masque au-dessus de la porte, fioles pendues.
+// Palette alignée sur `svg/lieux/hutte-zecora.js`.
+const Z = { bois: '#a06b40', boisC: '#b98253', boisT: '#6d4426', porte: '#8d3a4f',
+  porteT: '#5f2434', feuille: '#3e7a5c', feuilleC: '#57a074', feuilleT: '#255440',
+  lueur: '#ffd873', cordon: '#e8d16b', masque: '#e3d27a' };
 const hutteZecora = () => `<g transform="translate(185 650)">
-    <path d="M-46 0C-50 -38 -42 -66 -26 -86L26 -86C42 -66 50 -38 46 0Z"
-      fill="${C.troncT}" stroke="#4f3620" stroke-width="3.4" stroke-linejoin="round"/>
-    <path d="M-56 -86L0 -122L56 -86Z" fill="${C.paille}" stroke="${C.pailleT}" stroke-width="3.4" stroke-linejoin="round"/>
-    <path d="M-40 -86C-20 -96 20 -96 40 -86" fill="none" stroke="${C.pailleT}" stroke-width="3"/>
-    <path d="M-14 0L-14 -34C-14 -46 14 -46 14 -34L14 0Z" fill="#3f2b1a" stroke="#4f3620" stroke-width="3" stroke-linejoin="round"/>
-    <circle cx="-28" cy="-54" r="10" fill="${C.creme}" stroke="${C.pailleT}" stroke-width="2.6"/>
-    <path d="M-28 -58C-24 -54 -32 -54 -28 -50" fill="none" stroke="${C.pailleT}" stroke-width="2"/>
-    <ellipse cx="28" cy="-54" rx="9" ry="12" fill="${C.or}" stroke="${C.pailleT}" stroke-width="2.6"/>
-    <path d="M24 -58L24 -54M32 -58L32 -54M24 -48C28 -44 32 -48 32 -48" fill="none" stroke="${C.pailleT}" stroke-width="2" stroke-linecap="round"/>
-    <path d="M-58 -8C-58 -20 -42 -20 -42 -8Z" fill="#5b4130" stroke="#4f3620" stroke-width="2.6" stroke-linejoin="round"/>
-    <path d="M-56 -18C-52 -30 -46 -30 -44 -18" fill="none" stroke="${C.luciole}" stroke-width="3" stroke-linecap="round"/>
+    <path d="M-30 -78C-52 -84 -64 -92 -60 -104C-56 -116 -40 -120 -28 -114
+      C-24 -126 0 -130 10 -120C22 -128 44 -122 46 -108C60 -106 62 -92 48 -86C30 -80 -12 -76 -30 -78Z"
+      fill="${Z.feuille}" stroke="${Z.feuilleT}" stroke-width="3.4" stroke-linejoin="round"/>
+    <path d="M-44 -100C-30 -108 -6 -110 8 -106" fill="none" stroke="${Z.feuilleC}" stroke-width="3.4" stroke-linecap="round" opacity=".7"/>
+    <path d="M20 -110C34 -110 44 -104 48 -98" fill="none" stroke="${Z.feuilleC}" stroke-width="3" stroke-linecap="round" opacity=".6"/>
+    <path d="M-40 0C-44 -30 -36 -58 -24 -76L24 -76C36 -58 44 -30 40 0Z"
+      fill="${Z.bois}" stroke="${Z.boisT}" stroke-width="3.4" stroke-linejoin="round"/>
+    <path d="M-40 0C-54 0 -62 -6 -58 -16C-52 -8 -48 -6 -38 -6Z" fill="${Z.bois}" stroke="${Z.boisT}" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M40 0C54 0 62 -6 58 -16C52 -8 48 -6 38 -6Z" fill="${Z.bois}" stroke="${Z.boisT}" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M-26 -6C-28 -30 -24 -52 -18 -68M26 -6C28 -30 24 -52 18 -68" fill="none" stroke="${Z.boisT}" stroke-width="2.2" opacity=".45"/>
+    <path d="M-24 -76C-40 -84 -54 -88 -66 -88M24 -76C40 -84 54 -88 64 -88" fill="none" stroke="${Z.boisT}" stroke-width="5" stroke-linecap="round"/>
+    <path d="M-13 0L-13 -30C-13 -44 13 -44 13 -30L13 0Z" fill="${Z.porte}" stroke="${Z.porteT}" stroke-width="3" stroke-linejoin="round"/>
+    <circle cx="8" cy="-18" r="2.8" fill="${Z.cordon}"/>
+    <circle cx="-28" cy="-40" r="10" fill="${Z.lueur}" stroke="${Z.boisT}" stroke-width="2.6"/>
+    <path d="M-38 -40L-18 -40M-28 -50L-28 -30" stroke="${Z.boisT}" stroke-width="2"/>
+    <g transform="translate(0 -54)">
+      <path d="M0 11C-6 11 -8 4 -8 -2C-8 -8 -4 -11 0 -11C4 -11 8 -8 8 -2C8 4 6 11 0 11Z"
+        fill="${Z.masque}" stroke="${Z.boisT}" stroke-width="2.2" stroke-linejoin="round"/>
+      <circle cx="-3.4" cy="-3" r="1.9" fill="${Z.feuilleT}"/><circle cx="3.4" cy="-3" r="1.9" fill="${Z.feuilleT}"/>
+      <path d="M-6 3C-3 4 3 4 6 3" fill="none" stroke="${Z.feuille}" stroke-width="1.8"/>
+    </g>
+    <g stroke="${Z.cordon}" stroke-width="2.2">
+      <path d="M-48 -86L-48 -74"/><path d="M-34 -92L-34 -84"/><path d="M44 -88L44 -76"/>
+    </g>
+    <circle cx="-48" cy="-68" r="6" fill="#e05a8e" stroke="${Z.boisT}" stroke-width="2"/>
+    <circle cx="-34" cy="-79" r="5" fill="#8f5fc4" stroke="${Z.boisT}" stroke-width="2"/>
+    <circle cx="44" cy="-70" r="6" fill="#4fb2a6" stroke="${Z.boisT}" stroke-width="2"/>
   </g>`;
 
-// La chaumière de Fluttershy : toit de chaume, nichoirs, animaux.
+// La chaumière de Fluttershy : la MOTTE D'HERBE (et non un toit de chaume), les
+// fenêtres en arche toujours allumées, la porte rouge, la cheminée à chapeau rouge
+// et les nichoirs. Palette et architecture alignées sur `svg/lieux/chaumiere-fluttershy.js`
+// — l'enfant doit reconnaître la même maison-colline sur la carte et sur la fiche.
+const F = { mur: '#f0e2c4', murT: '#c2a878', vitre: '#ffdf8e', vitreT: '#c99a3e',
+  mousse: '#63b04a', mousseC: '#7fc45f', mousseT: '#3f7f31', toitN: '#d0574e' };
 const chaumiere = () => `<g transform="translate(790 604)">
     <path d="M-56 0C-58 -22 -52 -34 -44 -44L44 -44C52 -34 58 -22 56 0Z"
-      fill="${C.creme}" stroke="${C.murT}" stroke-width="3.4" stroke-linejoin="round"/>
+      fill="${F.mur}" stroke="${F.murT}" stroke-width="3.4" stroke-linejoin="round"/>
     <path d="M-64 -40C-52 -74 -28 -92 0 -92C28 -92 52 -74 64 -40C40 -50 -40 -50 -64 -40Z"
-      fill="${C.paille}" stroke="${C.pailleT}" stroke-width="3.4" stroke-linejoin="round"/>
-    <path d="M-44 -52C-24 -60 24 -60 44 -52" fill="none" stroke="${C.pailleT}" stroke-width="3"/>
-    <path d="M-40 -70C-20 -78 20 -78 40 -70" fill="none" stroke="${C.pailleT}" stroke-width="2.6" opacity=".7"/>
-    <path d="M-12 0L-12 -26C-12 -36 12 -36 12 -26L12 0Z" fill="${C.bois}" stroke="${C.boisT}" stroke-width="3" stroke-linejoin="round"/>
-    <circle cx="-32" cy="-24" r="10" fill="${C.ciel2}" stroke="${C.murT}" stroke-width="2.6"/>
-    <circle cx="32" cy="-24" r="10" fill="${C.ciel2}" stroke="${C.murT}" stroke-width="2.6"/>
-    <path d="M-70 0C-70 -12 -58 -12 -58 0Z" fill="${C.rose}" stroke="${C.murT}" stroke-width="2.4" stroke-linejoin="round"/>
-    <g transform="translate(58 -66)">
-      <rect x="-11" y="-14" width="22" height="18" rx="3" fill="${C.bois}" stroke="${C.boisT}" stroke-width="2.4"/>
-      <circle cx="0" cy="-4" r="4" fill="${C.boisT}"/>
-      <path d="M0 4L0 16" stroke="${C.boisT}" stroke-width="3"/>
+      fill="${F.mousse}" stroke="${F.mousseT}" stroke-width="3.4" stroke-linejoin="round"/>
+    <path d="M-44 -60C-26 -72 -2 -74 14 -68" fill="none" stroke="${F.mousseC}" stroke-width="4" stroke-linecap="round" opacity=".85"/>
+    <path d="M24 -70C40 -64 50 -54 54 -46" fill="none" stroke="${F.mousseC}" stroke-width="3.4" stroke-linecap="round" opacity=".75"/>
+    <path d="M-62 -44C-54 -50 -44 -50 -38 -46C-46 -42 -56 -42 -62 -44Z" fill="${F.mousseC}" opacity=".8"/>
+    <path d="M40 -46C48 -50 58 -50 62 -44C54 -42 46 -44 40 -46Z" fill="${F.mousseC}" opacity=".8"/>
+    <path d="M-12 0L-12 -22C-12 -34 12 -34 12 -22L12 0Z" fill="${C.grange}" stroke="${C.grangeT}" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M-38 -14L-38 -26C-38 -38 -20 -38 -20 -26L-20 -14Z" fill="${F.vitre}" stroke="${F.murT}" stroke-width="2.6" stroke-linejoin="round"/>
+    <path d="M20 -14L20 -26C20 -38 38 -38 38 -26L38 -14Z" fill="${F.vitre}" stroke="${F.murT}" stroke-width="2.6" stroke-linejoin="round"/>
+    <path d="M-29 -14L-29 -32M29 -14L29 -32" stroke="${F.vitreT}" stroke-width="1.8"/>
+    <path d="M-74 0C-74 -14 -58 -14 -58 0Z" fill="#6f5f4e" stroke="#54473a" stroke-width="2.4" stroke-linejoin="round"/>
+    <g transform="translate(58 -58)">
+      <path d="M0 8L0 26" stroke="${C.boisT}" stroke-width="3"/>
+      <rect x="-11" y="-8" width="22" height="16" rx="3" fill="${F.mur}" stroke="${F.murT}" stroke-width="2.4"/>
+      <path d="M-14 -8L0 -22L14 -8Z" fill="${F.toitN}" stroke="${C.grangeT}" stroke-width="2.4" stroke-linejoin="round"/>
+      <circle cx="0" cy="0" r="4" fill="${C.troncT}"/>
     </g>
     <g transform="translate(-52 -12)">
-      <ellipse cx="0" cy="0" rx="10" ry="8" fill="#ffffff" stroke="${C.murT}" stroke-width="2.4"/>
-      <circle cx="7" cy="-6" r="5" fill="#ffffff" stroke="${C.murT}" stroke-width="2.4"/>
-      <path d="M-8 -6C-12 -14 -4 -14 -6 -7" fill="#ffffff" stroke="${C.murT}" stroke-width="2.2"/>
+      <ellipse cx="0" cy="0" rx="10" ry="8" fill="#ffffff" stroke="${F.murT}" stroke-width="2.4"/>
+      <circle cx="7" cy="-6" r="5" fill="#ffffff" stroke="${F.murT}" stroke-width="2.4"/>
+      <path d="M-8 -6C-12 -14 -4 -14 -6 -7" fill="#ffffff" stroke="${F.murT}" stroke-width="2.2"/>
     </g>
   </g>`;
 
