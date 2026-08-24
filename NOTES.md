@@ -573,6 +573,26 @@ Deux pièges de méthode notés au passage :
   liste des cibles trop petites ; la capture d'écran sert seulement à juger ce qui ne
   se mesure pas — ici, le fait que l'étiquette cachait le toit.
 
+### LA TROUVAILLE DE LA TÂCHE : `.nojekyll`, sans quoi le site en ligne est vide
+
+Le tour en local passait 39/39, et le site publié était une **page blanche**. Cause :
+GitHub Pages passe le dépôt par **Jekyll**, qui écarte silencieusement tout fichier ou
+dossier dont le nom commence par un **souligné**. `svg/poneys/_commun.js` et
+`svg/lieux/_decor.js` — l'anatomie partagée des poneys et le décor partagé des lieux,
+donc la moitié du livre — renvoyaient `404`, et chaque `import()` dynamique de dessin
+échouait. Un fichier `.nojekyll` vide à la racine sert le dépôt tel quel et corrige tout.
+
+Trois leçons :
+
+- **Le convention de nommage `_fichier` pour « module partagé » est un piège sur Pages.**
+  Elle est parfaitement lisible dans l'éditeur et invisible en production.
+- **`curl … | grep -c "Grand livre"` rend 1 sur un site mort.** Le squelette HTML est
+  servi, le titre est dedans, tout va bien — sauf que `#app` est vide. Le seul contrôle
+  qui vaut est de **charger la page dans un navigateur et d'attendre un `h1` rendu**,
+  puis de compter les erreurs de console et les réponses ≥ 400.
+- **Vérifier l'URL publique n'est pas une formalité de fin de tâche.** C'est le seul
+  moment où l'on teste la couche d'hébergement, qui n'existe pas en local.
+
 **Reste à la main de willow** : l'essai sur un vrai iPad (doigt, Safari, plein soleil).
 
 ## 2026-08-25 — vague 5 : les dix lieux
