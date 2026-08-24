@@ -146,7 +146,7 @@ export const museau = ({ TRAIT, BOUCHE, LANGUE }, ouverte = true) =>
     ? `<path d="M267.5 95C271 93.5 275.5 97.5 278.5 102.5 275 104.5 271.5 105 269.5 103.5
            267 100 266.5 97 267.5 95Z" fill="${BOUCHE}" stroke="${TRAIT}" stroke-width="2.2"/>
        <path d="M269 100C271.5 102 274 103.5 276 104.5 273 106 270 105 268.5 102.5Z" fill="${LANGUE}"/>`
-    : `<path d="M268 97.5C271 96.5 274.5 99 277 102" fill="none" stroke="${TRAIT}" stroke-width="2.2"/>`);
+    : `<path d="M265.5 95.5C270 94.5 275 97.5 278.5 102" fill="none" stroke="${TRAIT}" stroke-width="2.6"/>`);
 
 // Un œil = masse sombre, blanc inséré, iris, bas d'iris, pupille, 2 reflets.
 export const oeil = (c, { PUPILLE, BLANC, IRIS_BAS }) => (t) => `<g transform="${t}">
@@ -212,7 +212,7 @@ export const AILE_REPLIEE = "M209 137C201 137 190 141 180 148"
   + "C204 161 209 149 209 137Z";
 export const ailePliee = (c, { TRAIT }) => `<g>
     <path d="${AILE_REPLIEE}" fill="${c.robe}" stroke="${TRAIT}" stroke-width="3.2"/>
-    <path d="${AILE_REPLIEE}" fill="#000" fill-opacity=".08"/>
+    <path d="${AILE_REPLIEE}" fill="#000" fill-opacity=".11"/>
     <g fill="none" stroke="${TRAIT}" stroke-width="2">
       <path d="M203 141C193 147 183 156 176 165"/>
       <path d="M206 149C198 155 190 163 185 171"/>
