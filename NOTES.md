@@ -12,6 +12,47 @@ Ce fichier est le **modèle anatomique** des 24 autres personnages. Le plus simp
 démarrer un nouveau poney est de le copier et de ne retoucher que la crinière, la queue,
 la marque de beauté et l'attribut d'espèce (corne / ailes / rien).
 
+### RÈGLE : tout nouveau personnage exige une référence PLEIN PIED
+
+Acté le 24/08/2026 par le propriétaire, après la vague 2 : **aucun visage ne se
+dessine de mémoire.** Twilight est réussie parce qu'elle a été relevée sur une
+vraie image ; les visages faits « de connaissance » sont ratés, et ils se ratent
+toujours au même endroit (voir le tableau des trois erreurs systématiques plus
+bas). Le protocole complet, pour chaque personnage :
+
+1. **Trouver une image officielle PLEIN PIED**, si possible dans la pose du
+   template (trois quarts, tête à droite). Le chemin qui marche est l'API
+   MediaWiki de `mlp.fandom.com` (voir § protocole de références) ; les images
+   d'infobox `File:<Nom> ID S…` sont presque toujours des plein pied sur fond
+   d'épisode. **Les fichiers dont le titre commence par `ID` en minuscules
+   (`File:Apple Bloom id S01E12.png`) sont les plus anciens, et souvent les plus
+   proches de la pose du template.** Écarter les titres `FANMADE`.
+2. **La télécharger dans `refs/` et la REGARDER** (outil Read). Les images
+   arrivent en WebP sous une extension `.png` : les repasser en PNG avec PIL,
+   sinon l'outil de lecture ne les affiche pas.
+3. **Relever la géométrie en fraction de la HAUTEUR DE TÊTE** (sommet du crâne →
+   menton). C'est la seule cote comparable d'une pose à l'autre : la « longueur
+   de tête » dépend de l'orientation, et « l'arrière du crâne » est sous la
+   crinière. Un montage à grille (`PIL` + `ImageDraw`, un trait tous les 40 px,
+   coordonnées écrites dans l'image) suffit et va vite.
+4. **Boucler contre la référence** : une page HTML qui met côte à côte, à la même
+   hauteur, le visage de la référence recadré et mon portrait `171 6 124 124`,
+   plus le plein pied des deux ; capture en Chrome headless ; deux à quatre tours.
+   **La superposition à 55 % du § suivant n'est possible que si la référence est
+   dans la MÊME pose** — les images d'infobox sont souvent de trois quarts
+   *avant*, et le dessin de trois quarts *côté* : dans ce cas on compare des
+   rapports, pas des pixels.
+5. **Noter l'URL de la référence en tête du fichier du personnage.**
+
+**Les trois erreurs systématiques du dessin de mémoire**, toutes les trois
+relevées sur la vague 2 et toutes les trois invisibles avant la comparaison :
+
+| Erreur | Ce que dit la référence |
+| --- | --- |
+| l'œil trop **haut** dans le crâne | centre de l'œil à 0,53 → 0,68 de la hauteur de tête, jamais 0,48 (le canon de Twilight, dont la tête est *relevée vers le ciel*) |
+| les **cils** au coin bas | tête de niveau ⇒ cils au coin **haut-arrière**, en éventail vers le haut et l'arrière. Au coin bas ils se lisent comme trois griffures sur la joue |
+| l'œil trop **petit** chez une pouliche | 0,61 → 0,655 de largeur-sur-hauteur-de-tête, contre 0,53 chez l'adulte |
+
 ### Le repère : tout est relisable sur la référence
 
 La référence (905 × 813 px) se projette sur le viewBox 300 × 300 par
@@ -200,6 +241,12 @@ unités de relevé au maximum.
 | Fluttershy | **.72** (tombante) | `sourireTimide` | 3 × **2**, fins (2,2) | regard baissé (,6 ; 3,2) |
 | Rarity | **.6**, peinte du **fard** | `sourirePose` | **4** × **2**, épais (3,2) | fard = `ton(yeux, .5, .4)` |
 | Spike (dragon) | aucune | gueille ouverte, crocs | aucun | — |
+| Big Macintosh | **.60** (lourde) | sourire fermé épais + **fossette** de coin | **aucun** | 3 taches de rousseur, œil descendu de 4 |
+| Apple Bloom | aucune | petit rire ouvert, dents | 3 **hauts** | nœud rose géant, PAS de taches |
+| Sweetie Belle | aucune | petite bouche ronde ouverte | 2 **hauts** | iris **.86**, regard (0 ; 0,8) |
+| Scootaloo | aucune, + basse **.12** | grand rire relevé vers l'arrière | 3 **hauts** | petites ailes |
+| Granny Smith | **.56**, ligne sombre | sourire long et bas + **pli de coin** | 2 **hauts**, épais | **3 rides**, regard (0 ; 1) |
+| Diamond Tiara | **.74** | sourire en coin fermé | 3 **hauts**, épais | **sourcil arqué**, tiare |
 
 Réglages utiles de la paupière haute : 1 = grand ouvert, .72 = regard doux
 tombant, .6 = mi-clos élégant, .64 + .1 par le bas = plissé d'assurance, .2 =
@@ -429,6 +476,157 @@ couleur du template disparaissent donc purement et simplement :
   en volute avant sortait du périmètre « expressions ». (3) Applejack n'a de
   taches de rousseur que sur la joue **proche** — en vue de trois quarts l'autre
   joue n'existe pas à l'écran.
+
+## 2026-08-24 — vague 2 : Big Macintosh, les Chercheuses de talent, Granny Smith, Diamond Tiara
+
+Six personnages, **treize dessins sur vingt-six** désormais. Références plein
+pied utilisées (toutes via l'API MediaWiki, toutes dans `refs/`) :
+
+| Personnage | Référence plein pied | Complément |
+| --- | --- | --- |
+| Big Macintosh | `Big_McIntosh_id_S2E17.png` (176 × 228, la pose du template en miroir) | `Big_McIntosh_sympathetic_smile_S4E14.png` |
+| Apple Bloom | `Apple_Bloom_id_S01E12.png` | `Apple_Bloom_ID_S6E4.png` |
+| Sweetie Belle | `Sweetie_Belle_ID_S1E18.png` | `Sweetie_Belle_ID_S6E4.png` |
+| Scootaloo | `Scootaloo_ID_S4E17.png` (gros plan) | `Scootaloo_ID_S6E4.png`, `Scootaloo_grin_S4E15.png` |
+| Granny Smith | `Granny_Smith_ID_S2E06.png` | `Applejack_and_Granny_Smith_smile_S03E08.png` |
+| Diamond Tiara | `Diamond_Tiara_ID_S2E06.png` | `Diamond_Tiara_ID_S5E18.png`, `Diamond_Tiara_smug_smile_S2E23.png` |
+
+### LE GABARIT DE POULICHE — la trouvaille de la vague
+
+Une pouliche n'est pas un adulte réduit, et surtout **ce n'est pas un adulte à
+qui on a coupé les pattes.** Relevé sur les trois références, en fraction de la
+hauteur de tête :
+
+| mesure | adulte | pouliche |
+| --- | --- | --- |
+| tête / hauteur totale | 33 % | **39 %** |
+| profondeur / longueur du tronc | 0,51 | **0,61** |
+| gorge (mâchoire → poitrail) | 65 unités | **30** |
+| patte visible | 1,08 h. de tête | **0,62** |
+| largeur d'œil | 0,53 | 0,63 |
+| oreille | 0,60 | **0,38** |
+
+Et surtout, la correction qui a demandé trois tours : **la tête elle-même
+change**. Le chanfrein adulte descend à x 282 et le menton à y 116 ; sous un
+grand œil de pouliche, il reste 25 unités de museau vide et **le profil se lit
+comme un lama**. La tête de pouliche (`CORPS_POULICHE` dans `_commun.js`) a donc
+le museau court (bout à x 275), le crâne bombé (sommet y 39) et le menton remonté
+(y 94) — d'où `naseauPouliche` et `jouePouliche`, et une fenêtre de bouche
+ramenée à x 256 → 272 / y 84 → 96.
+
+**Conséquence en cascade, contre-intuitive :** sur cette tête raccourcie, l'œil
+n'a plus besoin que de **6 %** d'agrandissement pour atteindre les 0,63 de la
+référence. Le premier jet l'avait mis à **1,15 sur la tête adulte** : deux gros
+yeux plantés au milieu d'un long museau. *L'œil ne paraissait petit que parce que
+la tête était trop grande.*
+
+**L'œil LOINTAIN ne suit pas l'agrandissement.** Large, il vient se poser en
+travers du chanfrein court : on lit deux yeux au milieu du profil. Il reste
+étroit (.30) **et écrasé (.66)**, et sa place est calée pour que son bord avant
+affleure le contour de joue, **qui le recoupe** en couche 10 — c'est ce
+recoupement, et lui seul, qui le fait lire « de l'autre côté de la tête ».
+
+**Le cadrage.** Une pouliche à tête canonique et pattes courtes ne remplit que
+les deux tiers hauts du viewBox : 82 unités de vide en bas, le dessin flotte dans
+sa fiche. Tout le personnage est donc posé dans un groupe
+`translate(-33 -8.5) scale(1.15)` (`CADRE_MINI`). Les deux nombres sont bornés
+par la fenêtre de portrait : le bas de la tête doit rester au-dessus de y 130,
+la tête doit tenir dans x 171 → 295. Bonus : la tête remplit **mieux** la
+vignette de galerie (86 unités de haut au lieu de 75). Le groupe englobe
+`class="paupieres"` sans rien casser — le CSS animait déjà le `transform` **du
+groupe**, un transform parent se compose simplement (vérifié au navigateur, les
+paupières restent calées sur les amandes).
+Corollaire à retenir pour la suite : **toute cote destinée à la fenêtre de
+portrait doit être écrite dans le repère final** (`y_final = 1,15·y − 8,5`) —
+une pointe de nœud à y 12 sort de la fenêtre, à y 16 elle y entre.
+
+### Personnages : ce que la référence a corrigé
+
+- **Big Macintosh — son œil n'est pas petit, il est MI-CLOS.** Premier jet : œil
+  réduit à .85 avec la paupière du regard doux. La référence donne une largeur
+  d'œil normale (0,54 h. de tête) pour une hauteur VISIBLE de 0,31 : c'est la
+  paupière lourde (`.60`) sur un œil de taille pleine. Et ce qui fait le colosse
+  n'est ni la taille générale (invisible sur un personnage seul dans son cadre)
+  ni un corps gonflé, c'est **un tronc profond (1,35 h. de tête contre 0,80) sous
+  des pattes courtes (0,75 contre 1,08)** — pattes canoniques à l'échelle 1,14
+  posées 20 unités plus haut dans le tronc, sabots à y 258.
+  Il A des taches de rousseur (contre-intuitif, vérifié deux fois). Son collier
+  de trait n'est pas une lanière mais **une pièce large** qui couvre l'épaule.
+- **Apple Bloom n'a PAS de taches de rousseur.** Le premier jet lui en donnait
+  « parce qu'elle est de la famille Apple » : ses joues sont unies sur les deux
+  références. Et son nœud est **énorme**, posé à l'arrière du crâne — mais la
+  fenêtre de portrait borne ses deux pointes (y ≥ 16, x ≥ 178).
+- **Sweetie Belle : la corne d'une pouliche licorne doit être plantée EN AVANT.**
+  Centrée sur le crâne, elle disparaît derrière le lobe avant de la frange — et
+  robe quasi blanche sur crinière rose pâle, rien ne la rattrape. Deux tours
+  perdus dessus.
+- **Scootaloo : les épis se couchent en ARRIÈRE.** Dressés depuis la ligne de
+  cheveux, ils font une crête de coq posée sur le crâne. Ses ailes sont
+  minuscules et hautes sur le flanc.
+- **Granny Smith ne porte PAS de lunettes** (le brief demandait de vérifier ;
+  elle porte un châle à pommes, non repris). Ce qui fait l'âge, dans l'ordre :
+  paupières lourdes (.56), **trois rides fines** (sous l'œil, sur la joue, fanon
+  de mâchoire — épaisses, elles font des balafres), **dos ensellé** (croupe
+  y 127 / creux y 141 / garrot y 136 : c'est le S qui fait la voûture, pas un
+  simple abaissement), ventre pendant, pattes raccourcies de 6 %.
+- **Diamond Tiara est la seule de la vague à pouvoir porter un sourcil** : son
+  toupet balayé en arrière dégage le front au-dessus de l'œil proche. On a gardé
+  de la référence le sourcil arqué et le regard mi-clos, **écarté** le sourcil
+  baissé vers l'avant et la bouche pincée, qui la rendent méprisante.
+
+### Deux pièges de couleur nouveaux
+
+- **`PUPILLE` ne fait pas toujours un bon crayon à cils.** Il dérive de
+  `c.yeux` : sur Diamond Tiara (yeux bleu très clair) il donne un bleu vif, sur
+  Granny Smith (yeux orange) un orange franc — des traits de crayon de couleur
+  au-dessus de l'œil. Les deux ont un `CRAYON` local, sombre, dérivé de la
+  crinière ou de l'œil (`ton(M0, 1.1, -.34)`, `ton(yeux, .85, -.46)`). Astuce
+  utile : `paupiereHaute(c, { TRAIT: CRAYON }, …)` — la fonction ne lit que
+  `TRAIT`, on lui passe donc un faux `d` pour teinter la ligne de paupière.
+- **`CRIN_T` est inutilisable sur une crinière BLANCHE.** `#efefef` n'a aucune
+  saturation : `ton()` n'en tire qu'un gris neutre, invisible sur la robe vert
+  pâle de Granny Smith. La référence borde ses cheveux d'un bleu-gris franc,
+  d'où une constante documentée `#a8bfca`.
+
+### Bouches : le blanc des dents, encore
+
+Même leçon que sur le rire de Pinkie, redécouverte deux fois : un aplat
+`#c7096e` de 14 unités **se lit comme une tache de rouge à lèvres**, et un
+intérieur presque tout blanc **se lit comme une perle**. La proportion qui marche
+pour une petite bouche ouverte de pouliche : le rose domine, le blanc n'est
+qu'une **bande le long du bord haut** (40 % de la hauteur), plus un soupçon de
+langue en bas.
+
+### Additions à `_commun.js` (toutes additives, les 7 existants intacts)
+
+`CORPS_POULICHE`, `pattePouliche` + les quatre pattes de pouliche,
+`membresFondPouliche`, `membresProchesPouliche`, `naseauPouliche`,
+`jouePouliche`, `OREILLE_P`, `CADRE_MINI`, `OEIL_PROCHE_P` / `OEIL_LOIN_P` /
+`OEIL_P`, et `cilsHauts` (cils au coin haut-arrière, écrits dans le repère LOCAL
+de l'amande pour suivre n'importe quel placement d'œil).
+`paupiereHaute`, `paupiereBasse` et `paupieres` prennent deux paramètres
+optionnels de plus (`P`, `L`) : le placement de l'œil, pour que la paupière fixe
+et le clignement suivent une amande déplacée. Valeurs par défaut = le canon.
+
+### Réserves de la vague
+
+1. **Les cils des 7 personnages de la vague 1 restent au coin BAS.** La vague 2
+   les met au coin haut-arrière, sur relevé de référence. Les deux conventions
+   cohabitent donc dans la galerie ; c'est visible si on les compare de près.
+   Reprendre la vague 1 est un chantier à part (il faut refaire les franges qui
+   couvrent le front).
+2. **La pose reste celle du template** (trois quarts côté, tête relevée). Les
+   références d'infobox sont souvent de trois quarts *avant* : la comparaison
+   s'est donc faite sur des rapports, pas en superposition pixel à pixel. Un
+   profil paraît toujours moins « mignon » qu'un trois quarts avant, et c'est une
+   limite de la pose, pas du dessin.
+3. **La tête de Big Macintosh et celle de Granny Smith restent canoniques.** Sur
+   la référence, Big Mac a un museau plus court et plus haut, Granny un museau
+   long et tombant à fanons : les deux demanderaient leur propre silhouette,
+   comme les pouliches. Leur œil a été descendu de 4 unités, ce qui corrige le
+   défaut principal.
+4. Le châle à pommes de Granny Smith et la trottinette de Scootaloo ne sont pas
+   dessinés (hors périmètre).
 
 ## Carte d'accueil
 
