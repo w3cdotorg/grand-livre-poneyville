@@ -1,1 +1,4 @@
 .DS_Store
+# Captures de la série téléchargées comme références de dessin : locales seulement,
+# on ne les republie pas sur GitHub Pages.
+refs/

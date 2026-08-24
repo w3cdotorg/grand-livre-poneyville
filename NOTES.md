@@ -481,6 +481,100 @@ couleur du template disparaissent donc purement et simplement :
   forcées à `scaleY(1)` et le médaillon**, capturée en Chrome headless. Beaucoup plus
   rapide que Playwright, et elle montre d'un coup les trois cadrages qui comptent.
 
+## 2026-08-25 — polissage final (Task 13) : le livre est terminé
+
+Vingt-six personnages, dix lieux, une carte, **plus aucun placeholder** :
+`svg/_placeholder-poney.js` et `svg/_placeholder-lieu.js` sont supprimés et
+`grep -rn "_placeholder" svg/ js/` ne rend plus rien.
+
+### Recalage de la carte sur les fiches — la fiche fait foi
+
+Les dix lieux ont été dessinés **après** la carte, d'après les références officielles.
+Quatre minis de `svg/carte.js` divergeaient donc de leur propre fiche ; les fiches
+tranchent, et les minis ont été refaits (rien d'autre n'a bougé — les 36 modules de
+`svg/poneys/` et `svg/lieux/` sont vérifiés inchangés par somme SHA-256) :
+
+| Mini | Avant | Après (aligné sur la fiche) | Signe conservé |
+| --- | --- | --- | --- |
+| chaumière de Fluttershy | toit de **paille** | **motte d'herbe** verte, murs sable, porte rouge, fenêtres en arche allumées | le nichoir |
+| hutte de Zecora | cabane à **toit de paille** | **arbre creux** nervuré, houppier en pointe, porte en ogive bordeaux, fenêtre ronde barrée, fioles pendues | le masque |
+| école de Poneyville | murs crème, toit **bleu** | murs **framboise**, toit d'écailles assorti, dentelle blanche, cœurs | **la cloche rouge** |
+| Sugarcube Corner | toit **rouge** | toit **chocolat** à pépites, frange de glaçage, colombages, colonnes sucre d'orge | **le cupcake** |
+
+Trois choses apprises en refaisant ces quatre minis :
+
+- **La palette de la fiche se recopie telle quelle, pas « à peu près ».** Chaque mini
+  porte désormais son propre petit objet de couleurs (`F`, `Z`, `E`, `S`) repris mot
+  pour mot du module de lieu correspondant. Approximer avec les entrées génériques de
+  `C` redonnait des bâtiments cousins mais pas identiques — et c'est justement ce
+  cousinage qui avait produit la divergence d'origine.
+- **Le piège du champignon vaut aussi à l'échelle mini.** Le houppier de la hutte,
+  posé en bande sur le fût, refaisait le champignon déjà corrigé sur la fiche : la
+  couronne part en pointe du fût et ce sont les branches qui vont chercher le feuillage.
+- **Un signe qui ne se lit pas sur fond sombre ne sert à rien.** Les écailles du toit
+  de Sugarcube, tracées en `CHOCO_T` sur du chocolat, étaient invisibles ; passées en
+  `POUTRE` (plus clair) elles se lisent. Et le cupcake de l'enseigne, qui flottait à
+  8 unités au-dessus du faîtage, a été reposé dessus : il se lit maintenant comme un
+  gâteau posé sur la maison, ce que dit la fiche.
+
+### L'étiquette ne doit pas cacher ce qu'elle désigne
+
+Le vrai piège de la carte n'était pas le dessin mais **la pastille-lien posée dessus**.
+Deux corrections en cascade :
+
+1. **La taille se mesure sur la carte, pas sur l'écran.** `.carte-cadre` devient un
+   conteneur (`container-type: inline-size`) et la police des `.sur-carte` s'exprime en
+   `cqw` : `clamp(.62rem, 1.62cqw, 1rem)`. En portrait 768 × 1024 la carte ne fait plus
+   que 736 px et les étiquettes se réduisent avec elle — la plus large passe de
+   **32,5 % à 24,5 %** de la largeur de la carte. En `vw` la correction aurait suivi la
+   fenêtre, pas la carte : faux repère dès que la fiche change de gouttière.
+2. **La cible tactile et le ruban blanc sont deux choses différentes.** Le lien garde
+   ses `min-height` / `min-width` de 64 px (règle iPad), mais le blanc n'est plus peint
+   sur le lien : il l'est sur un `<span>` intérieur qui épouse le texte. Le ruban tombe
+   de **64 px à 32 px de haut** et laisse voir le toit qu'il surplombait — sans quoi le
+   recalage ci-dessus n'aurait servi à rien : les étiquettes masquaient exactement la
+   motte d'herbe, le houppier et le clocher qu'on venait de redessiner. `white-space:
+   nowrap` complète le tour (« La chaumière de Fluttershy » sur deux lignes redevenait
+   assez haut pour couvrir le toit) et une requête de conteneur rend le retour à la
+   ligne sur carte étroite, où un ruban d'un seul tenant sortirait du cadre.
+
+### Le reste du polissage
+
+- **Apparition des écrans** : `#app > * { animation: apparait .25s ease-out }`. Sous
+  `@media (prefers-reduced-motion: reduce)`, apparition ET clignement passent à
+  `animation: none` — avec, pour les paupières, un `transform: scaleY(0)` explicite :
+  couper l'animation seule les aurait laissées **grandes ouvertes sur l'œil**, ce qui
+  est pire que le clignement qu'on voulait supprimer. Vérifié par
+  `page.emulateMedia({ reducedMotion: 'reduce' })`.
+- **Débordement à 375 et 430 px** : l'en-tête de fiche sortait de l'écran sur les titres
+  longs. Deux causes, pas une : la police du `h1` (clamp abaissé à
+  `clamp(1.35rem, 4.6vw, 2.4rem)`) et surtout **`min-width: 0`** — sans lui un élément
+  flex refuse de descendre sous sa largeur intrinsèque, et « La bibliothèque Golden
+  Oak » poussait le header dehors quelle que soit la taille de police.
+- **`refs/` passe au `.gitignore`** : 14 Mo de captures de la série, utiles en local
+  comme modèles, qu'on ne republie pas sur Pages.
+
+### Tour complet, mesuré
+
+Les 39 routes sont générées depuis `data.js` (26 poneys + 10 lieux + `#/`, `#/poneys`,
+`#/lieux`) et parcourues à **quatre tailles** — 1024 × 768, 768 × 1024, 375 × 667,
+430 × 932. À chaque route : titre attendu, cibles `.vignette, .sur-carte, .maison,
+.gros-boutons a` mesurées au `getBoundingClientRect`, et `scrollWidth > clientWidth`.
+Résultat : **39/39 partout, plus petite cible 64 px, zéro débordement, zéro message de
+console**. `npm test` : 10/10.
+
+Deux pièges de méthode notés au passage :
+
+- **Le cache tue l'audit.** Après édition de `css/style.css` et `js/render.js`, le
+  navigateur resservait les anciennes versions et l'audit mesurait un site périmé (la
+  police des pastilles restait obstinément à 16 px). Repartir sur **un nouveau port**
+  est le moyen le plus sûr de tout invalider d'un coup, modules ES compris.
+- **Mesurer, pas regarder.** L'audit tactile est un `browser_evaluate` qui rend la
+  liste des cibles trop petites ; la capture d'écran sert seulement à juger ce qui ne
+  se mesure pas — ici, le fait que l'étiquette cachait le toit.
+
+**Reste à la main de willow** : l'essai sur un vrai iPad (doigt, Safari, plein soleil).
+
 ## 2026-08-25 — vague 5 : les dix lieux
 
 Les dix scènes de `svg/lieux/` remplacent leurs ré-exports de placeholder.

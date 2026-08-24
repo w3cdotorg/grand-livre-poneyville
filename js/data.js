@@ -30,7 +30,7 @@ export const PERSONNAGES = [
       animal: "winona"
     },
     carte: { x: 10, y: 51 },
-    texte: "Applejack est une pouliche terrestre honnête et très forte. Elle travaille dur à la ferme Sweet Apple Acres pour récolter les pommes. Elle aime sa famille par-dessus tout.",
+    texte: "Applejack est un poney terrestre honnête et très fort. Elle travaille dur à la ferme Sweet Apple Acres pour récolter les pommes. Elle aime sa famille par-dessus tout.",
     leSaisTu: "Applejack sait attraper presque n'importe quoi avec son lasso !"
   },
   {
@@ -66,7 +66,7 @@ export const PERSONNAGES = [
       animal: "gummy"
     },
     carte: { x: 74, y: 51 },
-    texte: "Pinkie Pie est une pouliche terrestre pleine de joie de vivre. Elle travaille à la pâtisserie Sugarcube Corner et adore organiser des fêtes. Elle habite juste au-dessus, dans le grenier.",
+    texte: "Pinkie Pie est un poney terrestre plein de joie de vivre. Elle travaille à la pâtisserie Sugarcube Corner et adore organiser des fêtes. Elle habite juste au-dessus, dans le grenier.",
     leSaisTu: "Pinkie Pie a un « Pinkie sens » qui la prévient quand quelque chose va tomber !"
   },
   {
@@ -163,7 +163,7 @@ export const PERSONNAGES = [
     cutieMark: "une tiare d'argent",
     lieuId: "ecole-poneyville",
     liens: { famille: [], amis: [] },
-    texte: "Diamond Tiara est une élève de l'école de Poneyville. Elle porte une jolie tiare, comme sa marque de beauté. Elle aime commander, mais elle apprend à devenir plus gentille.",
+    texte: "Diamond Tiara est une élève de l'école de Poneyville. Elle porte toujours une jolie tiare sur la tête. Elle aime beaucoup commander les autres, mais elle apprend petit à petit à devenir plus gentille.",
     leSaisTu: "Elle est dans la même classe que les Chercheuses de talent."
   },
   {
@@ -304,7 +304,7 @@ export const PERSONNAGES = [
     cutieMark: null,
     lieuId: "bibliotheque",
     liens: { famille: [], amis: [], proprietaire: "twilight" },
-    texte: "Owlowiscious est le hibou de nuit de Twilight Sparkle. Il l'aide à surveiller la bibliothèque pendant la nuit. Quand on lui parle, il répond toujours « hou-hou »."
+    texte: "Owlowiscious est le hibou de Twilight Sparkle. Il l'aide à ranger la bibliothèque pendant la nuit. Quand on lui parle, il répond toujours « hou-hou »."
   }
 ];
 
