@@ -9,13 +9,21 @@
 // Là où la spirale se recouvre elle-même, la seconde passe efface la première :
 // la volute se referme proprement, sans couture interne.
 //
-// Autre singularité : les PAUPIÈRES ne sont pas de la couleur de la robe mais
-// d'un lilas — c'est le fard à paupières de Rarity, qui n'apparaît qu'au
-// clignement. Plus des cils très longs.
+// ── EXPRESSION SIGNATURE (relevée sur `refs/rarity-sweet.png` et
+//    `refs/rarity-canterlot.png`) : paupières MI-CLOSES, cils spectaculaires
+//    (quatre, longs, épais), sourcils fins et arqués, sourire posé.
+//
+//    Et surtout : le FARD À PAUPIÈRES est visible YEUX OUVERTS. Il l'était
+//    seulement au clignement, ce qui revenait à cacher sa marque de fabrique
+//    99 % du temps. La solution est d'un seul tenant : la paupière fixe
+//    mi-close est peinte du fard, si bien que le lilas est exactement l'aplat
+//    qu'on voit dans la série au-dessus de l'œil. Sur la référence ce fard est
+//    un bleu-lilas CLAIR, plus clair que la crinière — d'où `ton(M0, .55, .34)`.
 // ───────────────────────────────────────────────────────────────────────────────
 import {
-  ton, derives, OREILLE, CORPS, membresFond, membresProches, museau,
-  oeil, OEIL_PROCHE, OEIL_LOIN, paupieres, joue, cils, corne,
+  ton, derives, OREILLE, CORPS, membresFond, membresProches, naseau,
+  sourirePose, oeil, OEIL_PROCHE, OEIL_LOIN, paupieres, paupiereHaute,
+  joue, cils, corne,
 } from "./_commun.js";
 
 // ── FRANGE : reprise du template, avec l'encoche qui contourne la corne
@@ -62,7 +70,11 @@ export default (c) => {
   // Contour de crinière renforcé : `CRIN_T` du template (-16,5 %) ne détache
   // pas un trait épais violet foncé de la volute qu'il cerne.
   const CRIN_T = ton(M0, 1.25, -.21);
-  const FARD = ton(M0, .55, .34);   // lilas du fard à paupières
+  // Fard à paupières. Relevé sur `refs/rarity-canterlot.png` : c'est un BLEU
+  // lilas clair, nettement plus bleu que la crinière. Un `ton(M0, …)` en donnait
+  // un gris-violet qui, sur une robe presque blanche, se lisait comme une ombre
+  // sale ; il dérive donc de la couleur des YEUX, désaturée et éclaircie.
+  const FARD = ton(c.yeux, .5, .4);
   const oe = oeil(c, d);
 
   // Une volute : passe large en contour, passe fine en crinière, filet clair.
@@ -91,13 +103,27 @@ export default (c) => {
   <!-- 6. MEMBRES PROCHES -->
   ${membresProches(c, d)}
 
-  <!-- 7. NASEAU + BOUCHE FERMÉE (sourire retenu, pas le rire de Twilight) -->
-  ${museau(d, false)}
+  <!-- 7. NASEAU + SOURIRE POSÉ : long, il remonte vers l'avant et s'achève sur
+       un repli de lèvre. Le maintien, pas la joie. -->
+  ${naseau(d)}${sourirePose(d)}
 
   <!-- 8. YEUX -->
   ${oe(OEIL_PROCHE)}${oe(OEIL_LOIN)}
 
-  <!-- 9. PAUPIÈRES, en lilas et non en robe : le fard -->
+  <!-- 8 bis. PAUPIÈRES MI-CLOSES peintes du FARD : .6 d'ouverture. C'est
+       ce qui rend le fard visible à l'état ouvert, et non plus au seul
+       clignement. Le bord bas du fard est le bord bas même de l'œil remonté,
+       donc rigoureusement parallèle à lui. -->
+  ${paupiereHaute(c, d, .6, FARD)}
+
+  <!-- 8 ter. PAS DE SOURCIL. Essayé en couleur de crinière (x 222 → 240), et
+       intégralement invisible : la frange de Rarity est coiffée EN AVANT et son
+       bord bas passe par (222,78), (230,72), (238,66), (246,60) — donc plus bas
+       que le sommet de l'œil (y 61). Elle mord le coin arrière de l'œil : il n'y
+       a littéralement pas de front. Ce sont les paupières fardées et les cils
+       qui portent l'expression. -->
+
+  <!-- 9. PAUPIÈRES du clignement, du même fard -->
   ${paupieres(c, 1, FARD)}
 
   <!-- 10. contour de la joue, par-dessus l'œil lointain -->
@@ -126,8 +152,10 @@ export default (c) => {
 
   ${volute(VOLUTE_COU, 26)}
 
-  <!-- 13. CILS, très longs -->
-  ${cils(d, 1.8)}
+  <!-- 13. CILS SPECTACULAIRES : quatre, très longs et ÉPAIS (3,2). Le quatrième
+       part de (231,5 ; 93), sur le bord bas de l'amande : au-delà il décollerait
+       de l'œil. C'est le seul poney de la vague qui en a quatre. -->
+  ${cils(d, 2, 4, 3.2)}
 
   </g>
 </svg>`;

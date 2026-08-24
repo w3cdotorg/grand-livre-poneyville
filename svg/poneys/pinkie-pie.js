@@ -11,9 +11,15 @@
 // Crinière monochrome : ni bandes de couleur ni contour clair possibles.
 // Ni corne ni ailes. Marque de beauté = trois ballons.
 // ───────────────────────────────────────────────────────────────────────────────
+// ── EXPRESSION SIGNATURE (relevée sur `refs/pinkie-pie-grin.png`) : GRAND RIRE
+//    bouche ouverte avec une rangée de dents, et des yeux ÉCARQUILLÉS. La
+//    trouvaille de la passe : un œil écarquillé ne s'obtient pas en agrandissant
+//    l'amande (ce qui décalerait le clignement) mais en RÉTRÉCISSANT l'iris pour
+//    qu'il se décolle du bord haut — du blanc apparaît tout autour et l'œil
+//    « s'ouvre » sans qu'un seul point de l'amande ait bougé.
 import {
-  ton, derives, OREILLE, CORPS, membresFond, membresProches, museau,
-  oeil, OEIL_PROCHE, OEIL_LOIN, paupieres, joue, cils,
+  ton, derives, OREILLE, CORPS, membresFond, membresProches, naseau,
+  grandRire, oeil, OEIL_PROCHE, OEIL_LOIN, paupieres, joue, cils, etincelle,
 } from "./_commun.js";
 
 // ── BOUCLES. Les listes sont ordonnées de l'ARRIÈRE vers l'AVANT du dessin.
@@ -48,6 +54,16 @@ const BOUCLES_QUEUE = [
 // ── BALLON de la marque de beauté : goutte inversée + nœud + ficelle. Le jaune
 //    et le bleu sont des constantes documentées — la marque de Pinkie ne dérive
 //    d'aucune couleur de sa robe.
+// ── SILHOUETTE : on garde celle du template, et c'est un choix documenté.
+//    Piste essayée et ÉCARTÉE : élargir, pour Pinkie seule, l'encoche de bouche
+//    de `CORPS` — (271,98) → (279,106) devenant (265 ; 97,5) → (276,5 ; 109) —
+//    pour loger un rire plus grand dans le museau même. Résultat : le bout du
+//    museau se lit comme MORDU, la nouvelle lèvre inférieure fait une marche, et
+//    Pinkie perd son profil de poney. La leçon est que l'encoche de bouche du
+//    template n'est pas une réserve de place, c'est la forme du museau : le
+//    grand rire doit se contenter de la joue, et c'est sa BANDE DE DENTS, pas sa
+//    taille, qui le rend spectaculaire.
+
 const BALLON = "M0 -13C6 -13 10 -8 10 -2C10 5 5 12 0 15"
   + "C-5 12-10 5-10 -2C-10 -8-6 -13 0 -13Z";
 const JAUNE = "#f7d54e";
@@ -67,7 +83,13 @@ const TROIS_BALLONS = (x, y, e) =>
 export default (c) => {
   const d = derives(c);
   const { M0, TRAIT, CRIN_T, CRIN_S2, CRIN_H } = d;
-  const oe = oeil(c, d);
+  // Iris à 84 % et poussé vers le bas-avant : il quitte le bord haut de
+  // l'amande, du blanc s'ouvre au-dessus, et le regard pétille. Plus une
+  // étincelle supplémentaire au coin haut de chaque œil.
+  const oe = oeil(c, d, {
+    iris: .84, regard: [1.6, 3],
+    sus: etincelle(-9.5, -10, .3) + etincelle(12.5, -4.5, .22),
+  });
 
   // Une boucle : le disque, sa volute intérieure, son reflet.
   const boucle = ([x, y, r]) => `<g>
@@ -106,8 +128,11 @@ export default (c) => {
   <!-- 6. MEMBRES PROCHES -->
   ${membresProches(c, d)}
 
-  <!-- 7. NASEAU + BOUCHE (grand sourire ouvert : c'est son expression par défaut) -->
-  ${museau(d)}
+  <!-- 7. NASEAU + GRAND RIRE. Il s'étale vers l'ARRIÈRE, sous la joue, et non
+       vers l'avant : l'encoche de bouche de la silhouette bloque tout à
+       x > 272 entre y 98 et 102. Sa rangée de dents est ce qui le distingue du
+       sourire ouvert du template. -->
+  ${naseau(d)}${grandRire(d)}
 
   <!-- 8. YEUX -->
   ${oe(OEIL_PROCHE)}${oe(OEIL_LOIN)}

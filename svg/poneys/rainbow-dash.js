@@ -23,9 +23,16 @@
 // `ton(rouge, …)` cerne les bandes bleues et violettes d'un liseré rouge très
 // voyant. Il dérive de `criniere[5]` (le violet), la plus sombre des six.
 // ───────────────────────────────────────────────────────────────────────────────
+// ── EXPRESSION SIGNATURE (relevée sur `refs/rainbow-dash-smirk.png`) : le
+//    « smug » de Rainbow Dash tient à TROIS choses qui doivent aller ensemble,
+//    faute de quoi elle a juste l'air fatiguée — paupières hautes RABATTUES,
+//    paupières basses légèrement remontées (le plissement), et un SOURCIL
+//    relevé. La crête étant rejetée en arrière, son front est nu de y 45 à
+//    y 60 : c'est la seule de la vague qui a la place d'un vrai sourcil.
 import {
-  ton, derives, OREILLE, CORPS, membresFond, membresProches, museau,
-  oeil, OEIL_PROCHE, OEIL_LOIN, paupieres, joue, cils, aileDeployee,
+  ton, derives, OREILLE, CORPS, membresFond, membresProches, naseau,
+  sourireCoin, oeil, OEIL_PROCHE, OEIL_LOIN, paupieres, paupiereHaute,
+  paupiereBasse, sourcil, joue, cils, aileDeployee,
 } from "./_commun.js";
 
 // Une mèche : amande pointue tracée en deux quadratiques. `a` et `b` sont les
@@ -177,13 +184,36 @@ export default (c) => {
   <!-- 6. MEMBRES PROCHES -->
   ${membresProches(c, d)}
 
-  <!-- 7. NASEAU + BOUCHE (sourire ouvert : elle est toujours en train de fanfaronner) -->
-  ${museau(d)}
+  <!-- 7. NASEAU + SOURIRE EN COIN à GRAND crochet (2) : le sourire remonte
+       nettement d'un seul côté. C'est l'asymétrie, pas la largeur, qui fait le
+       sourire crâneur. -->
+  ${naseau(d)}${sourireCoin(d, 2)}
+
 
   <!-- 8. YEUX -->
   ${oe(OEIL_PROCHE)}${oe(OEIL_LOIN)}
 
-  <!-- 9. PAUPIÈRES -->
+  <!-- 8 bis. LE PLISSEMENT : la paupière haute laisse .64 d'ouverture et la
+       basse remonte de .1, soit une fente de ~54 % de l'œil. Trois valeurs
+       essayées : à .5 / .15 l'œil devient une fente et, en vignette de galerie,
+       Rainbow Dash a l'air ENDORMIE plutôt que crâneuse — l'iris doit rester
+       lisible à 60 px de large. Au-delà de .7 la paupière disparaît et le regard
+       redevient neutre. C'est le SOURCIL qui porte l'arrogance ; la paupière ne
+       fait que l'appuyer. -->
+  ${paupiereHaute(c, d, .64)}
+  ${paupiereBasse(c, d, .1)}
+
+  <!-- 8 ter. SOURCIL relevé, sur le front nu au-dessus de l'œil proche
+       (ligne de cheveux de la crête : (256,52) → (240,44) → (226,43)). Trois
+       cotes relevées sur la référence, et les trois comptent : il est COURT
+       (moitié de la largeur de l'œil, pas plus — long, il se lit comme un pli du
+       front), FIN, et de la couleur sombre des cils et non du contour de la
+       robe. Il monte vers l'AVANT ; vers l'arrière il ferait un air inquiet.
+       Posé ici, donc sous la crinière : la crête en recouvre l'attache. -->
+  ${sourcil(d.PUPILLE, "M226 59.5C230 55.5 235.5 53.5 240.5 54", 2.6)}
+
+  <!-- 9. PAUPIÈRES du clignement : elles recouvrent l'amande entière, donc aussi
+       les paupières fixes ci-dessus. -->
   ${paupieres(c)}
 
   <!-- 10. contour de la joue, par-dessus l'œil lointain -->

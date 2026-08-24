@@ -6,9 +6,15 @@
 // (une seule couleur, donc reflets `CRIN_H` + séparations `CRIN_S2` au lieu des
 // bandes de couleur du template), ni corne ni ailes, marque = trois pommes.
 // ───────────────────────────────────────────────────────────────────────────────
+// ── EXPRESSION SIGNATURE (relevée sur `refs/applejack-id.png`) : regard franc,
+//    grand ouvert et parfaitement de niveau — aucune paupière rabattue, c'est
+//    l'assurance tranquille et non la fanfaronnade ; sourire FERMÉ en coin, dont
+//    le crochet avant reste bas ; cils SOBRES (deux, courts) ; et les TACHES DE
+//    ROUSSEUR, qui sont sa vraie signature. Contre-intuitif et vérifié sur la
+//    référence : elles sont plus CLAIRES que la robe, pas plus foncées.
 import {
-  ton, derives, OREILLE, CORPS, membresFond, membresProches, museau,
-  oeil, OEIL_PROCHE, OEIL_LOIN, paupieres, joue, cils,
+  ton, derives, OREILLE, CORPS, membresFond, membresProches, naseau,
+  sourireCoin, oeil, OEIL_PROCHE, OEIL_LOIN, paupieres, joue, cils, taches,
 } from "./_commun.js";
 
 // ── QUEUE liée : elle descend sous la croupe, se PINCE vers y 205 (la ligature)
@@ -123,11 +129,20 @@ export default (c) => {
   <!-- 6. MEMBRES PROCHES -->
   ${membresProches(c, d)}
 
-  <!-- 7. NASEAU + BOUCHE (sourire ouvert : Applejack est franche et rieuse) -->
-  ${museau(d)}
+  <!-- 7. NASEAU + SOURIRE EN COIN, fermé, crochet bas : Applejack ne fanfaronne
+       pas, elle est sûre d'elle. Le rire ouvert du template lui donnait le même
+       visage qu'à Twilight. -->
+  ${naseau(d)}${sourireCoin(d, 1)}
 
-  <!-- 8. YEUX -->
+  <!-- 8. YEUX grands ouverts, iris au contact du bord haut : le regard franc. -->
   ${oe(OEIL_PROCHE)}${oe(OEIL_LOIN)}
+
+  <!-- 8 bis. TACHES DE ROUSSEUR : trois, en petit triangle sur la joue proche.
+       Le point bas de l'amande est (244 ; 94,3) — elles se serrent 4 à 6 unités
+       dessous, comme sur la référence. Posées dix unités plus bas (premier
+       essai) elles se lisaient comme des miettes sur la joue. Bien en arrière du
+       naseau (268). Pas de paupière rabattue ici, c'est voulu. -->
+  ${taches(c.robe, [[238.5, 98.5, 2], [246.5, 100, 2], [242, 104.5, 1.8]])}
 
   <!-- 9. PAUPIÈRES -->
   ${paupieres(c)}
@@ -173,8 +188,9 @@ export default (c) => {
   <path d="M200 45C214 38 234 35 253 36 271 37 285 41 291 45" fill="none"
         stroke="${CHAP_H}" stroke-width="4"/>
 
-  <!-- 13. CILS -->
-  ${cils(d)}
+  <!-- 13. CILS SOBRES : deux seulement. Applejack est la seule de la vague à ne
+       pas jouer du cil — trois ou plus la rapprochent de Rarity. -->
+  ${cils(d, 1, 2)}
 
   </g>
 </svg>`;

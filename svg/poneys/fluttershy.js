@@ -8,9 +8,16 @@
 // Crinière monochrome : reflets `CRIN_H` et séparations `CRIN_S2` au lieu des
 // bandes de couleur du template. Marque de beauté = trois papillons.
 // ───────────────────────────────────────────────────────────────────────────────
+// ── EXPRESSION SIGNATURE (relevée sur `refs/fluttershy-id.png`) : paupière
+//    supérieure TOMBANTE, sourcil en arc doux, cils très longs, et un tout petit
+//    sourire qui ne remonte pas. Le regard est BAISSÉ — obtenu en poussant
+//    l'iris vers le bas dans l'amande, seule façon de baisser les yeux sans
+//    baisser la tête (le port de tête est celui de la référence de Twilight,
+//    menton relevé, et redessiner `CORPS` sortirait du cadre de la passe).
 import {
-  ton, derives, OREILLE, CORPS, membresFond, membresProches, museau,
-  oeil, OEIL_PROCHE, OEIL_LOIN, paupieres, joue, cils, ailePliee,
+  ton, derives, OREILLE, CORPS, membresFond, membresProches, naseau,
+  sourireTimide, oeil, OEIL_PROCHE, OEIL_LOIN, paupieres, paupiereHaute,
+  joue, cils, ailePliee,
 } from "./_commun.js";
 
 // ── CRINIÈRE : UN SEUL tracé, de la pointe de la frange sur le front jusqu'au
@@ -72,7 +79,7 @@ const TROIS_PAPILLONS = (x, y, e) =>
 export default (c) => {
   const d = derives(c);
   const { M0, TRAIT, CRIN_T, CRIN_S2, CRIN_H } = d;
-  const oe = oeil(c, d);
+  const oe = oeil(c, d, { regard: [.6, 3.2] });   // regard baissé
 
   return `<svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg" role="img">
   <g stroke-linejoin="round" stroke-linecap="round">
@@ -104,12 +111,26 @@ export default (c) => {
   <!-- 6. MEMBRES PROCHES -->
   ${membresProches(c, d)}
 
-  <!-- 7. NASEAU + BOUCHE FERMÉE (sourire discret : Fluttershy ne rit pas à
-       gorge déployée comme Twilight ou Pinkie) -->
-  ${museau(d, false)}
+  <!-- 7. NASEAU + PETIT SOURIRE TIMIDE : court, bas, presque horizontal. C'est
+       de ne PAS remonter qui le rend timide. -->
+  ${naseau(d)}${sourireTimide(d)}
 
-  <!-- 8. YEUX -->
+  <!-- 8. YEUX, iris poussé vers le bas : le regard est baissé. -->
   ${oe(OEIL_PROCHE)}${oe(OEIL_LOIN)}
+
+  <!-- 8 bis. PAUPIÈRE TOMBANTE, douce : .72 d'ouverture. Assez pour adoucir le
+       regard, pas assez pour l'endormir (sous .55 elle a l'air triste). -->
+  ${paupiereHaute(c, d, .72)}
+
+  <!-- 8 ter. PAS DE SOURCIL, et c'est une conclusion, pas un oubli. La référence
+       lui en donne un, mais il n'y a pas de front où le poser : la ligne de
+       cheveux descend en diagonale de (254,44) à (214,84) et couvre tout ce qui
+       est au-dessus de la moitié arrière de l'œil. Un premier essai à
+       x 225 → 241 disparaissait sous la crinière ; déplacé en avant dans le seul
+       triangle de front nu (x 240 → 258), il cessait de se lire comme le sourcil
+       de l'œil PROCHE et devenait un pli au-dessus de l'œil LOINTAIN — le piège
+       de l'air fâché de NOTES.md. C'est la paupière tombante qui porte
+       l'expression. -->
 
   <!-- 9. PAUPIÈRES -->
   ${paupieres(c)}
@@ -140,8 +161,9 @@ export default (c) => {
   <path d="${OREILLE}" fill="${c.robe}" stroke="${TRAIT}" stroke-width="3.2"/>
   <path d="M202 62C200 74 200 86 202 100" fill="none" stroke="${TRAIT}" stroke-width="3.4"/>
 
-  <!-- 13. CILS, allongés : c'est la marque du regard de Fluttershy -->
-  ${cils(d, 1.7)}
+  <!-- 13. CILS très longs et FINS (2,2) : longs comme ceux de Rarity, mais
+       trois et minces là où Rarity en a quatre et épais. -->
+  ${cils(d, 2, 3, 2.2)}
 
   </g>
 </svg>`;
