@@ -29,7 +29,7 @@ const ECRANS = {
   async accueil() {
     const carte = (await import('../svg/carte.js')).default();
     const lieux = LIEUX.map(l =>
-      `<a class="sur-carte" href="#/lieu/${l.id}" style="left:${l.carte.x}%;top:${l.carte.y}%">${l.nom}</a>`).join('');
+      `<a class="sur-carte" href="#/lieu/${l.id}" style="left:${l.carte.x}%;top:${l.carte.y}%"><span>${l.nom}</span></a>`).join('');
     const poneys = await toutes(PERSONNAGES.filter(p => p.carte).map(p => p.id), async (id) => {
       const p = PERSONNAGE[id];
       return `<a class="sur-carte poney-carte" href="#/poney/${id}" style="left:${p.carte.x}%;top:${p.carte.y - 8}%">${portrait(await svgDe(p))}</a>`;
