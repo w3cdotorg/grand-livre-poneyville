@@ -101,6 +101,117 @@ dans x 171 → 295 / y 6 → 130. Une pointe de corne au-dessus de y = 10 serait
 Les 24 placeholders gris sont mal cadrés par cette fenêtre — c'est assumé, ils
 disparaîtront au fur et à mesure des vrais dessins.
 
+### Le visage : une expression signature par personnage
+
+Le retour du propriétaire sur la vague 1 — « elles ont toutes exactement le même
+visage et la même expression faciale » — était exact et méritait sa propre passe.
+Les cinq poneys de la vague héritaient tels quels des quatre blocs de visage du
+template (`museau`, `oeil`, `paupieres`, `cils`), donc du visage de Twilight.
+
+**Protocole de références (obligatoire avant de dessiner un visage).** Les images
+officielles se prennent sur `mlp.fandom.com`, et **pas** avec un `WebFetch` ni un
+`curl` sur la page (402 et 403 respectivement — Fandom filtre). Le chemin qui
+marche est **l'API MediaWiki**, qui répond 200 sans authentification :
+
+    # l'image d'infobox d'un personnage
+    api.php?action=query&prop=pageimages&titles=Applejack|Rarity&format=json&pithumbsize=700
+    # chercher un plan d'expression précis (namespace 6 = Fichier)
+    api.php?action=query&list=search&srsearch=Rainbow+Dash+smug+smirk&srnamespace=6&srlimit=8
+    # l'URL directe d'un fichier nommé
+    api.php?action=query&prop=imageinfo&iiprop=url&iiurlwidth=800&titles=File:...
+
+Écarter les titres préfixés `FANMADE` (ce ne sont pas des captures de la série).
+Les dix références retenues sont dans
+`.superpowers/sdd/2026-08-24-grand-livre-poneyville/refs/`. Les **regarder** :
+deux relevés seulement contredisaient l'intuition, et tous les deux comptaient —
+les taches de rousseur d'Applejack sont plus **claires** que sa robe, et le fard à
+paupières de Rarity est un **bleu** clair, pas un lilas gris.
+
+**La règle d'or : tout se joue À L'INTÉRIEUR de l'amande.** Le groupe
+`class="paupieres"` du clignement est calé sur l'amande de l'œil. Donc aucune
+expression ne doit toucher à l'amande : ni l'agrandir, ni la déplacer, ni la
+faire tourner. Un œil « écarquillé » s'obtient en **rétrécissant l'iris** pour
+qu'il se décolle du bord haut (option `iris` de `oeil`), un regard baissé en
+**décalant l'iris** (option `regard`), un œil mi-clos en **peignant une paupière
+par-dessus**. Corollaire vérifié au navigateur : les six poneys ont exactement la
+même boîte de paupières (`214,6 / 51,4 / 59,9 × 44`) et la couvre-t-elle des
+quatre amandes avec marge positive sur les quatre côtés.
+
+**Une paupière fixe est un MÉLANGE DES DEUX BORDS de l'amande**, point à point
+(`melange` dans `_commun.js`) : à 0 elle ne couvre rien, à 1 elle couvre tout.
+Les deux bords partageant leurs extrémités, tout mélange part et arrive aux deux
+**coins** de l'œil — la paupière pivote sur les coins, comme une vraie, et ne peut
+par construction jamais sortir de l'œil. Deux versions ont été jetées avant :
+
+- *l'amande entière remontée* : sa moitié haute sort du crâne. Sur Rarity la
+  paupière du fard débordait au-dessus du front, à côté de la corne, en gros
+  hématome lilas. Invisible sur Rainbow Dash et Fluttershy **parce que leur
+  crinière la masquait** — le piège classique de ce qui marche par chance ;
+- *le bord bas translaté vers le haut* : le remplissage restait borné, mais le
+  **pli** s'échappait. Le bord bas a ses extrémités à y −3,9 et +9,5 alors que le
+  sommet de l'amande est à −16,8 : remonté de 21, son extrémité arrière passe à
+  −24,9, soit huit unités au-dessus. Le pli traçait un grand arc en travers du
+  front de Rainbow Dash. **Une paupière n'est pas un bord translaté, c'est un
+  bord qui pivote.**
+
+La paupière fixe se dessine dans le repère du **blanc** de l'œil
+(`translate(-1.6 1.4) scale(.955)`), ce qui laisse intact le liseré sombre de
+l'amande sur tout le tour : c'est lui qui fait la ligne de cil supérieure.
+Elle se pose en **couche 8 bis**, entre les yeux et `paupieres`.
+
+**Le sourcil n'est possible que si la crinière laisse le front nu.** Sur les cinq
+poneys de la vague, **un seul** : Rainbow Dash, dont la crête est rejetée en
+arrière (front nu de y 45 à y 60). Applejack a le chapeau, Pinkie ses boucles, la
+crinière de Fluttershy descend en diagonale de (254,44) à (214,84) et couvre tout
+l'arrière de l'œil, la frange de Rarity est coiffée en avant et son bord bas passe
+par (238,66) — **plus bas que le sommet de l'œil**. Et déplacer le sourcil « là où
+il reste de la place » ne sauve rien : avancé jusqu'au triangle de front nu
+(x 240 → 258), il cesse de se lire comme le sourcil de l'œil proche et devient un
+pli au-dessus de l'œil **lointain**, c'est-à-dire l'air fâché du piège connu.
+Cotes du sourcil qui marche : **court** (une demi-largeur d'œil, pas plus — long,
+il fait un pli du front), **fin** (2,6), de la couleur sombre des **cils** et non
+du contour de la robe, et montant vers l'**avant** (vers l'arrière : air inquiet).
+
+**L'encoche de bouche du template n'est pas une réserve de place, c'est la forme
+du museau.** Elle interdit tout point à x > 272 entre y 98 et 102. Piste essayée
+et écartée sur Pinkie : élargir l'encoche de `CORPS` pour elle seule, de
+(271,98) → (279,106) à (265 ; 97,5) → (276,5 ; 109). Résultat, le bout du museau
+se lit comme **mordu** et la nouvelle lèvre inférieure fait une marche. Un grand
+rire doit donc se contenter de la joue, entre le bord bas de l'œil (y 94,4 à
+x 250) et la mâchoire (y 113,2 à x 261) : **large (23) et peu haut (14)**, jamais
+rond — plus haut, il se lit comme posé sur le menton. Et c'est sa **bande de
+dents** qui le rend spectaculaire, pas sa taille : l'aplat rose du template se
+lisait comme une langue tirée. Une seule ligne de séparation entre les rangées ;
+dessiner chaque dent fait peur.
+
+**Le crochet d'un sourire en coin reste court.** Deux essais perdus : monté à
+y 90 il sort du chanfrein (à y 93 la silhouette est déjà à x 279,3) et dessine un
+bec ; et même contenu, un crochet de huit unités se lit comme un hameçon. Trois
+unités de relevé au maximum.
+
+**Le tableau des expressions** — c'est le guide des vagues suivantes :
+
+| Personnage | Paupière haute | Bouche | Cils | Autre |
+| --- | --- | --- | --- | --- |
+| Twilight (référence) | aucune | `museau` ouvert + langue | 3 × 1 | — |
+| Applejack | aucune (regard franc) | `sourireCoin(1)` | **2** × 1, sobres | 3 **taches de rousseur** claires |
+| Rainbow Dash | **.64** + basse .1 | `sourireCoin(2)` | 3 × 1 | **sourcil** relevé, en `PUPILLE` |
+| Pinkie Pie | aucune | **`grandRire`** (dents) | 3 × 1 | iris **.84**, regard (1,6 ; 3), 2 étincelles |
+| Fluttershy | **.72** (tombante) | `sourireTimide` | 3 × **2**, fins (2,2) | regard baissé (,6 ; 3,2) |
+| Rarity | **.6**, peinte du **fard** | `sourirePose` | **4** × **2**, épais (3,2) | fard = `ton(yeux, .5, .4)` |
+| Spike (dragon) | aucune | gueille ouverte, crocs | aucun | — |
+
+Réglages utiles de la paupière haute : 1 = grand ouvert, .72 = regard doux
+tombant, .6 = mi-clos élégant, .64 + .1 par le bas = plissé d'assurance, .2 =
+presque fermé. **Ne pas descendre sous .5** : en vignette de galerie (60 px) l'œil
+devient une fente et le poney a l'air endormi, pas expressif. C'est la cote qui a
+coûté trois itérations sur Rainbow Dash.
+
+**Le fard de Rarity devait être visible YEUX OUVERTS.** Il ne l'était qu'au
+clignement, soit caché 99 % du temps. La solution tient en un seul geste : peindre
+la **paupière fixe mi-close** du fard, ce qui met le lilas exactement là où la
+série le met. Bonus : le clignement, qui utilise la même teinte, reste cohérent.
+
 ### Les paupières et le clignement
 
 `css/style.css` anime `.paupieres` en `scaleY` avec `transform-box: fill-box` et
@@ -276,6 +387,11 @@ couleur du template disparaissent donc purement et simplement :
 - **Attention aux accents graves dans les commentaires HTML d'un template literal** : un
   ``fill="none"`` en accents graves à l'intérieur d'un `` `…` `` ferme la chaîne. Deux
   `SyntaxError` sur la vague. Écrire `fill=none` en clair dans les commentaires SVG.
+- **Le validateur d'arité tourne à chaque itération de la passe expressions**, et
+  il a servi : un mélange de points en JavaScript produit des `-0.05000000000001`
+  qui gonflent les `d=` inutilement (d'où l'arrondi à 2 décimales dans
+  `melange`), et une bouche écrite en deux `C` concaténés à la main s'était
+  retrouvée avec un `C` de 10 nombres au lieu de 12. 500 tracés, 0 erreur.
 - **Un validateur de tracés se rentabilise immédiatement.** Le script de la vague parse
   tous les `d="…"` des six modules avec **leurs vraies couleurs de `data.js`**, vérifie
   l'arité de chaque commande (`M`/`L`/`T` = 2, `H`/`V` = 1, `C` = 6, `S`/`Q` = 4, `A` = 7)
@@ -284,6 +400,35 @@ couleur du template disparaissent donc purement et simplement :
   personnage, **le dessin entier, le portrait recadré `171 6 124 124`, les paupières
   forcées à `scaleY(1)` et le médaillon**, capturée en Chrome headless. Beaucoup plus
   rapide que Playwright, et elle montre d'un coup les trois cadrages qui comptent.
+
+## 2026-08-24 — passe expressions : un visage par personnage
+
+- **Les cinq poneys de la vague Mane ont chacun leur visage.** Finding du
+  propriétaire clos. Détail et cotes dans le § « Le visage : une expression
+  signature par personnage » ci-dessus, tableau récapitulatif compris.
+- **`_commun.js` gagne une boîte à outils d'expression** sans rien retirer :
+  `naseau`, quatre bouches (`sourireCoin`, `grandRire`, `sourireTimide`,
+  `sourirePose`), `paupiereHaute` / `paupiereBasse` (+ les primitives
+  `PAUPIERE_H`, `PLI_H`, `PAUPIERE_B`, `PLI_B`), `sourcil`, `taches` / `TACHE`,
+  et les deux moitiés d'amande `AMANDE_HAUT` / `AMANDE_BAS`. `museau` reste
+  inchangé (Twilight, Spike), `oeil` gagne un 3ᵉ argument **optionnel**
+  (`iris`, `regard`, `sus`) et `cils` deux (`n`, `w`) — dans les deux cas les
+  valeurs par défaut reproduisent le rendu du template.
+- **Twilight et Spike n'ont pas été touchés**, et aucune incohérence flagrante
+  n'a été relevée sur eux. En particulier le placement des cils **au coin
+  bas-arrière** de l'œil, qui surprend face aux références de la série (elles les
+  montrent au coin haut-arrière), est correct **pour cette pose** : dans la
+  référence fournie, Twilight a la tête relevée vers le ciel, donc le coin
+  externe de son œil pointe vers le bas-arrière. Tous les poneys héritant de
+  cette pose, la cote est bonne partout — c'est noté pour que la vague suivante
+  ne « corrige » pas ce qui n'est pas cassé.
+- **Réserves.** (1) Fluttershy garde la tête relevée du template : la baisser
+  demanderait de redessiner `CORPS`, hors périmètre ; le regard baissé est rendu
+  par l'iris. (2) Le toupet en rouleau de Rarity n'est pas repris : sa volute de
+  nuque (`VOLUTE_TETE`) joue déjà ce rôle devant l'oreille, et refaire la frange
+  en volute avant sortait du périmètre « expressions ». (3) Applejack n'a de
+  taches de rousseur que sur la joue **proche** — en vue de trois quarts l'autre
+  joue n'existe pas à l'écran.
 
 ## Carte d'accueil
 
