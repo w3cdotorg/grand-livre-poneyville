@@ -925,3 +925,18 @@ export const CORPS_ALICORNE = "M190 144C196 132 201 112 202 100 200 86 200 74 20
 export const CADRE_JAMBES = 'transform="translate(13.6 -1.8) scale(.92 1.097)"';
 export const CADRE_JAMBES_LUNA = 'transform="translate(11 -1.2) scale(.935 1.06)"';
 
+// ── LES ANIMAUX DE COMPAGNIE : `derives` NE PASSE PAS TEL QUEL ────────────────
+// Les six animaux de `data.js` ont `criniere: []` — ils n'ont ni crinière ni
+// queue de poney. `derives()` appelle `ton(M(0), …)` pour `CRIN_T`, `CRIN_S`,
+// `CRIN_H` et `CRIN_S2` ; avec un tableau VIDE, `M(0)` vaut `undefined` et
+// `ton()` lève un `TypeError` sur `hex.slice(1)` — pas un aplat noir, un
+// plantage franc du module. Vérifié avant d'écrire une seule ligne d'Angel.
+//
+// `derivesAnimal` retombe donc sur la ROBE quand la crinière est vide : les
+// quatre dérivés de crinière deviennent des dérivés de robe, ce qui est
+// exactement ce qu'il faut pour un pelage (les tufs de poil d'Opale, les
+// écailles dorsales de Gummy). Toutes les autres clés sont inchangées, et un
+// personnage à crinière non vide obtient rigoureusement `derives(c)`.
+export const derivesAnimal = (c) =>
+  derives(c.criniere?.length ? c : { ...c, criniere: [c.robe] });
+
