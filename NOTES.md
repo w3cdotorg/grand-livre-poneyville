@@ -139,8 +139,9 @@ fenêtre de 124 laisse ~7 % de marge de chaque côté). Conséquence : tout ce q
 pour la vignette de galerie et pour le mini-portrait de la carte d'accueil doit vivre
 dans x 171 → 295 / y 6 → 130. Une pointe de corne au-dessus de y = 10 serait coupée.
 
-Les 24 placeholders gris sont mal cadrés par cette fenêtre — c'est assumé, ils
-disparaîtront au fur et à mesure des vrais dessins.
+Les 24 placeholders gris étaient mal cadrés par cette fenêtre — c'était assumé,
+et depuis la vague 4 il n'en reste plus aucun : les vingt-six personnages sont
+dessinés (seuls les dix LIEUX sont encore des placeholders).
 
 ### Le visage : une expression signature par personnage
 
@@ -329,6 +330,11 @@ couleur du template disparaissent donc purement et simplement :
   `oeil`, `AMANDE` et `derives`. Garder impérativement `class="paupieres"` (les tests
   l'exigent) **avec les mêmes transformations que les yeux**, et le cadrage tête dans
   `171 6 124 124`.
+  **Pour les six animaux, appeler `derivesAnimal(c)` et non `derives(c)`** : ils ont
+  `criniere: []`, et `derives` lève alors un `TypeError` dans `ton()` (§ vague 4).
+  Leur œil n'est le plus souvent PAS l'œil du gabarit — quatre des six ont une
+  amande sombre pleine à reflet, ou un iris propre ; `oeil()` ne s'applique qu'à
+  Spike et Discord.
 
 ### Dragon (Spike) — ce qui change
 
@@ -474,6 +480,218 @@ couleur du template disparaissent donc purement et simplement :
   personnage, **le dessin entier, le portrait recadré `171 6 124 124`, les paupières
   forcées à `scaleY(1)` et le médaillon**, capturée en Chrome headless. Beaucoup plus
   rapide que Playwright, et elle montre d'un coup les trois cadrages qui comptent.
+
+## 2026-08-25 — vague 4 : les six animaux de compagnie
+
+Angel, Gummy, Winona, Opale, Tank et Owlowiscious. **Les vingt-six personnages
+sont dessinés : plus aucun placeholder de personnage dans le livre.** Il ne
+reste que les dix dessins de lieux.
+
+### Références plein pied utilisées (toutes via l'API MediaWiki, toutes dans `refs/`)
+
+| Personnage | Plein pied | Complément |
+| --- | --- | --- |
+| Angel | [`File:Angel ID S3E10.png`](https://mlp.fandom.com/wiki/File:Angel_ID_S3E10.png) (302 × 368, assis, sourcils baissés) | `File:Angel ID S4E03.png` (328 × 412) |
+| Gummy | [`File:Gummy, Winona, and Opalescence appear S6E22.png`](https://mlp.fandom.com/wiki/File:Gummy,_Winona,_and_Opalescence_appear_S6E22.png) recadré (`refs/z-gummy-corps.png`) | [`File:Gummy looking as stoic as ever S7E11.png`](https://mlp.fandom.com/wiki/File:Gummy_looking_as_stoic_as_ever_S7E11.png) — la structure de l'œil |
+| Winona | [`File:Winona id S3E11.png`](https://mlp.fandom.com/wiki/File:Winona_id_S3E11.png) (385 × 403, **assise, tête à droite : la pose du gabarit**) | le même plan de trio, recadré (`refs/z-winona-assise.png`) |
+| Opale | le plan de trio recadré (`refs/z-opale-corps.png`) — assise de face, nœud, collier, panache | [`File:Opalescence id S1E14.png`](https://mlp.fandom.com/wiki/File:Opalescence_id_S1E14.png) (500 × 450, gros plan du visage) |
+| Tank | [`File:Tank S2E7.png`](https://mlp.fandom.com/wiki/File:Tank_S2E7.png) (1280 × 720, profil complet) | [`File:Tank flying S2E7.png`](https://mlp.fandom.com/wiki/File:Tank_flying_S2E7.png) — **le seul plan qui montre tout le harnais de vol** |
+| Owlowiscious | `File:Tank S2E7.png` recadré (`refs/z-owl-jour.png`) — **perché en plein jour** | [`File:Owlowiscious id S3E11.png`](https://mlp.fandom.com/wiki/File:Owlowiscious_id_S3E11.png) (254 × 302, plan de nuit) |
+
+Deux leçons sur la recherche elle-même :
+
+- **`aiprefix` ne trouve pas tous les animaux.** `Gummy id`, `Gummy ID`, `Tank id`
+  et `Tank ID` ne renvoient RIEN : ces deux-là n'ont pas de fichier d'infobox au
+  format habituel. Le chemin qui marche est alors `aiprefix=<Nom>` tout court,
+  avec `ailimit=60`, et on choisit dans la liste des titres descriptifs
+  (`Gummy has no teeth S1E15`, `Tank gives a tender smile S5E5`…).
+- **Un plan de GROUPE vaut mieux qu'un plan d'infobox.**
+  `Gummy, Winona, and Opalescence appear S6E22.png` donne les trois animaux en
+  pied, à la même échelle, dans la même lumière : c'est la meilleure référence de
+  la vague, et de loin. À chercher systématiquement pour les personnages
+  secondaires.
+- **Prendre la référence en PLEIN JOUR.** Le plan d'infobox d'Owlowiscious est
+  nocturne : sa robe y paraît vert-olive (`#6c9c48`) et son ventre kaki. En plein
+  jour, c'est un brun franc (`#95653c`) sur un ventre CRÈME (`#e4d9ad`). Peint sur
+  le plan de nuit, le hibou devenait un rapace vert.
+
+### LE PROBLÈME DE CADRAGE DES ANIMAUX — la tension de la vague
+
+C'est le sujet de toute la vague et il n'a **pas** de solution exacte. Deux
+contraintes s'opposent :
+
+- la **fenêtre de portrait est FIXE** au coin haut-droit (`171 6 124 124`) et la
+  tête doit la remplir ;
+- le **dessin doit remplir son viewBox de 300** sur la fiche.
+
+Les deux ne sont compatibles que si le personnage fait environ **2,4 blocs de
+tête de haut**. C'est le cas des poneys (2,6 à 3,0) et de Winona (2,7 — le seul
+animal sans écart). Ça ne l'est pas du tout des animaux compacts :
+
+| animal | total / bloc de tête (relevé) | conséquence |
+| --- | --- | --- |
+| Angel | 1,4 | corps agrandi de 0,84 à 1,0 hauteur de tête, oreilles raccourcies |
+| Gummy | 1,6 | corps allongé et tête haute (le cou remonte) |
+| Opale | 1,9 | tête arrondie de 2,12:1 à 1,46:1 |
+| Tank | **0,5** — la tête est le PLUS PETIT élément | la fenêtre cadre la tête *et* le tiers avant de la carapace |
+| Owlowiscious | 3,0 | aucun écart, comme Winona |
+
+**Ce qui cède est toujours la cote la plus extrême**, jamais la fenêtre. Et il
+faut le faire consciemment : les trois premiers tours d'Angel ont été perdus à
+grossir le corps « pour remplir », ce qui donnait un mouton à petite tête.
+
+### LA TÊTE EST POSÉE SUR LE CORPS, PAS À CÔTÉ
+
+Le défaut n° 1 des deux premiers tours d'Angel, et il se mesure : sur la
+référence, les centres de la tête et du corps ne sont décalés que de 12 px, soit
+**8 unités**. Le dessin en avait 57 — la tête se lisait comme une boule blanche
+POSÉE À CÔTÉ d'une pomme de terre couchée. Contrepartie assumée : un animal assis
+est **vertical**, il occupe les deux tiers droits du viewBox et pas toute la
+largeur comme un quadrupède. C'est la composition de la référence.
+
+### LE CORPS ALLONGÉ SE GÉNÈRE, IL NE S'ÉCRIT PAS — la trouvaille de la vague
+
+Quatre tours perdus sur le tronc de Gummy, écrit « à la main » en tracé fermé. À
+chaque fois la silhouette ressortait **plate** (25 à 40 unités d'épaisseur au
+lieu des 89 relevées) et l'alligator se lisait comme une **cosse de pois**. La
+cause est structurelle, pas manuelle : *dans un tracé fermé écrit point par
+point, l'épaisseur est la différence de deux courbes indépendantes, et rien ne la
+garantit.* On croit régler une silhouette, on règle deux bords sans lien.
+
+Le remède : décrire le corps par son **AXE** et sa **DEMI-LARGEUR**
+(`[x, y, w]`), et calculer les deux bords par décalage perpendiculaire.
+
+```
+bord(k, f) = pour chaque point de l'axe, décaler de k·f·w le long de la normale
+CORPS  = lisse(bord(+1, 1)) + lisse(inverse(bord(−1, 1))) + Z
+VENTRE = lisse(bord(+1, 1)) + lisse(inverse(bord(+1, .5))) + Z
+```
+
+Bénéfices, tous vérifiés : l'épaisseur devient **un paramètre** ; le ventre pâle
+est la même courbe à `f` près et ne peut plus déborder ; les écailles dorsales se
+posent sur `bord(−1, .92)` sans recalage ; la queue s'affine en faisant décroître
+`w`. Le lissage se fait en `Q` par les points avec les sommets aux milieux —
+une polyligne brute donne un corps facetté, et un `C` par segment demanderait des
+tangentes explicites. **La technique est réutilisée telle quelle pour le panache
+de queue d'Opale**, et c'est le premier candidat pour tout dessin à venir dont
+une pièce est un tube (une rivière, une racine, un serpentin).
+
+### `derives()` PLANTE SUR LES ANIMAUX — vérifié avant d'écrire une ligne
+
+Les six animaux ont `criniere: []` dans `data.js`. `derives()` appelle
+`ton(M(0), …)` pour `CRIN_T`, `CRIN_S`, `CRIN_H` et `CRIN_S2` ; avec un tableau
+vide, `M(0)` vaut `undefined` et `ton()` lève un **`TypeError` sur
+`hex.slice(1)`** — pas un aplat noir comme pour un `fill="undefined"`, un
+plantage franc du module. D'où **`derivesAnimal(c)`** dans `_commun.js`, qui
+retombe sur la robe quand la crinière est vide (additif ; un personnage à
+crinière non vide obtient rigoureusement `derives(c)`).
+
+### Relevés par personnage
+
+- **Angel — son œil est un APLAT NOIR**, pas un œil de poney : amande pleine
+  (`#030303`) avec un reflet en goutte, sans blanc d'œil ni iris. Et il est
+  **plus haut que large** (30 × 29 pour le proche, 18 × 24 pour le lointain,
+  contre 39 × 33 pour l'amande du gabarit) : les `scale` sont donc dissociés.
+  Deuxième relevé contre-intuitif : **le nez est PLUS HAUT que le centre de
+  l'œil proche et il touche l'œil lointain** (chevauchement de 5 × 10 px). Angel
+  a le menton rentré et regarde vers le haut — c'est de là que vient son air
+  exigeant, autant que des sourcils. Mais **le report exact du chevauchement ne
+  passe pas** : à notre échelle, nez et œil lointain fusionnaient en une seule
+  tache et le rose se lisait comme un second œil. Le nez est redescendu sous les
+  deux yeux, seule concession du personnage.
+  Ses **oreilles sont raccourcies à 0,55 hauteur de tête au lieu de 1,13** : à
+  l'échelle exacte, sur une tête qui remplit la fenêtre, leur pointe tombe à
+  y −70, donc hors du viewBox — et même inclinées à 30° elles n'y rentrent pas.
+- **Winona — ce qui la sauve, ce sont les TOUFFES DE JOUE.** Trois tours à
+  grossir les oreilles et le museau blanc sans rien y gagner : une tête brune
+  ronde à museau court se lit comme un **rongeur**, quelle que soit la taille des
+  oreilles. Trois pointes de poil sur le contour de la joue et de la nuque, et
+  la lecture bascule d'un coup sur « chien de berger ». Son œil est noir comme
+  celui d'Angel, mais avec un **gros reflet ROND** et non une goutte. Et le
+  contour est le **même brun sombre sur le brun et sur le blanc** : un contour
+  dérivé du blanc découpe la bavette du reste de la chienne.
+- **Gummy — trois choses font le personnage** et sans elles ce n'est qu'un lézard
+  vert. (1) **Les yeux BOMBENT au-dessus du crâne** : le contour de la tête fait
+  une bosse par-dessus chacun, avec un creux entre les deux ; un crâne lisse et
+  deux ovales posés dessus donnent une grenouille. (2) **L'iris est rayé en
+  rayons** — douze traits, calculés sur l'ellipse 16 × 29 et pas sur un cercle,
+  sinon ils sortent en haut et manquent sur les côtés. (3) **La pupille est un
+  croissant noir mince**, pas un disque : avec une pupille ronde Gummy REGARDE
+  quelque chose, avec le croissant il regarde dans le vide, et c'est tout son
+  comique. Aucune dent, évidemment.
+- **Opale — le nez est AU-DESSUS des yeux** (0,26 de la hauteur de tête contre
+  0,43 et 0,48 pour les centres d'yeux) : c'est le museau rentré du persan. Posé
+  « comme sur un chat normal », il donne un museau de chaton et efface l'air
+  pincé. Ses **cils PENDENT vers le bas**, au coin bas-externe, cinq par œil —
+  l'inverse exact de la convention du livre, et sans ambiguïté sur les deux
+  références. Sa paupière est **lilas** et, comme le fard de Rarity, elle doit
+  être visible yeux ouverts : peinte en paupière mi-close fixe, le clignement
+  reprenant la même teinte. Sa tête est **arrondie de 2,12:1 à 1,46:1** — au
+  rapport exact elle fait 118 × 56 dans la fenêtre, une crêpe sous laquelle ni le
+  nœud ni la houppe ne tiennent.
+- **Tank — son œil est SOMBRE** (relevé `#234a2f`), pas ambré. Ses **écailles de
+  carapace sont à deux tons** (anneau vert moyen + cœur jaune-vert clair) : en
+  aplat uni ce sont des taches de peinture. Et **le bas de la carapace est une
+  bande segmentée** — sans elle, un galet posé sur des pattes.
+  **L'hélice : deux pales NON COLINÉAIRES plus deux arcs de rotation.** Alignées
+  sur un dôme, elles se lisent comme un seul bâton, c'est-à-dire un **parasol** —
+  c'était le premier tour, et aucune retouche de forme ne le rattrapait. Ce sont
+  les deux angles différents et les arcs qui font lire « hélice », pour deux
+  tracés de plus. La sangle de cuir à boucle est nécessaire au même titre : sans
+  elle, le dôme est posé en équilibre.
+- **Owlowiscious — tête et corps sont UNE SEULE masse en goutte.** Un hibou n'a
+  pas de cou visible : une tête ronde POSÉE sur un corps ovale donne un bonhomme
+  de neige. Et **le ventre crème remonte jusqu'entre les yeux** et fusionne avec
+  les deux disques de face, qui **se recouvrent au milieu** — c'est ce
+  chevauchement, avec le bec posé pile dessus, qui donne la tête en 8 du hibou de
+  dessin animé. Peint en simple plastron, il devient un moineau. C'est le
+  personnage le plus proche de sa référence de toute la vague, et le seul, avec
+  Winona, dessiné sans aucun écart de proportion.
+
+### Palettes corrigées dans `data.js`
+
+Six sur six. Trois familles de correction : un œil peint d'une couleur qui
+n'existe pas sur les références, une robe relevée sur un plan trop sombre, une
+clé manquante.
+
+| Personnage | Avant | Après | Motif |
+| --- | --- | --- | --- |
+| Angel | robe `#f4f4f6`, yeux `#74b9e0` | robe `#f6faf9`, yeux `#1b232a` | l'œil est un **aplat noir** ; la robe gagne une pointe de cyan pour que `TRAIT` en dérive le vert-gris pâle relevé (`#c0d8d8`) |
+| Gummy | robe `#a3d46e`, yeux `#cd8bd6` | robe `#55cb54`, **`ventre: #c8f6a9`**, yeux `#a95cf5` | robe franchement VERTE (relevé `#5cd258`), ventre pâle ajouté, iris violet saturé |
+| Winona | robe `#b5773f`, blanc `#f6efe3`, yeux `#6b4a2b` | robe `#946243`, blanc `#fbf8f2`, yeux `#1f1a17` | brun relevé plus sombre et moins orangé ; l'œil est **noir**, le brun moyen donnait un œil délavé |
+| Opale | robe `#f0ebf5`, crinière `#c4b7d9`, yeux `#4fbfa0`, nœud `#7a5fb5` | robe `#e7ebef`, crinière `#b89fc7`, yeux `#c9e880`, nœud `#a177b3` | **les yeux sont CHARTREUSE**, pas turquoise ; la crinière porte le lilas des paupières ; nœud plus rose |
+| Tank | robe `#9bc463`, carapace `#6e8f4f`, yeux `#e8a33d` | robe `#60ae7f`, carapace `#539e70`, **`ecailles: #cfee95`**, yeux `#22412e` | vert **sauge** et non jaune-vert ; l'œil ambré n'existe sur aucune référence |
+| Owlowiscious | robe `#8e6742`, ventre `#d8b98c` | robe `#95653c`, ventre `#e9ddb2` | ventre **crème** et non tan (relevé de jour) |
+
+### Additions à `_commun.js` (toutes additives)
+
+`derivesAnimal` — et rien d'autre. Les six animaux n'utilisent de la carcasse
+commune que `ton`, `derives`, `AMANDE` et `cilsHauts` ; tout le reste (corps,
+museau, oreille, pattes) leur est propre, comme prévu au § « Non-poneys ».
+Contrôle de non-régression : les **20 personnages non touchés** rendent des SVG
+rigoureusement identiques (hachage du dessin et du médaillon avant / après).
+
+### Réserves de la vague
+
+1. **Le dessin d'Angel n'occupe que les deux tiers droits du viewBox.** C'est la
+   composition de la référence (un lapin assis est vertical), mais dans la fiche,
+   à côté d'un poney qui va d'un bord à l'autre, il paraît plus petit.
+2. **La pale d'hélice de Tank n'entre qu'à moitié dans la vignette de galerie.**
+   Le moyeu est sur le sommet de la carapace, donc à gauche de la fenêtre ; on ne
+   voit que la moitié externe de la pale droite et un bout d'arc, ce qui se lit
+   comme un coin sombre. Le gadget entier n'est visible que sur la fiche. Le
+   remède serait de poser le rotor sur le bord AVANT de la carapace, ce qui n'est
+   plus le harnais de la série.
+3. **Le panache d'Opale garde un bord un peu lisse** : trois mèches internes
+   suffisent à le structurer mais pas à faire du poil long. Un bord festonné (à
+   la manière des touffes de joue de Winona) le rendrait plus fourni.
+4. **Le nez d'Angel ne touche pas l'œil lointain**, contrairement au relevé
+   (cf. plus haut) : à notre échelle les deux fusionnaient.
+5. **Les cils d'Opale pendent vers le BAS** alors que tout le reste du livre les
+   porte au coin haut-arrière. C'est la référence qui le veut, mais les deux
+   conventions cohabitent désormais dans la galerie.
+6. Les **dix dessins de lieux** restent des placeholders ; c'est tout ce qui
+   reste du gris dans le livre.
 
 ## 2026-08-25 — vague 3 : princesses, Zecora, Discord, Trixie, Derpy, Cheerilee
 
