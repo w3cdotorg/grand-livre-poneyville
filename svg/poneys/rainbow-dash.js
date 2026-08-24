@@ -1,1 +1,231 @@
-export { default, cutieMark } from "../_placeholder-poney.js";
+// ───────────────────────────────────────────────────────────────────────────────
+// Rainbow Dash — pégase. Dérivée du TEMPLATE CANON `twilight.js` via
+// `_commun.js` (carcasse, œil, museau, oreille, membres).
+//
+// Singularités : AILE DÉPLOYÉE, et une crinière à SIX mèches. Le template n'en
+// gère que trois. Deux techniques cohabitent ici, et le choix n'est pas
+// esthétique mais géométrique :
+//
+//  • crête et mèche d'encolure — SIX MÈCHES EXPLICITES : chaque couleur est une
+//    mèche à part, en amande pointue (`M … Q … Q … Z`), qui part de la ligne de
+//    cheveux et s'achève en pointe. Elles sont posées de la plus profonde
+//    (violet) à la plus haute (rouge), sur une masse de fond rouge.
+//    Deux techniques ont été essayées avant et écartées : des traits parallèles
+//    laissaient les pointes de la crête en aplat violet (une famille de courbes
+//    décalée d'un (dx, dy) constant ne suit pas un contour qui s'évase), et des
+//    coquilles concentriques mises à l'échelle autour de la racine donnaient
+//    des bandes dont la largeur croît avec la distance — un énorme cœur violet
+//    sur le sommet du crâne.
+//  • queue — SIX TRAITS ÉPAIS parallèles : la queue est un faisceau droit, les
+//    bandes y sont vraiment parallèles à l'axe, pas concentriques.
+//
+// Autre écart : le contour de crinière ne dérive PAS de `criniere[0]`. Un
+// `ton(rouge, …)` cerne les bandes bleues et violettes d'un liseré rouge très
+// voyant. Il dérive de `criniere[5]` (le violet), la plus sombre des six.
+// ───────────────────────────────────────────────────────────────────────────────
+import {
+  ton, derives, OREILLE, CORPS, membresFond, membresProches, museau,
+  oeil, OEIL_PROCHE, OEIL_LOIN, paupieres, joue, cils, aileDeployee,
+} from "./_commun.js";
+
+// Une mèche : amande pointue tracée en deux quadratiques. `a` et `b` sont les
+// deux points de racine (sur la ligne de cheveux), `t` la pointe, `h` et `k`
+// les bombés du dessus et du dessous.
+const meche = ([ax, ay, hx, hy, tx, ty, kx, ky, bx, by]) =>
+  `M${ax} ${ay}Q${hx} ${hy} ${tx} ${ty}Q${kx} ${ky} ${bx} ${by}Z`;
+
+// Les six mèches de la CRÊTE, du violet (la plus basse, posée en premier) au
+// rouge (la plus haute, posée en dernier) : l'éventail balaie de l'arrière-bas
+// vers le haut du crâne.
+const MECHES_CRETE = [
+  [194, 56, 178, 80, 174, 100, 196, 80, 208, 60],   // violet
+  [199, 50, 168, 74, 160, 96, 190, 78, 211, 57],    // bleu
+  [211, 44, 168, 58, 150, 86, 180, 76, 203, 51],    // vert
+  [225, 41, 180, 44, 148, 68, 175, 62, 212, 45],    // jaune
+  [239, 42, 194, 28, 156, 48, 189, 48, 224, 41],    // orange
+  [253, 48, 212, 20, 171, 32, 207, 42, 238, 41],    // rouge
+];
+
+// Les six mèches de l'ENCOLURE : six amandes verticales côte à côte, le rouge
+// à l'extérieur (à gauche) donc posé en dernier.
+const MECHES_COU = [0, 1, 2, 3, 4, 5].map((i) => {
+  const ax = 213 - 1.6 * i, ay = 99;              // i = 0 → violet, à l'intérieur
+  const bx = 219 - 1.6 * i, by = 103;
+  const tx = 218 - 4.6 * i, ty = 150 + 3.4 * i;   // les pointes s'éventent
+  return [ax, ay, ax - 7, (ay + ty) / 2, tx, ty, bx + 4, (by + ty) / 2, bx, by];
+});
+
+// ── CRÊTE : la crinière est REJETÉE EN ARRIÈRE (elle ne retombe jamais sur
+//    l'œil, contrairement à la frange de Twilight). Ligne de cheveux du front
+//    (256,52) → sommet du crâne → deux pointes qui filent vers l'arrière.
+//    Contrainte de composition : au-dessous de y 56, la crête doit rester à
+//    x < 180, sinon elle avale entièrement l'OREILLE (181 → 205, 56 → 101).
+const CRETE = "M256 52"
+  + "C252 44 246 36 238 31"
+  + "C226 24 210 24 196 28"
+  + "C182 33 170 42 162 54"
+  + "C155 64 152 77 153 88"
+  + "C154 94 156 97 159 99"
+  + "C161 92 163 86 166 81"
+  + "C168 88 170 95 173 101"
+  + "C175 93 177 84 178 76"
+  + "C178 70 185 60 196 53"
+  + "C206 47 226 43 240 44"
+  + "C248 46 254 49 256 52Z";
+
+// ── MÈCHE D'ENCOLURE : elle démarre à y 96, comme celle de Twilight, et pas
+//    plus haut. Piège : au-dessus de y 95 la bande x 197 → 231 n'est PAS la
+//    nuque mais la TEMPE — le crâne y couvre x 202 → 269. Une mèche remontée
+//    jusqu'à y 48 pour combler le vide entre crête et encolure barre le visage
+//    d'un ruban arc-en-ciel. Ce vide (y 76 → 96) est comblé par l'OREILLE :
+//    c'est exactement le rôle qu'elle joue dans le template.
+const MECHE = "M206 96"
+  + "C199 108 195 122 194 136"
+  + "C193 148 194 158 197 166"
+  + "C201 161 205 156 208 151"
+  + "C209 157 211 162 214 168"
+  + "C219 159 223 149 225 141"
+  + "C221 124 215 109 206 96Z";
+
+// ── QUEUE : droite, plaquée vers l'arrière-bas, pointe dentelée. Son bord
+//    interne reste à x < 122 entre y 150 et 190 pour laisser la place à la
+//    marque de beauté (centrée x 143).
+const QUEUE = "M140 126"
+  + "C124 127 108 134 95 146"
+  + "C83 156 74 168 68 180"
+  + "C64 189 62 195 62 201"
+  + "C66 199 70 197 74 195"
+  + "C72 203 71 211 72 219"
+  + "C78 211 84 203 90 197"
+  + "C90 205 92 213 95 220"
+  + "C100 210 105 200 110 191"
+  + "C116 178 120 164 121 152"
+  + "C126 140 133 130 140 126Z";
+
+// ── MARQUE DE BEAUTÉ : nuage + éclair arc-en-ciel. Le nuage est un tracé fermé
+//    à fond plat (bosses en haut, base droite) ; l'éclair est un polygone en Z
+//    dont on recolore le HAUT en rouge et la POINTE en bleu — les trois bandes
+//    de couleur de l'éclair officiel sont horizontales, pas concentriques.
+const NUAGE = "M-19 5C-22 5-24 2-24 -1C-24 -5-21 -7-18 -7"
+  + "C-18 -12-13 -16-8 -15C-5 -20 2 -21 7 -18"
+  + "C12 -20 18 -17 19 -11C24 -10 26 -6 25 -1"
+  + "C25 3 22 5 19 5Z";
+const ECLAIR = "M15 -12L-5 4 5 4-7 30 17 10 7 10Z";
+const ECLAIR_HAUT = "M15 -12L-5 4 9.2 4Z";
+const ECLAIR_BAS = "M-2.4 20L5 20-7 30Z";
+const NUAGE_T = "#c9d4e2";   // contour du nuage : constante documentée, le nuage
+const NUAGE_F = "#ffffff";   // est blanc et ne dérive d'aucune couleur de `c`.
+
+const marque = (x, y, e, M) => `<g transform="translate(${x} ${y}) scale(${e})">
+    <g transform="translate(2 12)">
+      <path d="${ECLAIR}" fill="${M[2]}" stroke="${ton(M[2], 1, -.3)}" stroke-width="2.2"/>
+      <path d="${ECLAIR_HAUT}" fill="${M[0]}"/>
+      <path d="${ECLAIR_BAS}" fill="${M[4]}"/>
+      <path d="${ECLAIR}" fill="none" stroke="${ton(M[2], 1, -.3)}" stroke-width="2.2"/>
+    </g>
+    <path d="${NUAGE}" fill="${NUAGE_F}" stroke="${NUAGE_T}" stroke-width="2.4"/>
+  </g>`;
+
+export default (c) => {
+  const d = derives(c);
+  const { M5, TRAIT } = d;
+  const M = [d.M0, d.M1, d.M2, d.M3, d.M4, d.M5];
+  const CRIN_T = ton(M5, 1.15, -.14);   // contour : dérivé du VIOLET, pas du rouge
+  const oe = oeil(c, d);
+
+  // Six bandes de queue : la queue est un faisceau droit, décalage
+  // perpendiculaire à son axe. Trait de 10 pour un pas de 5,2 : chaque bande
+  // mange la moitié de la précédente, il reste une rayure nette.
+  const bandesQueue = M.map((col, k) => {
+    const dx = 2.4 * k, dy = 5.2 * k;
+    return `<path d="M${136 + dx} ${134 + dy}C${118 + dx} ${137 + dy} ${102 + dx} ${146 + dy} ${88 + dx} ${159 + dy}`
+      + `C${78 + dx} ${169 + dy} ${70 + dx} ${181 + dy} ${66 + dx} ${191 + dy}"`
+      + ` fill="none" stroke="${col}" stroke-width="10"/>`;
+  }).join('');
+
+  return `<svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg" role="img">
+  <g stroke-linejoin="round" stroke-linecap="round">
+
+  <!-- 1. QUEUE : masse violette (couche la plus basse de l'arc-en-ciel), six
+       bandes, puis le contour RETRACÉ par-dessus — les bandes débordent
+       toujours un peu de la masse. -->
+  <path d="${QUEUE}" fill="${M5}" stroke="${CRIN_T}" stroke-width="3.2"/>
+  ${bandesQueue}
+  <path d="${QUEUE}" fill="none" stroke="${CRIN_T}" stroke-width="3.2"/>
+
+  <!-- 2. MEMBRES DU FOND -->
+  ${membresFond(d)}
+
+  <!-- 4. CORPS + COU + TÊTE + MUSEAU : une seule silhouette -->
+  <path d="${CORPS}" fill="${c.robe}" stroke="${TRAIT}" stroke-width="3.4"/>
+
+  <!-- 5. MARQUE DE BEAUTÉ sur la croupe. Contrainte : l'éclair descend de 26
+       unités sous le nuage, et le bord haut de la patte arrière proche passe de
+       (131,182) à (162,163) — au-delà de y 168 la pointe de l'éclair disparaît
+       sous la cuisse. D'où une marque haute et compacte. -->
+  ${marque(150, 140, .62, M)}
+
+  <!-- 5 bis. AILE DÉPLOYÉE : après le corps, avant les membres proches. Sa
+       pointe reste à x < 171 pour rester hors de la fenêtre de portrait. -->
+  ${aileDeployee(c, d)}
+
+  <!-- 6. MEMBRES PROCHES -->
+  ${membresProches(c, d)}
+
+  <!-- 7. NASEAU + BOUCHE (sourire ouvert : elle est toujours en train de fanfaronner) -->
+  ${museau(d)}
+
+  <!-- 8. YEUX -->
+  ${oe(OEIL_PROCHE)}${oe(OEIL_LOIN)}
+
+  <!-- 9. PAUPIÈRES -->
+  ${paupieres(c)}
+
+  <!-- 10. contour de la joue, par-dessus l'œil lointain -->
+  ${joue(d)}
+
+  <!-- 11. (pas de corne : pégase — l'aile est posée en 5 bis) -->
+
+  <!-- 12. CRINIÈRE. Masse de fond (rouge, la couche la plus haute), puis les
+       six mèches de la plus profonde à la plus haute, puis le contour de la
+       masse RETRACÉ : les mèches débordent toujours un peu. -->
+  <path d="${CRETE}" fill="${M[0]}" stroke="${CRIN_T}" stroke-width="3.2"/>
+  <g stroke="${CRIN_T}" stroke-width="2.4">
+    ${MECHES_CRETE.map((m, i) => `<path d="${meche(m)}" fill="${M[5 - i]}"/>`).join('')}
+  </g>
+  <path d="${CRETE}" fill="none" stroke="${CRIN_T}" stroke-width="3.2"/>
+
+  <!-- 12 bis. OREILLE, ici et pas en couche 3 : la crête arrière recouvre
+       entièrement la zone de l'oreille (181 → 205, 56 → 101), et le débord des
+       mèches par-dessous n'est PAS rattrapé par le contour retracé (un
+       tracé en fill=none retrace le bord, il ne découpe rien). L'oreille est donc
+       posée DEVANT la crinière, ce qui est de toute façon la bonne lecture :
+       l'oreille proche est en avant des mèches rejetées derrière la tête. Le
+       pli interne, que le contour du corps dessinait en couche 4, est retracé
+       à la main juste après. -->
+  <path d="${OREILLE}" fill="${c.robe}" stroke="${TRAIT}" stroke-width="3.2"/>
+  <path d="M202 62C200 74 200 86 202 100" fill="none" stroke="${TRAIT}" stroke-width="3.4"/>
+
+  <path d="${MECHE}" fill="${M[0]}" stroke="${CRIN_T}" stroke-width="3.2"/>
+  <g stroke="none">
+    ${MECHES_COU.map((m, i) => `<path d="${meche(m)}" fill="${M[5 - i]}"/>`).join('')}
+  </g>
+  <path d="${MECHE}" fill="none" stroke="${CRIN_T}" stroke-width="3.2"/>
+
+  <!-- 13. CILS -->
+  ${cils(d)}
+
+  </g>
+</svg>`;
+};
+
+// Médaillon. Pas de disque de robe : le nuage blanc et l'éclair se lisent seuls
+// sur le fond clair de la fiche — mais on le garde pour rester homogène avec
+// les autres marques, et parce que le blanc du nuage a besoin d'un fond coloré.
+export const cutieMark = (c) => {
+  const M = [0, 1, 2, 3, 4, 5].map(i => c.criniere[i] ?? c.criniere[0]);
+  return `<svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" role="img">
+  <circle cx="30" cy="30" r="30" fill="${c.robe}"/>
+  ${marque(30, 26, 1.05, M)}
+</svg>`;
+};
