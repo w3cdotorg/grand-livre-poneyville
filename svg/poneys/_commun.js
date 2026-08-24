@@ -167,9 +167,11 @@ export const OEIL_LOIN = "translate(266 65.8) scale(-.41 .81)";
 // Couche 9 : PAUPIÈRES dessinées EN POSITION FERMÉE (l'amande agrandie de 7 %).
 // Le CSS les replie en scaleY(0) au repos. Jamais de `stroke` ici : un contour
 // sur un groupe à scaleY(0) laisse un filet horizontal visible.
-export const paupieres = (c, e = 1) => `<g class="paupieres">
-    <path d="${AMANDE}" transform="translate(235.5 77.9) scale(${1.07 * e})" fill="${c.robe}"/>
-    <path d="${AMANDE}" transform="translate(266 65.8) scale(${-.44 * e} ${.87 * e})" fill="${c.robe}"/>
+// `teinte` permet de déroger à la robe : Rarity a du fard à paupières, qui
+// n'apparaît justement qu'au clignement.
+export const paupieres = (c, e = 1, teinte = c.robe) => `<g class="paupieres">
+    <path d="${AMANDE}" transform="translate(235.5 77.9) scale(${1.07 * e})" fill="${teinte}"/>
+    <path d="${AMANDE}" transform="translate(266 65.8) scale(${-.44 * e} ${.87 * e})" fill="${teinte}"/>
   </g>`;
 
 // Couche 10 : le contour de la joue repasse PAR-DESSUS l'œil lointain — sans
