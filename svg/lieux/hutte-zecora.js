@@ -62,6 +62,25 @@ const masque = (x, y, s = 1, f = '#e3d27a') => `<g transform="translate(${x} ${y
       fill="${FEUILLE_C}" stroke="${BOIS_T}" stroke-width="${n(1.4 / s)}" stroke-linejoin="round"/>
   </g>`;
 
+// Grand masque plat, posé sur sa pierre : même vocabulaire que `masque()` (ovale
+// clair, yeux en amande, petites cornes) mais silhouette allongée verticalement
+// et un contour de bord marqué en creux — pour qu'il se lise « masque décoratif
+// posé à plat », pas une tête d'insecte. Fonction séparée : le petit masque
+// au-dessus de la porte reste inchangé.
+const masquePlat = (x, y, s = 1, f = '#e3d27a') => `<g transform="translate(${x} ${y}) scale(${n(s)})">
+    <path d="M0 27C-11 27 -16 10 -16 -5C-16 -19.5 -8 -27 0 -27C8 -27 16 -19.5 16 -5C16 10 11 27 0 27Z"
+      fill="${f}" stroke="${BOIS_T}" stroke-width="${n(1.6 / s)}" stroke-linejoin="round"/>
+    <path d="M0 21.6C-8.8 21.6 -12.8 8 -12.8 -4C-12.8 -15.6 -6.4 -21.6 0 -21.6C6.4 -21.6 12.8 -15.6 12.8 -4C12.8 8 8.8 21.6 0 21.6Z"
+      fill="none" stroke="${BOIS_T}" stroke-width="${n(1.1 / s)}" opacity=".5"/>
+    <path d="M-9 -7.3C-9 -14.6 -3 -14.6 -3 -7.3C-3 -1.2 -9 -1.2 -9 -7.3Z" fill="${FEUILLE_T}"/>
+    <path d="M9 -7.3C9 -14.6 3 -14.6 3 -7.3C3 -1.2 9 -1.2 9 -7.3Z" fill="${FEUILLE_T}"/>
+    <path d="M-13 4.9C-8 7.3 8 7.3 13 4.9M-11 14.6C-6 17.1 6 17.1 11 14.6" fill="none" stroke="${FEUILLE}" stroke-width="${n(1.8 / s)}"/>
+    <path d="M-16 -14.6C-22 -22 -22 -29 -18 -34C-16 -26.8 -14 -22 -11 -19.5Z"
+      fill="${FEUILLE_C}" stroke="${BOIS_T}" stroke-width="${n(1.4 / s)}" stroke-linejoin="round"/>
+    <path d="M16 -14.6C22 -22 22 -29 18 -34C16 -26.8 14 -22 11 -19.5Z"
+      fill="${FEUILLE_C}" stroke="${BOIS_T}" stroke-width="${n(1.4 / s)}" stroke-linejoin="round"/>
+  </g>`;
+
 // Feuille de sous-bois violette.
 const feuilleViolette = (x, y, s = 1, r = 0) => `<path transform="translate(${x} ${y}) rotate(${r}) scale(${n(s)})"
     d="M0 0C-14 -2 -22 -10 -22 -18C-22 -26 -12 -30 0 -30C12 -30 22 -26 22 -18C22 -10 14 -2 0 0Z"
@@ -145,10 +164,10 @@ export default () => `<svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/s
   ${fiole(150, 116, 22, '#f0c23f', 0.8)}
   ${fiole(252, 118, 24, '#7fa8e0', 0.8)}
 
-  ${masque(322, 254, 0.8)}
+  ${masquePlat(322, 254, 0.8)}
   ${pierre(322, 276, 1.1, '#5b6a6a')}
   ${feuilleViolette(76, 260, 0.85, -12)}${feuilleViolette(104, 268, 0.7, 14)}
-  ${feuilleViolette(330, 236, 0.7, 18)}${feuilleViolette(354, 262, 0.85, -10)}
+  ${feuilleViolette(368, 274, 0.7, 20)}${feuilleViolette(384, 250, 0.6, -18)}
   ${crosse(122, 272, 1)}${crosse(288, 268, -1)}${crosse(58, 274, 0.8)}
   ${champignon(146, 284, 1.1)}${champignon(262, 288, 0.95)}${champignon(38, 262, 0.9)}
   ${herbes(240, 274, 0.9, '#6ea377')}${herbes(160, 292, 0.9, '#6ea377')}
