@@ -159,15 +159,20 @@ export default (c) => {
   <!-- 4. CORPS + COU + TÊTE + MUSEAU : une seule silhouette -->
   <path d="${CORPS}" fill="${c.robe}" stroke="${TRAIT}" stroke-width="3.4"/>
 
-  <!-- 5. MARQUE DE BEAUTÉ sur la croupe. Contrainte : l'éclair descend de 26
-       unités sous le nuage, et le bord haut de la patte arrière proche passe de
-       (131,182) à (162,163) — au-delà de y 168 la pointe de l'éclair disparaît
-       sous la cuisse. D'où une marque haute et compacte. -->
-  ${marque(150, 140, .62, M)}
+  <!-- 5. MARQUE DE BEAUTÉ sur la croupe. Elle est prise en étau : l'éclair
+       descend de 26 unités sous le nuage et le bord haut de la patte arrière
+       proche passe de (131,182) à (162,163), donc au-delà de y 168 la pointe
+       disparaît sous la cuisse ; au-dessus, c'est l'aile déployée qui avale le
+       nuage. D'où une marque haute, compacte, et une aile remontée. -->
+  ${marque(150, 142, .62, M)}
 
   <!-- 5 bis. AILE DÉPLOYÉE : après le corps, avant les membres proches. Sa
-       pointe reste à x < 171 pour rester hors de la fenêtre de portrait. -->
-  ${aileDeployee(c, d)}
+       pointe reste à x < 171 pour rester hors de la fenêtre de portrait.
+       Remontée de 11 unités par rapport à la position générique de
+       _commun.js : à sa place nominale son bord bas descend à y 143 et
+       recouvre le nuage de la marque de beauté. Sa racine reste sur la ligne
+       du dos (194,121). -->
+  <g transform="translate(-2 -11)">${aileDeployee(c, d)}</g>
 
   <!-- 6. MEMBRES PROCHES -->
   ${membresProches(c, d)}

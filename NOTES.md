@@ -116,17 +116,67 @@ disparaîtront au fur et à mesure des vrais dessins.
   `.paupieres{animation:none;transform:scaleY(0)}` yeux ouverts, `scaleY(1)` fermés.
   En Chrome headless, `--virtual-time-budget=4320` tombe pile dans le clignement.
 
+### `_commun.js` : l'anatomie partagée
+
+Depuis la vague 1 (Applejack → Spike), la carcasse est **factorisée** dans
+`svg/poneys/_commun.js` : `ton`, `derives`, `AMANDE`, `IRIS`, `ETINCELLE`, `OREILLE`,
+`CORPS`, les quatre pattes, et les blocs composites `membresFond`, `membresProches`,
+`museau(d, ouverte)`, `oeil(c, d)(transform)`, `paupieres(c, e, teinte)`, `joue`,
+`corne`, `cils(d, l)`, `ailePliee`, `aileDeployee`. Un fichier de personnage n'écrit
+plus que sa part singulière (crinière, queue, marque, attribut d'espèce).
+
+`twilight.js` reste **volontairement autonome** : c'est la pièce de référence, relisible
+d'un bloc face au PNG. Les coordonnées de `_commun.js` en sont la copie exacte.
+
+Deux dérivés de couleur ont été ajoutés pour les crinières **monochromes** (Applejack,
+Pinkie, Fluttershy, Rarity), où `criniere[1]` vaut `criniere[0]` et où les bandes de
+couleur du template disparaissent donc purement et simplement :
+
+| Dérivé | Formule | Rôle |
+| --- | --- | --- |
+| `CRIN_H` | `ton(criniere[0], .95, +.075)` | reflet de mèche, remplace les bandes |
+| `CRIN_S2` | `ton(criniere[0], 1.05, -.12)` | séparation renforcée (`CRIN_S` est invisible sur une mèche claire) |
+
 ### Variantes par espèce
 
 - **Licorne / alicorne** : la corne ci-dessus, à sa place exacte. Les 4 stries fines et
   le contour ne sont pas décoratifs : sans eux la corne se lit comme une oreille.
-- **Pégase / alicorne** : aile à la place de la 2e patte du fond côté flanc, à insérer
-  **après le corps et avant les pattes de devant**, autour de `(150..215, 130..185)`,
-  en robe + contour, plus un voile `#000 / .08`.
+- **Pégase / alicorne** : aile à insérer **après le corps et avant les pattes de
+  devant**, en robe + contour, plus un voile `#000`. Deux variantes dans `_commun.js` :
+  - `ailePliee` — repliée le long du flanc, `(158..209, 137..184)`, voile `.11`. C'est
+    l'aile de Fluttershy. **Elle mange la place de la marque de beauté** : la marque doit
+    tenir à gauche de x 158.
+  - `aileDeployee` — déployée du garrot `(198,132)` vers `(113,88)`, voile `.08`. C'est
+    l'aile de Rainbow Dash. Sa pointe reste à x < 171 pour rester **hors de la fenêtre de
+    portrait**. À sa place nominale son bord bas descend à y 143 et **recouvre la marque
+    de beauté** ; Rainbow Dash la remonte de 11 unités (`translate(-2 -11)`).
 - **Terrestre** : ni corne ni aile, garder l'oreille telle quelle.
-- **Non-poneys** (Spike, Discord, animaux) : la grille tête/corps/pattes tient encore,
-  mais tête et museau sont à retailler ; garder impérativement `class="paupieres"`
-  (les tests l'exigent) et le cadrage tête dans `171 6 124 124`.
+- **Non-poneys** (Spike, Discord, animaux) : rien de la carcasse ne se réemploie sauf
+  `oeil`, `AMANDE` et `derives`. Garder impérativement `class="paupieres"` (les tests
+  l'exigent) **avec les mêmes transformations que les yeux**, et le cadrage tête dans
+  `171 6 124 124`.
+
+### Dragon (Spike) — ce qui change
+
+- **Échelle.** Un personnage petit dans l'univers doit quand même remplir sa fenêtre de
+  portrait : Spike est dessiné à grande échelle, crâne `x 182 → 293, y 20 → 110`, la
+  boîte même que la tête de Twilight. Son corps entier ne fait que ~2,5 hauteurs de tête,
+  ce qui est le canon du personnage et pas un accident.
+- **Face frontale aux trois quarts**, pas un profil de chanfrein. Les deux yeux sont côte
+  à côte à l'avant du crâne, le lointain simplement resserré en largeur
+  (`scale(.74 .95)`). Deux erreurs à ne pas refaire : le mettre **en miroir** (son iris
+  part du mauvais côté, le regard devient divergent) et le poser à la place du poney
+  (à droite, sur le museau — il se lit comme un œil greffé sur la truffe).
+- **Le museau doit saillir BAS**, sous la ligne des yeux (`276,52 → 290,72 → 260,96`).
+  Posé à hauteur d'œil il se lit comme une bosse sur la joue ; absent, la tête reste une
+  boule et le dragon se lit comme un chat violet.
+- **La gueule ouverte doit rester bien à l'intérieur du crâne.** Posée sur le bord de la
+  mâchoire (y ≈ 100) elle se confond avec le contour et les crocs pendent dans le vide
+  sous le menton.
+- Ni les cils ni les sourcils du template : sur une face frontale, un sourcil au-dessus
+  d'un œil sur deux fait un air fâché, et Spike n'en a pas dans la série.
+- L'intérieur de gueule rose du template (`#c7096e`) est un rose de poney. Constantes
+  locales : gueule `#8f3448`, langue `#d9647a`.
 
 ### Pièges rencontrés
 
@@ -170,6 +220,86 @@ disparaîtront au fur et à mesure des vrais dessins.
   d'opacité — la comparaison devient métrique et non plus impressionniste.
 - Le cache des modules ES est agressif : ajouter `?v=n` et **vérifier** qu'un morceau du
   nouveau tracé est bien dans le DOM (`el.outerHTML.includes('…')`) avant de juger.
+
+### Pièges de la vague 1 (Applejack, Rainbow Dash, Pinkie, Fluttershy, Rarity, Spike)
+
+- **Un contour retracé en `fill="none"` retrace un bord, il ne DÉCOUPE rien.** C'est la
+  méprise la plus coûteuse de la vague. La technique marche pour rattraper le débord
+  d'une bande *le long* du bord de sa mèche ; elle ne fait rien contre une forme qui
+  dépasse franchement de la masse (une mèche pointue, un disque de boucle, un trait
+  épais). Conséquence pratique : **quand la masse arrière couvre la zone de l'oreille
+  (`181 → 205, 56 → 101`), il faut poser l'oreille DEVANT la crinière**, en couche 12 bis
+  au lieu de 3, et retracer à la main le pli interne que le contour du corps dessinait :
+  `M202 62C200 74 200 86 202 100` en `TRAIT`, épaisseur 3,4. C'est le cas de Rainbow
+  Dash, Pinkie, Fluttershy et Rarity — et c'est de toute façon la bonne lecture, l'oreille
+  proche est en avant des mèches rejetées derrière la tête.
+- **Découper une crinière longue en « frange » + « masse » donne infailliblement un
+  béret**, avec une couture entre les deux. Fluttershy est dessinée en **UN SEUL tracé**,
+  de la pointe de frange sur le front au crochet de poitrail. Corollaire : le bord bas de
+  la frange doit être **concave** et la ligne de cheveux **bombée** (jusqu'à y 32) ; un
+  bord bas rectiligne au ras du crâne fait un couvre-chef même en une seule pièce.
+- **La frange ne doit pas descendre sous y 62 au-delà de x 224**, sinon elle recouvre la
+  pupille de l'œil proche (amande `216 → 255, 61 → 94`). Cote relevée sur la référence :
+  le bord bas passe par (213,75) puis remonte à (233,62) et (251,52). Deux itérations
+  perdues sur Applejack à cause de ça.
+- **Six couleurs de crinière : les traits parallèles ne suffisent plus.** Une famille de
+  courbes décalée d'un `(dx, dy)` constant ne peut pas suivre un contour qui s'évase :
+  sur la crête de Rainbow Dash les pointes restaient en aplat violet. Les coquilles
+  concentriques (même tracé mis à l'échelle autour de la racine) sont pires : la largeur
+  de bande croît avec la distance, on obtient un énorme cœur violet sur le crâne. La
+  solution est **six mèches explicites**, chacune une amande pointue `M … Q … Q … Z`,
+  posées de la plus profonde à la plus haute sur une masse de fond. En revanche, sur la
+  **queue** — un faisceau droit — les six traits parallèles marchent très bien.
+- **Le contour de crinière ne dérive pas toujours de `criniere[0]`.** Sur Rainbow Dash,
+  `ton(rouge, …)` cerne les bandes bleues et violettes d'un liseré rouge très voyant : le
+  contour dérive de `criniere[5]` (le violet), la plus sombre des six. Sur Rarity, le
+  `CRIN_T` du template (-16,5 %) ne détache pas un trait épais violet foncé de la volute
+  qu'il cerne : on passe à `ton(M0, 1.25, -.21)`.
+- **Une volute ne se dessine pas comme un tracé fermé** — son contour devrait se
+  recroiser. On la dessine comme un **trait épais à bouts ronds passé deux fois** : large
+  en `CRIN_T` (c'est le contour), puis plus fin en `M0`. Aux recouvrements la seconde
+  passe efface la première et la boucle se referme sans couture interne. C'est toute la
+  crinière et toute la queue de Rarity.
+- **Une seule file de boucles fait une chaîne de perles, pas un volume.** La crinière de
+  Pinkie est faite de **deux rangs** de disques par masse, le rang extérieur d'abord.
+  Chaque boucle porte une volute (`CRIN_S2`) et un reflet en croissant (`CRIN_H`) : sans
+  eux les disques se lisent comme des bulles de savon.
+- **Une marque de beauté à trois motifs se lit mal si les motifs sont trop repliés sur
+  eux-mêmes.** Les échancrures d'aile du papillon de Fluttershy devaient revenir jusqu'à
+  x ±6 : à ±10 les quatre lobes fusionnent en une tache ronde dès la taille du médaillon.
+  Contrôler chaque marque **dans le médaillon 60 × 60**, pas seulement sur le flanc.
+- **La marque de beauté est prise en étau entre la cuisse et l'aile.** Le bord haut de la
+  patte arrière proche passe de (131,182) à (162,163) : tout ce qui descend sous y 168
+  disparaît sous la cuisse. Et l'aile (repliée ou déployée) occupe précisément le flanc.
+  Les marques de la vague sont donc **hautes et compactes**, et le médaillon est décalé
+  vers le bas (`translate` +2 à +3) pour ne pas déborder du disque de 60.
+- **Attention aux accents graves dans les commentaires HTML d'un template literal** : un
+  ``fill="none"`` en accents graves à l'intérieur d'un `` `…` `` ferme la chaîne. Deux
+  `SyntaxError` sur la vague. Écrire `fill=none` en clair dans les commentaires SVG.
+- **Un validateur de tracés se rentabilise immédiatement.** Le script de la vague parse
+  tous les `d="…"` des six modules avec **leurs vraies couleurs de `data.js`**, vérifie
+  l'arité de chaque commande (`M`/`L`/`T` = 2, `H`/`V` = 1, `C` = 6, `S`/`Q` = 4, `A` = 7)
+  et cherche `undefined`, `NaN`, `hsl(NaN`. 483 tracés contrôlés à chaque itération.
+- Boucle de fidélité : une page HTML locale qui rend, côte à côte et pour chaque
+  personnage, **le dessin entier, le portrait recadré `171 6 124 124`, les paupières
+  forcées à `scaleY(1)` et le médaillon**, capturée en Chrome headless. Beaucoup plus
+  rapide que Playwright, et elle montre d'un coup les trois cadrages qui comptent.
+
+## 2026-08-24 — vague 1 : les cinq autres Mane 6 + Spike
+
+- **Applejack, Rainbow Dash, Pinkie Pie, Fluttershy, Rarity et Spike dessinés**
+  show-accurate, et l'anatomie commune extraite dans `svg/poneys/_commun.js`. Sept
+  personnages sur vingt-six sont désormais de vrais dessins ; dix-neuf placeholders
+  restent. Trouvailles consignées ci-dessus (§ « Pièges de la vague 1 », § `_commun.js`,
+  § « Variantes par espèce », § « Dragon (Spike) »).
+- Aucun hex de `data.js` n'a eu besoin d'être retouché : les six palettes fournies
+  tiennent à l'écran, y compris la robe quasi blanche de Rarity (`#f2f0f7`), dont le
+  contour dérivé `ton(robe, .64, -.21)` donne un gris lavande clair conforme à la série.
+- Couleurs qui ne dérivent d'aucune entrée de `c` et restent donc des **constantes
+  documentées**, par personnage : pommes `#c9302c` / feuille `#5aa844` (Applejack),
+  nuage `#ffffff` / `#c9d4e2` (Rainbow Dash), ballons `#f7d54e` et `#86cfee` (Pinkie),
+  papillons `#ef7ba9` (Fluttershy), diamants `#7fc3e8` (Rarity), gueule `#8f3448` et
+  langue `#d9647a` (Spike).
 
 ## 2026-08-24 — démarrage
 - **Twilight redessinée d'après référence (show-accurate).** Le propriétaire a fourni un
