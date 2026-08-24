@@ -6,15 +6,29 @@
 // (une seule couleur, donc reflets `CRIN_H` + séparations `CRIN_S2` au lieu des
 // bandes de couleur du template), ni corne ni ailes, marque = trois pommes.
 // ───────────────────────────────────────────────────────────────────────────────
-// ── EXPRESSION SIGNATURE (relevée sur `refs/applejack-id.png`) : regard franc,
-//    grand ouvert et parfaitement de niveau — aucune paupière rabattue, c'est
-//    l'assurance tranquille et non la fanfaronnade ; sourire FERMÉ en coin, dont
-//    le crochet avant reste bas ; cils SOBRES (deux, courts) ; et les TACHES DE
-//    ROUSSEUR, qui sont sa vraie signature. Contre-intuitif et vérifié sur la
-//    référence : elles sont plus CLAIRES que la robe, pas plus foncées.
+// ── EXPRESSION SIGNATURE, REFAITE SUR RÉFÉRENCE PLEIN PIED (24/08/2026) :
+//    `File:Applejack id S3E1.png` — https://mlp.fandom.com/wiki/File:Applejack_id_S3E1.png
+//    (complément : `File:Applejack ID S3E12.png`, `refs/applejack-sourire.png`).
+//    Le regard franc et les taches de rousseur sont conservés, mais leurs formes
+//    viennent maintenant du relevé et non du template :
+//      · les CILS sortent du coin HAUT-arrière (trois, en éventail) et non du
+//        coin bas, où ils se lisaient comme deux griffures sur la joue ;
+//      · le sourire est OUVERT, avec une bande de dents blanches : la référence
+//        ne montre jamais Applejack la bouche fermée, et le trait fermé du
+//        premier jet tombait pile dans l'encoche du museau, où il se lisait
+//        comme une lèvre fendue ;
+//      · les taches sont resserrées en petit triangle sous le coin arrière-bas
+//        de l'œil (relevé : 7 unités de côté, 3,4 de diamètre), au lieu du grand
+//        triangle bas du premier jet ;
+//      · le FRONT ARRIÈRE est nu — c'est ce que montre la référence, la frange
+//        couvrant le front AVANT et retombant en mèches sur le museau. C'est
+//        aussi ce qui laisse sortir les cils.
+//    Contre-intuitif et revérifié à la pipette : les taches sont plus CLAIRES
+//    que la robe (#fff8d3 sur une robe #f5b765), pas plus foncées.
 import {
   ton, derives, OREILLE, CORPS, membresFond, membresProches, naseau,
-  sourireCoin, oeil, OEIL_PROCHE, OEIL_LOIN, paupieres, joue, cils, taches,
+  sourireDents, oeil, OEIL_PROCHE, OEIL_LOIN, paupieres, joue, cilsCoinHaut,
+  taches, TACHES_JOUE,
 } from "./_commun.js";
 
 // ── QUEUE liée : elle descend sous la croupe, se PINCE vers y 205 (la ligature)
@@ -32,17 +46,34 @@ const QUEUE = "M141 122C124 126 110 137 101 154"
   + "C120 186 119 167 121 151"
   + "C126 138 133 128 141 122Z";
 
-// ── FRANGE : trois pointes qui descendent sous le bord du chapeau. Le bord bas
-//    est DENTELÉ (deux crans) et la pointe de gauche mord sur le coin de l'œil
-//    proche — sans elle la frange se lit comme un casque. Bord bas repris des
-//    cotes de la référence : au-delà de x 224 il doit remonter à y < 62, sinon
-//    la frange recouvre la pupille.
-const FRANGE = "M196 47C197 55 200 61 204 66 207 70 210 73 212 75"
-  + "C213 73 214 71 216 70"
-  + "C217 71 219 72 220 73"
-  + "C225 66 232 60 238 56 244 52 249 50 252 48"
-  + "C247 43 238 40 229 40"
-  + "C216 40 204 43 196 47Z";
+// ── FRANGE, REFAITE SUR RÉFÉRENCE. Le premier jet la faisait descendre sur le
+//    front ARRIÈRE (bord bas à (212,75)) et laissait le front avant nu : c'est
+//    l'inverse de la référence. Sur `Applejack_id_S3E1.png`, la ligne de cheveux
+//    court haut sur le crâne, le front ARRIÈRE est nu (une plage de robe entre
+//    l'oreille et la frange, où sortent les cils du coin haut), et la masse
+//    blonde retombe sur le front AVANT en un grand lobe dentelé qui file jusque
+//    sur le haut du museau. Cotes, en fraction de la hauteur de tête : bord bas
+//    à 0,13 h.t. au-dessus de l'œil arrière, 0,09 au-dessus de l'œil avant, et
+//    la mèche de tête descend jusqu'à 0,36 (ici y 69).
+//    Borne DÉCOUVERTE À L'ITÉRATION 2 : la frange ne peut pas filer jusque sur le
+//    museau, parce que l'ŒIL LOINTAIN occupe exactement x 258 → 274 / y 52 → 79.
+//    Poussée jusqu'à x 272 elle l'avalait aux trois quarts et n'en laissait
+//    qu'un triangle vert qui se lisait comme une écaille. C'est la raison pour
+//    laquelle la frange du template s'arrête elle aussi à x 251 : dans cette
+//    pose, le front AVANT appartient à l'œil de l'autre côté de la tête.
+//    Contrainte dure : le bord bas doit rester AU-DESSUS de y 58 entre x 213 et
+//    x 230, sinon il recouvre les trois cils du coin haut (x 215 → 228,
+//    y 57,7 → 66,4). Et pas de point sous y 62 au-delà de x 224 : la pupille de
+//    l'œil proche est dans l'amande 216 → 255 / 61 → 94.
+const FRANGE = "M186 47"
+  + "C190 51 197 53 205 54"
+  + "C212 55 220 57 227 62"
+  + "C232 61 237 60 241 61"
+  + "C245 64 249 67 252 69"
+  + "C254 63 255 57 254 51"
+  + "C253 44 250 39 244 36"
+  + "C234 32 221 32 209 35"
+  + "C196 38 188 42 186 47Z";
 
 // ── MÈCHE D'ENCOLURE liée : même pincement que la queue (y ≈ 163) puis touffe
 //    au niveau du poitrail.
@@ -55,14 +86,24 @@ const MECHE = "M199 90C193 104 188 120 186 138"
   + "C213 148 218 138 221 130"
   + "C215 114 207 100 199 90Z";
 
-// ── CHAPEAU. Le bord est une ellipse vue de trois quarts (x 190 → 294, plate),
-//    la calotte un tronc arrondi posé dessus (y 14 → 44). Le bord est dessiné
-//    APRÈS la calotte : c'est son arête avant qui masque la base de la calotte.
-const CALOTTE = "M212 46C210 36 212 26 218 20 224 15 234 13 246 13"
-  + "C258 13 268 15 274 21 280 27 282 37 281 47"
-  + "C266 51 226 51 212 46Z";
-const BORD = "M192 46C192 40 204 34 221 31 240 28 259 29 273 33 285 37 291 42 290 47"
-  + "C289 52 278 56 262 58 244 59 224 56 209 52 197 48 192 47 192 46Z";
+// ── CHAPEAU, RELEVÉ SUR RÉFÉRENCE. Le premier jet en faisait un melon posé à
+//    plat : bord horizontal descendant jusqu'à y 59, donc tout le front couvert,
+//    et pas une mèche visible devant. Sur la référence le chapeau est posé EN
+//    ARRIÈRE et BASCULÉ, son bord remonte franchement vers l'avant (l'arête
+//    avant passe au-dessus de l'œil, à 0,05 hauteur de tête sous le crâne), la
+//    calotte est HAUTE, et c'est la frange qui occupe le front sous le bord.
+//    Cotes : bord x 184 → 288, arête basse arrière y 46, arête basse avant y 41
+//    (soit 12 unités plus haut que le premier jet) ; calotte y 10 → 40.
+//    Borne dure : la fenêtre de portrait commence à y 6. Calé à y 8, le sommet de
+//    la calotte n'avait plus que 2 unités de marge sur 124 — sur le
+//    mini-portrait de la carte d'accueil (76 px) il affleurait le bord du cadre
+//    et se lisait comme coupé. Tout le chapeau est donc descendu de 3 : sommet à
+//    y 11, cinq unités de marge.
+const CALOTTE = "M211 42C207 32 209 22 216 17 223 12 233 11 244 11"
+  + "C256 11 265 14 271 20 277 27 278 35 277 44"
+  + "C263 48 225 47 211 42Z";
+const BORD = "M195 39C195 32 205 27 219 23 235 19 252 20 265 24 276 28 282 32 282 37"
+  + "C281 42 271 46 256 48 239 49 221 46 208 42 199 39 195 40 195 39Z";
 
 // ── POMME de la marque de beauté (rayon ≈ 10, centrée sur 0,0) : disque à
 //    creux supérieur, plus une petite feuille. Rouge, vert et brun sont des
@@ -129,20 +170,22 @@ export default (c) => {
   <!-- 6. MEMBRES PROCHES -->
   ${membresProches(c, d)}
 
-  <!-- 7. NASEAU + SOURIRE EN COIN, fermé, crochet bas : Applejack ne fanfaronne
-       pas, elle est sûre d'elle. Le rire ouvert du template lui donnait le même
-       visage qu'à Twilight. -->
-  ${naseau(d)}${sourireCoin(d, 1)}
+  <!-- 7. NASEAU + SOURIRE OUVERT À BANDE DE DENTS. Relevé sur la référence :
+       Applejack sourit toujours la bouche ouverte, coin ARRIÈRE relevé, et la
+       bande de dents blanches occupe le haut de l'ouverture (rapport mesuré :
+       deux fois plus longue que haute). Le trait fermé du premier jet tombait
+       dans l'encoche du museau et s'y lisait comme une lèvre fendue. -->
+  ${naseau(d)}${sourireDents(d, 1.25)}
 
   <!-- 8. YEUX grands ouverts, iris au contact du bord haut : le regard franc. -->
   ${oe(OEIL_PROCHE)}${oe(OEIL_LOIN)}
 
-  <!-- 8 bis. TACHES DE ROUSSEUR : trois, en petit triangle sur la joue proche.
-       Le point bas de l'amande est (244 ; 94,3) — elles se serrent 4 à 6 unités
-       dessous, comme sur la référence. Posées dix unités plus bas (premier
-       essai) elles se lisaient comme des miettes sur la joue. Bien en arrière du
-       naseau (268). Pas de paupière rabattue ici, c'est voulu. -->
-  ${taches(c.robe, [[238.5, 98.5, 2], [246.5, 100, 2], [242, 104.5, 1.8]])}
+  <!-- 8 bis. TACHES DE ROUSSEUR, resserrées sur relevé : petit triangle de
+       7 unités de côté COLLÉ sous le coin arrière-bas de l'amande (point bas
+       (244 ; 94,3)), diamètre 3,4. Le triangle large et bas du premier jet se
+       lisait comme trois miettes tombées sur la joue. Pas de paupière rabattue
+       ici, c'est voulu : le regard franc est celui de la référence. -->
+  ${taches(c.robe, TACHES_JOUE)}
 
   <!-- 9. PAUPIÈRES -->
   ${paupieres(c)}
@@ -154,11 +197,13 @@ export default (c) => {
 
   <!-- 12. CRINIÈRE : frange dentelée + mèche d'encolure liée -->
   <path d="${FRANGE}" fill="${M0}" stroke="${CRIN_T}" stroke-width="3.2"/>
-  <path d="M200 46C209 43 220 42 230 44 239 46 246 48 249 50" fill="none"
+  <!-- reflet et séparations : ils suivent la nouvelle ligne de cheveux, du crâne
+       arrière vers la mèche qui retombe sur le museau -->
+  <path d="M199 43C209 39 221 37 232 40 242 43 249 50 252 58" fill="none"
         stroke="${CRIN_H}" stroke-width="6"/>
   <g fill="none" stroke="${CRIN_S2}" stroke-width="1.5">
-    <path d="M202 51C210 46 220 44 229 46"/>
-    <path d="M206 61C212 55 219 51 226 48"/>
+    <path d="M200 47C210 43 222 42 233 47 242 51 248 58 250 65"/>
+    <path d="M212 51C222 50 231 54 239 60 245 65 249 68 251 70"/>
   </g>
   <path d="${FRANGE}" fill="none" stroke="${CRIN_T}" stroke-width="3.2"/>
 
@@ -179,18 +224,21 @@ export default (c) => {
   <!-- 12 bis. CHAPEAU, par-dessus la crinière : la frange sort de sous le bord.
        Calotte d'abord, bord ensuite — l'arête avant du bord ferme la calotte. -->
   <path d="${CALOTTE}" fill="${CHAPEAU}" stroke="${CHAP_T}" stroke-width="3"/>
-  <path d="M221 24C228 28 240 30 252 28 262 26 269 23 273 20" fill="none"
+  <path d="M219 23C226 27 237 29 248 27 257 25 264 22 268 19" fill="none"
         stroke="${CHAP_T}" stroke-width="2.4"/>
-  <path d="M223 19C230 16 239 15 247 16 255 17 262 19 267 22" fill="none"
+  <path d="M221 18C228 15 236 14 244 15 251 16 257 18 262 21" fill="none"
         stroke="${CHAP_H}" stroke-width="4"/>
-  <path d="M218 35C229 40 262 40 275 35" fill="none" stroke="${CHAP_T}" stroke-width="3.5"/>
+  <path d="M216 32C227 37 258 37 271 32" fill="none" stroke="${CHAP_T}" stroke-width="3.5"/>
   <path d="${BORD}" fill="${CHAPEAU}" stroke="${CHAP_T}" stroke-width="3"/>
-  <path d="M200 45C214 38 234 35 253 36 271 37 285 41 291 45" fill="none"
+  <path d="M202 36C214 30 231 26 247 27 263 28 275 32 280 35" fill="none"
         stroke="${CHAP_H}" stroke-width="4"/>
 
-  <!-- 13. CILS SOBRES : deux seulement. Applejack est la seule de la vague à ne
-       pas jouer du cil — trois ou plus la rapprochent de Rarity. -->
-  ${cils(d, 1, 2)}
+  <!-- 13. CILS AU COIN HAUT-ARRIÈRE (convention de la vague 2, désormais
+       partagée) : la référence en montre TROIS, en éventail vers le haut et
+       l'arrière, noirs. Les deux cils du coin bas du premier jet se lisaient
+       comme deux griffures vertes sur la joue. Ils sortent sous la frange, dont
+       le bord bas arrière remonte à y 51 exprès. -->
+  ${cilsCoinHaut(d, 3, 2.4)}
 
   </g>
 </svg>`;

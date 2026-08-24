@@ -11,15 +11,29 @@
 // Crinière monochrome : ni bandes de couleur ni contour clair possibles.
 // Ni corne ni ailes. Marque de beauté = trois ballons.
 // ───────────────────────────────────────────────────────────────────────────────
-// ── EXPRESSION SIGNATURE (relevée sur `refs/pinkie-pie-grin.png`) : GRAND RIRE
-//    bouche ouverte avec une rangée de dents, et des yeux ÉCARQUILLÉS. La
-//    trouvaille de la passe : un œil écarquillé ne s'obtient pas en agrandissant
-//    l'amande (ce qui décalerait le clignement) mais en RÉTRÉCISSANT l'iris pour
-//    qu'il se décolle du bord haut — du blanc apparaît tout autour et l'œil
-//    « s'ouvre » sans qu'un seul point de l'amande ait bougé.
+// ── EXPRESSION SIGNATURE, REFAITE SUR RÉFÉRENCE PLEIN PIED (24/08/2026) :
+//    `File:Pinkie Pie ID S4E11.png`
+//    — https://mlp.fandom.com/wiki/File:Pinkie_Pie_ID_S4E11.png
+//    (complément d'expression : `refs/pinkie-pie-grin.png`).
+//    Le grand rire et les yeux écarquillés restent — la trouvaille de la passe
+//    expressions tient toujours : un œil écarquillé ne s'obtient pas en
+//    agrandissant l'amande (ce qui décalerait le clignement) mais en
+//    RÉTRÉCISSANT l'iris pour qu'il se décolle du bord haut. Trois cotes ont
+//    changé au relevé :
+//      · le LISERÉ de l'amande et la PUPILLE sortaient tous les deux de
+//        `PUPILLE`, qui vaut un bleu MOYEN sur un œil bleu clair : les trois
+//        bleus se confondaient et l'œil se lisait comme une spirale bleue. Sur
+//        la référence, liseré et pupille sont NOIRS, l'iris seul est bleu ;
+//      · les CILS partaient du coin bas, en bleu vif : trois griffures sur la
+//        joue. Coin HAUT-arrière et noirs, comme sur la référence ;
+//      · les BOUCLES étaient trop nombreuses et trop petites (14 disques de
+//        rayon 10 à 13 sur la seule tête) : au comparateur la crinière se lisait
+//        comme un chou-fleur. La référence en montre moitié moins, deux fois
+//        plus grosses.
 import {
   ton, derives, OREILLE, CORPS, membresFond, membresProches, naseau,
-  grandRire, oeil, OEIL_PROCHE, OEIL_LOIN, paupieres, joue, cils, etincelle,
+  grandRire, oeil, OEIL_PROCHE, OEIL_LOIN, paupieres, joue, cilsCoinHaut,
+  museauLisse, etincelle,
 } from "./_commun.js";
 
 // ── BOUCLES. Les listes sont ordonnées de l'ARRIÈRE vers l'AVANT du dessin.
@@ -33,22 +47,34 @@ import {
 // Chaque masse est faite de DEUX rangs : le rang extérieur d'abord, le rang
 // intérieur par-dessus. Une seule file de boucles donne une chaîne de perles,
 // pas un volume.
+// REFONTE : MOINS DE BOUCLES, PLUS GROSSES. Le premier jet en posait 14 sur la
+// tête, de rayon 10 à 13 ; à la taille de la vignette de galerie elles se
+// fondaient en un relief régulier de petits lobes — un chou-fleur. Le relevé
+// donne, sur la hauteur de tête, des boucles de 0,21 à 0,23 (ici rayon 15 à 17)
+// et QUATRE par rang, pas six. Deuxième tour nécessaire : à cinq boucles de
+// rayon 13-15 la couronne se lisait encore comme une guirlande de perles autour
+// du crâne. Ce qui fait la crinière de Pinkie, ce sont peu de GROS lobes. Les deux rangs restent : une seule file de boucles
+// fait une chaîne de perles, pas un volume.
+// Bornes de composition, inchangées et revérifiées : aucune boucle ne descend
+// sous y 58 dans la bande x 216 → 255 (l'amande de l'œil proche), la boucle la
+// plus haute culmine à y 8 (la fenêtre de portrait commence à y 6), et la
+// dernière boucle de front reste à x < 262 pour ne pas avaler l'œil LOINTAIN
+// (x 258 → 274 / y 52 → 79).
 const BOUCLES_TETE = [
-  [192, 44, 11], [200, 30, 11], [214, 22, 12],   // rang extérieur, du crâne
-  [232, 20, 12], [248, 28, 11], [258, 42, 10],   //   vers le front
-  [188, 60, 12], [196, 46, 12], [208, 36, 13],   // rang intérieur
-  [224, 32, 13], [240, 36, 12], [251, 47, 10],
-  [180, 76, 12], [180, 92, 12],                  // la nuque
+  [193, 44, 15], [211, 26, 17], [239, 26, 16],   // rang extérieur, du crâne
+  [258, 40, 11],                                 //   vers le front
+  [188, 66, 14], [204, 44, 16], [228, 32, 17],   // rang intérieur
+  [250, 42, 13],
+  [180, 84, 13], [181, 100, 12],                 // la nuque
 ];
 const BOUCLES_COU = [
-  [186, 106, 12], [190, 122, 13], [192, 138, 13],
-  [190, 154, 12], [194, 170, 11],
-  [200, 112, 11], [204, 130, 12], [203, 148, 12], [202, 164, 11],
+  [185, 108, 13], [190, 126, 14], [191, 144, 13], [194, 162, 12],
+  [201, 116, 11], [204, 136, 12], [203, 156, 11],
 ];
 const BOUCLES_QUEUE = [
-  [124, 142, 12], [112, 152, 14], [100, 168, 15],
-  [94, 188, 15], [94, 208, 15], [102, 226, 14], [116, 238, 13],
-  [118, 158, 13], [110, 180, 14], [108, 200, 14], [114, 220, 13],
+  [124, 142, 13], [110, 154, 15], [98, 172, 16],
+  [94, 194, 16], [100, 216, 15], [114, 234, 14],
+  [116, 162, 14], [108, 186, 15], [110, 210, 14],
 ];
 
 // ── BALLON de la marque de beauté : goutte inversée + nœud + ficelle. Le jaune
@@ -86,7 +112,11 @@ export default (c) => {
   // Iris à 84 % et poussé vers le bas-avant : il quitte le bord haut de
   // l'amande, du blanc s'ouvre au-dessus, et le regard pétille. Plus une
   // étincelle supplémentaire au coin haut de chaque œil.
-  const oe = oeil(c, d, {
+  // ŒIL À CERNE NOIR : `PUPILLE` (un bleu moyen sur un iris bleu clair) servait
+  // à la fois de liseré d'amande et de pupille, si bien que les trois bleus se
+  // confondaient. La référence donne un liseré et une pupille NOIRS autour d'un
+  // iris bleu clair — d'où `CRAYON` passé en `PUPILLE` pour cet œil.
+  const oe = oeil(c, { ...d, PUPILLE: d.CRAYON }, {
     iris: .84, regard: [1.6, 3],
     sus: etincelle(-9.5, -10, .3) + etincelle(12.5, -4.5, .22),
   });
@@ -128,10 +158,15 @@ export default (c) => {
   <!-- 6. MEMBRES PROCHES -->
   ${membresProches(c, d)}
 
+  <!-- 6 ter. MUSEAU LISSE. Le grand rire s'étalant sur la JOUE, l'encoche de
+       bouche de la silhouette restait vide et le bout du museau se lisait comme
+       un bec (cf. _commun.js). Elle est rabotée de 10 unités à 3. -->
+  ${museauLisse(c, d)}
+
   <!-- 7. NASEAU + GRAND RIRE. Il s'étale vers l'ARRIÈRE, sous la joue, et non
-       vers l'avant : l'encoche de bouche de la silhouette bloque tout à
-       x > 272 entre y 98 et 102. Sa rangée de dents est ce qui le distingue du
-       sourire ouvert du template. -->
+       vers l'avant : même museau raboté, la lèvre avant ne peut pas dépasser
+       x 274. Sa rangée de dents est ce qui le distingue du sourire ouvert du
+       template. -->
   ${naseau(d)}${grandRire(d)}
 
   <!-- 8. YEUX -->
@@ -157,8 +192,9 @@ export default (c) => {
   <path d="${OREILLE}" fill="${c.robe}" stroke="${TRAIT}" stroke-width="3.2"/>
   <path d="M202 62C200 74 200 86 202 100" fill="none" stroke="${TRAIT}" stroke-width="3.4"/>
 
-  <!-- 13. CILS -->
-  ${cils(d)}
+  <!-- 13. CILS AU COIN HAUT-ARRIÈRE, noirs (convention de la vague 2, désormais
+       partagée). Au coin bas et en bleu vif, ils faisaient trois griffures. -->
+  ${cilsCoinHaut(d, 3, 2.4)}
 
   </g>
 </svg>`;

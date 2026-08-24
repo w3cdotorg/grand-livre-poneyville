@@ -9,9 +9,25 @@
 // Là où la spirale se recouvre elle-même, la seconde passe efface la première :
 // la volute se referme proprement, sans couture interne.
 //
-// ── EXPRESSION SIGNATURE (relevée sur `refs/rarity-sweet.png` et
-//    `refs/rarity-canterlot.png`) : paupières MI-CLOSES, cils spectaculaires
-//    (quatre, longs, épais), sourcils fins et arqués, sourire posé.
+// ── EXPRESSION SIGNATURE, REFAITE SUR RÉFÉRENCE PLEIN PIED (24/08/2026) :
+//    `File:Rarity id S1E08.png` — https://mlp.fandom.com/wiki/File:Rarity_id_S1E08.png
+//    (840 × 720, la plus détaillée des six ; complément d'expression :
+//    `refs/rarity-sweet.png`, `refs/rarity-canterlot.png`).
+//    Paupières mi-closes, cils spectaculaires et sourire posé : tout cela reste.
+//    Trois cotes changent, et la troisième est un revirement :
+//      · les CILS sortent du coin HAUT-arrière. Au coin bas, quatre cils longs et
+//        épais faisaient quatre traits noirs en travers de la joue — de loin le
+//        pire défaut du personnage au comparateur, on lui voyait des moustaches ;
+//      · la paupière du fard passe de `.6` à `.72`. Sur la référence, le fard est
+//        une BANDE le long du bord haut (un quart de la hauteur d'œil), pas une
+//        paupière à moitié rabattue : à `.6` l'œil de Rarity était le plus fermé
+//        de la galerie alors qu'elle a les plus grands yeux de la série ;
+//      · **elle a bien un SOURCIL.** La passe expressions avait conclu que non,
+//        et le raisonnement était juste pour la frange d'alors, coiffée EN AVANT
+//        et dont le bord bas passait par (238,66) — plus bas que le sommet de
+//        l'œil. Mais les deux références montrent une frange REJETÉE EN ARRIÈRE
+//        qui dégage le front, et un sourcil fin et arqué dessus. La frange est
+//        donc remontée, et le sourcil posé dans les 7 unités de front nu.
 //
 //    Et surtout : le FARD À PAUPIÈRES est visible YEUX OUVERTS. Il l'était
 //    seulement au clignement, ce qui revenait à cacher sa marque de fabrique
@@ -23,18 +39,30 @@
 import {
   ton, derives, OREILLE, CORPS, membresFond, membresProches, naseau,
   sourirePose, oeil, OEIL_PROCHE, OEIL_LOIN, paupieres, paupiereHaute,
-  joue, cils, corne,
+  joue, cilsCoinHaut, sourcil, museauLisse, corne,
 } from "./_commun.js";
 
-// ── FRANGE : reprise du template, avec l'encoche qui contourne la corne
-//    (233,42 → 237,28) et la pointe qui mord sur le coin externe de l'œil
-//    proche (216,82). Le balayage est un peu plus long et plus doux que celui
-//    de Twilight — Rarity a la mèche coiffée, pas ébouriffée.
-const FRANGE = "M236 28C230 32 220 38 210 45 204 49 197 54 193 60"
-  + "C198 65 204 70 210 75 213 78 215 80 216 82"
-  + "C222 78 230 72 238 66 246 60 253 55 256 51"
-  + "C250 47 242 44 233 42"
-  + "C234 37 235 32 237 28Z";
+// ── FRANGE, REFAITE SUR RÉFÉRENCE : REJETÉE EN ARRIÈRE. Le premier jet la
+//    coiffait EN AVANT, bord bas descendant jusqu'à (216,82) — donc par-dessus
+//    tout l'arrière de l'œil (amande 216 → 255 / 61 → 94). C'est ce qui
+//    interdisait à la fois le sourcil et les cils du coin haut. Les deux
+//    références montrent l'inverse : la masse violette est BALAYÉE VERS
+//    L'ARRIÈRE, son bord bas court à 0,12 hauteur de tête au-dessus de l'œil, et
+//    le front est nu entre les deux.
+//    Bornes : bord bas au-dessus de y 56 entre x 205 et x 230 (les cils du coin
+//    haut occupent x 215 → 228 / y 57,7 → 66,4, et le sourcil y 56,5 → 58,5) ;
+//    la masse s'arrête à x 240, si bien qu'elle ne couvre que la BASE ARRIÈRE de
+//    la corne : sur les deux références la corne se dresse DEVANT la crinière,
+//    dégagée sur toute sa longueur, et le front reste blanc entre elle et l'œil
+//    lointain. Premier essai poussé jusqu'à x 255 : la frange avalait les deux
+//    tiers de la corne et se lisait comme un béret posé de travers.
+const FRANGE = "M243 44"
+  + "C236 49 226 53 216 55"
+  + "C208 57 200 57 195 55"
+  + "C191 49 192 39 197 32"
+  + "C205 25 215 22 224 22"
+  + "C232 23 238 26 241 31"
+  + "C239 35 239 40 243 44Z";
 
 // ── VOLUTES. Chemins de spirale : chaque volute part de la base de la frange
 //    et s'enroule vers son centre. Le trait épais fait le volume.
@@ -75,6 +103,12 @@ export default (c) => {
   // un gris-violet qui, sur une robe presque blanche, se lisait comme une ombre
   // sale ; il dérive donc de la couleur des YEUX, désaturée et éclaircie.
   const FARD = ton(c.yeux, .5, .4);
+  // Contour de CORNE renforcé. `TRAIT` dérive d'une robe quasi blanche
+  // (#f2f0f7) : il en sort un gris-lavande très clair, avec lequel la corne
+  // disparaissait purement et simplement sur le front — au comparateur on ne
+  // voyait plus que ses quatre stries flotter. Sur la référence la corne est
+  // cernée d'un gris franc.
+  const CORNE_T = ton(c.robe, 1.05, -.34);   // gris-lavande franc
   const oe = oeil(c, d);
 
   // Une volute : passe large en contour, passe fine en crinière, filet clair.
@@ -103,6 +137,10 @@ export default (c) => {
   <!-- 6. MEMBRES PROCHES -->
   ${membresProches(c, d)}
 
+  <!-- 6 ter. MUSEAU LISSE : bouche fermée, l'encoche de bouche de la silhouette
+       restait vide et le museau se terminait en bec (cf. _commun.js). -->
+  ${museauLisse(c, d)}
+
   <!-- 7. NASEAU + SOURIRE POSÉ : long, il remonte vers l'avant et s'achève sur
        un repli de lèvre. Le maintien, pas la joie. -->
   ${naseau(d)}${sourirePose(d)}
@@ -110,18 +148,21 @@ export default (c) => {
   <!-- 8. YEUX -->
   ${oe(OEIL_PROCHE)}${oe(OEIL_LOIN)}
 
-  <!-- 8 bis. PAUPIÈRES MI-CLOSES peintes du FARD : .6 d'ouverture. C'est
+  <!-- 8 bis. PAUPIÈRES peintes du FARD : .72 d'ouverture (et non .6). C'est
        ce qui rend le fard visible à l'état ouvert, et non plus au seul
        clignement. Le bord bas du fard est le bord bas même de l'œil remonté,
        donc rigoureusement parallèle à lui. -->
-  ${paupiereHaute(c, d, .6, FARD)}
+  ${paupiereHaute(c, d, .72, FARD)}
 
-  <!-- 8 ter. PAS DE SOURCIL. Essayé en couleur de crinière (x 222 → 240), et
-       intégralement invisible : la frange de Rarity est coiffée EN AVANT et son
-       bord bas passe par (222,78), (230,72), (238,66), (246,60) — donc plus bas
-       que le sommet de l'œil (y 61). Elle mord le coin arrière de l'œil : il n'y
-       a littéralement pas de front. Ce sont les paupières fardées et les cils
-       qui portent l'expression. -->
+  <!-- 8 ter. SOURCIL FIN ET ARQUÉ — ajouté à la refonte du 24/08, avec la
+       frange remontée. Le verdict « pas de front où le poser » de la passe
+       expressions portait sur une frange coiffée en avant qui n'est pas celle
+       des références. Il reste maintenant 7 unités entre le bord bas de la
+       frange (y 54,5 à x 222) et le sommet de l'amande (y 61) : le sourcil y
+       tient, à condition d'être MINCE (1,9). Il est arqué et non descendant —
+       descendant, c'est l'air méprisant qu'on avait déjà écarté pour Diamond
+       Tiara. -->
+  ${sourcil(d.PUPILLE, "M222 59.6C227.5 56.8 234.5 56.2 241 58.4", 1.9)}
 
   <!-- 9. PAUPIÈRES du clignement, du même fard -->
   ${paupieres(c, 1, FARD)}
@@ -129,14 +170,17 @@ export default (c) => {
   <!-- 10. contour de la joue, par-dessus l'œil lointain -->
   ${joue(d)}
 
-  <!-- 11. CORNE, avant la crinière pour que la frange couvre sa base -->
-  ${corne(c, d)}
+  <!-- 11. CORNE, avant la crinière pour que la frange couvre sa base. Contour
+       renforcé : le TRAIT dérivé d'une robe quasi blanche la rendait invisible. -->
+  ${corne(c, { TRAIT: CORNE_T })}
 
   <!-- 12. CRINIÈRE : frange, puis les deux volutes de la nuque et de l'encolure -->
   <path d="${FRANGE}" fill="${M0}" stroke="${CRIN_T}" stroke-width="3.2"/>
-  <path d="M202 58C210 51 220 45 230 39 239 34 246 31 250 30" fill="none"
+  <!-- reflet et séparation : ils suivent le BALAYAGE ARRIÈRE de la nouvelle
+       frange, de la pointe avant (255,45) vers la nuque (203,42) -->
+  <path d="M238 40C229 45 218 49 209 50 201 51 196 49 195 46" fill="none"
         stroke="${CRIN_H}" stroke-width="7"/>
-  <path d="M205 66C214 58 225 51 236 45" fill="none"
+  <path d="M239 45C230 50 219 54 209 55" fill="none"
         stroke="${ton(M0, 1.05, -.11)}" stroke-width="1.6"/>
   <path d="${FRANGE}" fill="none" stroke="${CRIN_T}" stroke-width="3.2"/>
 
@@ -152,10 +196,14 @@ export default (c) => {
 
   ${volute(VOLUTE_COU, 26)}
 
-  <!-- 13. CILS SPECTACULAIRES : quatre, très longs et ÉPAIS (3,2). Le quatrième
-       part de (231,5 ; 93), sur le bord bas de l'amande : au-delà il décollerait
-       de l'œil. C'est le seul poney de la vague qui en a quatre. -->
-  ${cils(d, 2, 4, 3.2)}
+  <!-- 13. CILS SPECTACULAIRES, au coin HAUT-arrière : trois (le répertoire
+       cilsHauts de _commun.js en compte trois), très longs (l = 1,8) et ÉPAIS
+       (3). Sur la référence ce sont quatre à cinq cils, mais ils se recouvrent :
+       à l'échelle
+       de la vignette, trois cils longs et épais rendent exactement la même
+       masse, et quatre au même endroit se fondent en un pâté noir. C'est le
+       poney de la galerie qui a les plus longs. -->
+  ${cilsCoinHaut(d, 3, 2.5, 1.6)}
 
   </g>
 </svg>`;

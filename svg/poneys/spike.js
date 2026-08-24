@@ -25,6 +25,13 @@ import { ton, derives, AMANDE, oeil } from "./_commun.js";
 //    saillir BAS, sous la ligne des yeux : posé à hauteur d'œil il se lit comme
 //    une bosse sur la joue, et sans lui du tout la tête reste une boule et
 //    Spike se lit comme un chat violet.
+//    ── COU ÉPAISSI À LA REFONTE DU 24/08. Le premier jet donnait un cou de
+//    12 unités de large (gorge x 208 / nuque x 196 à y 120) sous un crâne de
+//    111 : la tête flottait sur une tige et le comparateur lisait une girafe.
+//    Sur la référence plein pied, le cou d'un bébé dragon fait 0,7 de la LARGEUR
+//    DE BASE DU CRÂNE et il est COURT. Gorge portée à x 217 et nuque à x 193,
+//    soit 24 unités, et le torse remonté de 23 : la longueur de cou visible
+//    passe de 47 à 23 unités, soit 0,25 hauteur de crâne au lieu de 0,52.
 const CORPS = "M182 62"
   + "C182 38 202 20 230 20"
   + "C254 20 272 32 276 52"
@@ -33,55 +40,82 @@ const CORPS = "M182 62"
   + "C278 94 268 96 260 96"
   + "C254 102 246 106 238 108"
   + "C230 110 223 109 219 107"
-  + "C212 111 208 117 208 124"
-  + "C208 132 212 138 218 143"
-  + "C229 151 237 161 238 175"
+  + "C216 112 216 120 220 128"    // gorge — cou ÉPAISSI et RACCOURCI (cf. en-tête)
+  + "C226 136 232 144 236 152"
+  + "C240 161 240 169 238 175"
   + "C239 190 233 202 223 209"
   + "C215 214 205 215 197 213"
   + "C185 210 177 202 175 191"
   + "C173 179 174 167 177 157"
-  + "C180 147 185 139 190 132"
-  + "C194 127 196 122 196 117"
-  + "C194 107 189 97 186 87"
+  + "C180 147 187 136 192 126"    // nuque — cou ÉPAISSI et RACCOURCI
+  + "C196 119 194 111 192 103"
+  + "C190 96 187 90 186 84"
   + "C184 78 182 70 182 62Z";
 
 // ── VENTRE clair, sur l'avant du torse. Deux bords : celui de gauche épouse
 //    l'intérieur du poitrail, celui de droite la silhouette du ventre.
-const VENTRE = "M208 126C201 138 199 154 205 168"
-  + "C213 182 218 196 214 208"
-  + "C222 214 232 209 237 199"
-  + "C242 187 240 172 232 159"
-  + "C223 145 213 134 208 126Z";
+// REMONTÉ de 14 unités à la refonte du 24/08 : il commençait à y 126 alors que
+// le menton est à y 107, ce qui laissait 19 unités de robe nue sous la gorge et
+// rallongeait visuellement le cou d'autant — la vraie cause de l'effet girafe,
+// autant que la finesse du cou. Sur la référence le plastron démarre juste sous
+// la mâchoire.
+const VENTRE = "M206 112C199 126 197 146 203 162"
+  + "C211 178 217 194 213 207"
+  + "C222 213 232 208 237 198"
+  + "C242 186 240 170 232 156"
+  + "C222 140 211 124 206 112Z";
 
-// ── CRÊTE : la rangée de pointes vertes du crâne, posée SUR la tête (et non
-//    derrière). Quatre pointes, du front (258,30) vers la nuque (182,20), puis
-//    un bord bas qui redescend le long du crâne. Les pointes culminent à y 10 :
-//    la fenêtre de portrait commence à y 6, il reste quatre unités de marge.
-const CRETE = "M252 26"
-  + "C252 14 250 12 248 12"
-  + "C246 18 244 24 240 28"
-  + "C238 16 234 10 230 10"
-  + "C228 16 224 22 220 26"
-  + "C218 14 212 8 208 10"
-  + "C206 18 200 26 194 32"
-  + "C190 22 186 18 182 20"
-  + "C182 30 184 42 188 52"
-  + "C194 46 202 40 210 36"
-  + "C220 30 238 26 252 26Z";
+// ── CRÊTE, REFAITE SUR RÉFÉRENCE PLEIN PIED (24/08/2026) :
+//    `File:Spike ID S4E24.png` — https://mlp.fandom.com/wiki/File:Spike_ID_S4E24.png
+//    Le premier jet posait QUATRE petites pointes de 6 unités de haut le long du
+//    crâne : au comparateur ça faisait une scie, pas une crête de dragon. Relevé
+//    sur la référence : ce sont TROIS grandes palmes en flamme, larges de 0,25 à
+//    0,37 longueur de crâne, qui montent à 0,57 HAUTEUR DE CRÂNE au-dessus du
+//    sommet de la tête — la plus haute à l'AVANT, la plus courte à l'arrière et
+//    couchée vers l'arrière. C'est le trait qui fait « dragon » avant même les
+//    yeux. Elles sont LARGES (la palme avant fait 48 unités à la base pour 57 de
+//    haut) et PENCHÉES EN ARRIÈRE : dressées droit et pointues, comme au
+//    deuxième tour, les trois pointes se lisaient comme une couronne en papier
+//    posée sur le crâne.
+//    Elles ne tiennent dans la fenêtre de portrait qu'au prix du `CADRE_SPIKE`
+//    plus bas : à l'échelle 1 leurs pointes seraient à y −18, soit 24 unités
+//    au-dessus du bord haut de la fenêtre.
+const CRETE = "M270 38"
+  + "C266 20 252 0 240 -19"
+  + "C232 -14 226 -2 222 8"
+  + "C216 -6 208 -14 200 -17"
+  + "C193 -8 187 2 183 8"
+  + "C179 0 173 -4 167 -3"
+  + "C167 12 172 25 178 35"
+  + "C185 28 195 22 205 19"
+  + "C220 13 244 17 258 25"
+  + "C263 29 268 34 270 38Z";
 
-// ── AILERON D'OREILLE : palme verte à l'arrière du crâne, pas l'oreille en
-//    feuille des poneys.
-const AILERON = "M190 56C184 52 174 50 166 52"
-  + "C170 58 174 64 180 70"
-  + "C185 74 189 74 191 70"
-  + "C192 65 191 60 190 56Z";
+// ── AILERON D'OREILLE : palme à l'arrière du crâne, pas l'oreille en feuille
+//    des poneys. REFAIT SUR RÉFÉRENCE : il est deux fois plus grand que le
+//    premier jet (0,42 longueur de crâne au lieu de 0,22), il pointe vers
+//    l'arrière-bas, et il est du VERT PÂLE du ventre — pas du vert soutenu de la
+//    crête. C'est le seul relevé de couleur qui contredisait l'intuition sur
+//    Spike : les deux verts sont bien distincts sur la référence, la crête est
+//    saturée et l'aileron délavé, comme la face interne d'une aile.
+const AILERON = "M192 52C184 44 168 38 150 42"
+  + "C154 54 162 66 172 76"
+  + "C180 83 188 84 191 78"
+  + "C194 70 193 60 192 52Z";
 
 // ── QUEUE : trapue, en arrière-bas, avec deux pointes vertes sur le dessus.
+// ── QUEUE : trapue, en arrière-bas, terminée par un FER DE LANCE. Relevé sur la
+//    référence : la queue de Spike ne s'effile pas en cône, elle finit sur une
+//    pointe élargie en losange. Sans elle, la queue se lisait comme un simple
+//    boudin coupé net.
 const QUEUE = "M190 190C176 197 157 208 143 220"
-  + "C133 229 127 238 128 246"
-  + "C137 249 147 245 156 240"
-  + "C169 232 183 223 191 213"
-  + "C196 206 196 197 190 190Z";
+  + "C136 226 131 233 130 240"
+  + "C124 240 118 242 114 246"
+  + "C120 250 126 252 132 252"
+  + "C131 258 133 264 137 267"
+  + "C142 262 146 255 147 248"
+  + "C160 241 178 228 189 216"
+  + "C195 209 196 197 190 190Z";
 const POINTES_DOS = [
   "M182 164L177 184 154 166Z",
   "M177 188L179 208 148 196Z",
@@ -133,11 +167,29 @@ export default (c) => {
   //     mauvais côté et Spike devient divergent.
   //   · posé comme celui d'un poney (à droite, sur le museau), il se lit comme
   //     un œil greffé sur la truffe.
-  const OEIL_L = "translate(213 65) scale(.74 .95)";
-  const OEIL_P = "translate(253 61) scale(1.08)";
+  // Agrandis à la refonte du 24/08 : sur la référence les deux yeux occupent à
+  // eux seuls 0,55 de la largeur du crâne. Le lointain suit, mais moins.
+  const OEIL_L = "translate(212 65) scale(.80 1)";
+  const OEIL_P = "translate(254 61) scale(1.16)";
 
   return `<svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg" role="img">
-  <g stroke-linejoin="round" stroke-linecap="round">
+  <!-- CADRE_SPIKE : tout le dragon est posé dans un groupe translate(31 25.4)
+       scale(.87). Deux raisons, et la seconde est la vraie :
+        · la CRÊTE refaite sur référence monte à y −18 dans le repère local
+          (0,57 hauteur de crâne au-dessus du sommet de la tête, cote relevée) ;
+          à l'échelle 1 elle sortirait de 24 unités par le haut de la fenêtre de
+          portrait, qui commence à y 6 ;
+        · les deux nombres sont bornés par cette fenêtre : pointe de crête à
+          y 8 (25,4 + 0,87 × −18 = 9,7) et menton à y 122 (25,4 + 0,87 × 111),
+          soit tête + crête = 114 unités dans une fenêtre de 124. Le tx = 31
+          recentre la tête, que le scale seul ramenait à x 158 → 255, hors de la
+          fenêtre x 171 → 295 ; elle retombe sur x 189 → 286. Les pointes sont
+       calées à y −19 et non plus bas : à −22, la pointe médiane retombait à
+       y 6,3 et son contour de 3 unités était rogné par le bord de la fenêtre.
+       Le groupe englobe class="paupieres" sans casser le clignement : le CSS
+       animait déjà le transform DU GROUPE des paupières, et un transform parent
+       se compose (déjà vérifié au navigateur sur les pouliches de la vague 2). -->
+  <g transform="translate(31 25.4) scale(.87)" stroke-linejoin="round" stroke-linecap="round">
 
   <!-- 1. QUEUE et POINTES DU DOS, derrière tout -->
   <g fill="${M0}" stroke="${CRIN_T}" stroke-width="3">
@@ -151,14 +203,28 @@ export default (c) => {
   </g>
 
   <!-- 3. AILERON D'OREILLE, avant la tête : c'est le contour de la tête,
-       dessiné ensuite, qui creuse son attache. -->
-  <path d="${AILERON}" fill="${M0}" stroke="${CRIN_T}" stroke-width="3"/>
+       dessiné ensuite, qui creuse son attache. Vert PÂLE (celui du ventre) et
+       nervuré, comme sur la référence. -->
+  <path d="${AILERON}" fill="${VENTRE_C}" stroke="${VENTRE_T}" stroke-width="3"/>
+  <g fill="none" stroke="${VENTRE_T}" stroke-width="1.6">
+    <path d="M188 56C178 50 166 46 156 46"/>
+    <path d="M187 66C178 60 168 53 160 50"/>
+  </g>
 
   <!-- 4. TÊTE + COU + TORSE : une seule silhouette -->
   <path d="${CORPS}" fill="${c.robe}" stroke="${TRAIT}" stroke-width="3.4"/>
 
-  <!-- 5. VENTRE clair -->
+  <!-- 5. VENTRE clair, avec ses ÉCAILLES. Relevé sur la référence : le plastron
+       de Spike est barré de cinq bandes horizontales, et sans elles il se lit
+       comme une bavette. -->
   <path d="${VENTRE}" fill="${VENTRE_C}" stroke="${VENTRE_T}" stroke-width="2.6"/>
+  <g fill="none" stroke="${VENTRE_T}" stroke-width="1.5">
+    <path d="M201 126C208 130 216 131 222 129"/>
+    <path d="M199 141C207 146 216 147 225 144"/>
+    <path d="M199 156C208 161 218 162 228 159"/>
+    <path d="M205 172C213 177 224 177 233 174"/>
+    <path d="M211 188C219 192 228 192 236 189"/>
+  </g>
 
   <!-- 6. MEMBRES PROCHES : bras droit tendu et jambe droite -->
   <g fill="${c.robe}" stroke="${TRAIT}" stroke-width="3.2">
@@ -179,7 +245,10 @@ export default (c) => {
        La bouche doit rester bien À L'INTÉRIEUR du crâne : posée sur le bord de
        la mâchoire (y ≈ 100) elle se confond avec le contour et les crocs
        pendent dans le vide sous le menton. -->
-  <circle cx="283" cy="77" r="2.4" fill="${TRAIT}"/>
+  <!-- NASEAU : une virgule enroulée, relevée sur la référence. Le simple point
+       du premier jet se lisait comme un grain de beauté sur la joue. -->
+  <path d="M285 74C288 75 289 78 287 80 285 81.5 283 80.5 283 78.5" fill="none"
+        stroke="${TRAIT}" stroke-width="2.4"/>
   <path d="M232 82C240 95 258 95 272 79C260 74 243 75 232 82Z"
         fill="${GUEULE}" stroke="${TRAIT}" stroke-width="2.4"/>
   <path d="M241 88C249 95 257 94 263 88 257 91 248 92 241 88Z" fill="${LANGUE_D}"/>
@@ -194,8 +263,8 @@ export default (c) => {
        position fermée. Mêmes transformations que les yeux, sinon le clignement
        laisse un croissant d'œil visible. -->
   <g class="paupieres">
-    <path d="${AMANDE}" transform="translate(213 65) scale(.79 1.02)" fill="${c.robe}"/>
-    <path d="${AMANDE}" transform="translate(253 61) scale(1.16)" fill="${c.robe}"/>
+    <path d="${AMANDE}" transform="translate(212 65) scale(.856 1.07)" fill="${c.robe}"/>
+    <path d="${AMANDE}" transform="translate(254 61) scale(1.24)" fill="${c.robe}"/>
   </g>
 
   <!-- 10. le contour du chanfrein repasse par-dessus l'œil lointain -->
@@ -203,10 +272,10 @@ export default (c) => {
 
   <!-- 11. CRÊTE de pointes vertes, sur le crâne -->
   <path d="${CRETE}" fill="${M0}" stroke="${CRIN_T}" stroke-width="3"/>
-  <g fill="none" stroke="${ton(M0, 1, -.09)}" stroke-width="1.6">
-    <path d="M250 20C244 26 238 32 232 36"/>
-    <path d="M228 18C222 24 216 30 210 34"/>
-    <path d="M204 18C198 26 192 32 188 38"/>
+  <g fill="none" stroke="${ton(M0, 1, -.09)}" stroke-width="1.8">
+    <path d="M240 -13C246 1 255 17 263 31"/>
+    <path d="M201 -11C205 2 212 15 218 26"/>
+    <path d="M169 2C171 11 174 22 177 31"/>
   </g>
 
   </g>

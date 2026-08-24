@@ -23,16 +23,25 @@
 // `ton(rouge, …)` cerne les bandes bleues et violettes d'un liseré rouge très
 // voyant. Il dérive de `criniere[5]` (le violet), la plus sombre des six.
 // ───────────────────────────────────────────────────────────────────────────────
-// ── EXPRESSION SIGNATURE (relevée sur `refs/rainbow-dash-smirk.png`) : le
-//    « smug » de Rainbow Dash tient à TROIS choses qui doivent aller ensemble,
-//    faute de quoi elle a juste l'air fatiguée — paupières hautes RABATTUES,
-//    paupières basses légèrement remontées (le plissement), et un SOURCIL
-//    relevé. La crête étant rejetée en arrière, son front est nu de y 45 à
-//    y 60 : c'est la seule de la vague qui a la place d'un vrai sourcil.
+// ── EXPRESSION SIGNATURE, REFAITE SUR RÉFÉRENCE PLEIN PIED (24/08/2026) :
+//    `File:Rainbow Dash ID S3E7.png`
+//    — https://mlp.fandom.com/wiki/File:Rainbow_Dash_ID_S3E7.png
+//    (complément d'expression : `refs/rainbow-dash-smirk.png`).
+//    Le « smug » reste, mais les trois cotes qui le portaient étaient fausses :
+//      · le SOURCIL était peint en `PUPILLE`, soit un MAGENTA VIF. Sur la
+//        référence du smirk c'est un trait presque noir, fin et PLAT. En magenta
+//        et arqué il faisait un sourcil de colère, et c'est lui qui rendait
+//        Rainbow Dash méchante plutôt que crâneuse ;
+//      · les CILS partaient du coin bas — trois griffures magenta sur la joue.
+//        La référence les met au coin HAUT-arrière, noirs, en éventail ;
+//      · la paupière à `.64` + `.10` par le bas écrasait l'iris en une fente :
+//        sur la référence l'œil mi-clos garde une pupille ronde entière. Remonté
+//        à `.72` + `.07`, l'air malin reste et le regard redevient lisible en
+//        vignette de galerie.
 import {
   ton, derives, OREILLE, CORPS, membresFond, membresProches, naseau,
   sourireCoin, oeil, OEIL_PROCHE, OEIL_LOIN, paupieres, paupiereHaute,
-  paupiereBasse, sourcil, joue, cils, aileDeployee,
+  paupiereBasse, sourcil, joue, cilsCoinHaut, museauLisse, aileDeployee,
 } from "./_commun.js";
 
 // Une mèche : amande pointue tracée en deux quadratiques. `a` et `b` sont les
@@ -44,13 +53,19 @@ const meche = ([ax, ay, hx, hy, tx, ty, kx, ky, bx, by]) =>
 // Les six mèches de la CRÊTE, du violet (la plus basse, posée en premier) au
 // rouge (la plus haute, posée en dernier) : l'éventail balaie de l'arrière-bas
 // vers le haut du crâne.
+// ITÉRATION 2 DE LA REFONTE : les six pointes DÉPASSAIENT de la masse.
+// Le contour retracé par-dessus ne découpe rien (piège documenté), donc chaque
+// tête de mèche sortait en épine du bord haut-arrière et la crête se lisait
+// comme une crête de coq punk — c'est ce qui la rendait agressive. Les six
+// pointes sont rentrées de 10 à 14 unités, à l'INTÉRIEUR du bord de `CRETE`
+// (frontière haut-arrière : (238,31) → (196,28) → (162,54) → (153,88)).
 const MECHES_CRETE = [
-  [194, 56, 178, 80, 174, 100, 196, 80, 208, 60],   // violet
-  [199, 50, 168, 74, 160, 96, 190, 78, 211, 57],    // bleu
-  [211, 44, 168, 58, 150, 86, 180, 76, 203, 51],    // vert
-  [225, 41, 180, 44, 148, 68, 175, 62, 212, 45],    // jaune
-  [239, 42, 194, 28, 156, 48, 189, 48, 224, 41],    // orange
-  [253, 48, 212, 20, 171, 32, 207, 42, 238, 41],    // rouge
+  [194, 56, 180, 78, 174, 94, 196, 80, 208, 60],   // violet
+  [199, 50, 172, 72, 166, 90, 190, 78, 211, 57],   // bleu
+  [211, 44, 172, 58, 159, 80, 180, 76, 203, 51],   // vert
+  [225, 41, 184, 46, 157, 65, 175, 62, 212, 45],   // jaune
+  [239, 42, 198, 33, 164, 51, 189, 48, 224, 41],   // orange
+  [253, 48, 216, 26, 181, 38, 207, 44, 238, 41],   // rouge
 ];
 
 // Les six mèches de l'ENCOLURE : six amandes verticales côte à côte, le rouge
@@ -138,7 +153,14 @@ export default (c) => {
   const { M5, TRAIT } = d;
   const M = [d.M0, d.M1, d.M2, d.M3, d.M4, d.M5];
   const CRIN_T = ton(M5, 1.15, -.14);   // contour : dérivé du VIOLET, pas du rouge
-  const oe = oeil(c, d);
+  // ŒIL À CERNE NOIR. Le liseré de l'amande et la pupille sortent tous les deux
+  // de `PUPILLE`, qui vaut ici un magenta foncé : sur un iris magenta les trois
+  // se confondaient et l'œil devenait UNE SEULE tache magenta cernée d'un gros
+  // trait — l'effet « trait d'eye-liner » relevé au comparateur. Sur la
+  // référence, le liseré et la pupille sont NOIRS et seul l'anneau d'iris est
+  // magenta. On passe donc `CRAYON` en `PUPILLE` pour cet œil-là : la fonction
+  // ne s'en sert que pour le liseré et la pupille.
+  const oe = oeil(c, { ...d, PUPILLE: d.CRAYON });
 
   // Six bandes de queue : la queue est un faisceau droit, décalage
   // perpendiculaire à son axe. Trait de 10 pour un pas de 5,2 : chaque bande
@@ -184,9 +206,15 @@ export default (c) => {
   <!-- 6. MEMBRES PROCHES -->
   ${membresProches(c, d)}
 
+  <!-- 6 ter. MUSEAU LISSE : l'encoche de bouche de la silhouette est rabotée.
+       Bouche fermée, elle laissait une marche de 10 unités au bout du museau,
+       que le comparateur lisait comme un bec. -->
+  ${museauLisse(c, d)}
+
   <!-- 7. NASEAU + SOURIRE EN COIN à GRAND crochet (2) : le sourire remonte
        nettement d'un seul côté. C'est l'asymétrie, pas la largeur, qui fait le
-       sourire crâneur. -->
+       sourire crâneur. Le crochet monte en RECULANT, cf. _commun.js : l'encoche
+       est rentrante et interdit tout point à x > 271 entre y 96 et 101. -->
   ${naseau(d)}${sourireCoin(d, 2)}
 
 
@@ -200,17 +228,20 @@ export default (c) => {
        lisible à 60 px de large. Au-delà de .7 la paupière disparaît et le regard
        redevient neutre. C'est le SOURCIL qui porte l'arrogance ; la paupière ne
        fait que l'appuyer. -->
-  ${paupiereHaute(c, d, .64)}
-  ${paupiereBasse(c, d, .1)}
+  ${paupiereHaute(c, d, .72)}
+  ${paupiereBasse(c, d, .07)}
 
   <!-- 8 ter. SOURCIL relevé, sur le front nu au-dessus de l'œil proche
-       (ligne de cheveux de la crête : (256,52) → (240,44) → (226,43)). Trois
-       cotes relevées sur la référence, et les trois comptent : il est COURT
+       (ligne de cheveux de la crête : (256,52) → (240,44) → (226,43)). Quatre
+       cotes, toutes relevées sur refs/rainbow-dash-smirk.png : il est COURT
        (moitié de la largeur de l'œil, pas plus — long, il se lit comme un pli du
-       front), FIN, et de la couleur sombre des cils et non du contour de la
-       robe. Il monte vers l'AVANT ; vers l'arrière il ferait un air inquiet.
-       Posé ici, donc sous la crinière : la crête en recouvre l'attache. -->
-  ${sourcil(d.PUPILLE, "M226 59.5C230 55.5 235.5 53.5 240.5 54", 2.6)}
+       front), FIN (2,2), PLAT (deux unités de dénivelé, pas cinq) et NOIR
+       (CRAYON, cf. _commun.js). Le premier jet le peignait en PUPILLE, soit magenta vif, et
+       nettement arqué : à ce compte-là ce n'est plus un sourcil crâneur mais un
+       sourcil de colère, et c'était le défaut n° 1 du personnage. Il monte vers
+       l'AVANT ; vers l'arrière il ferait un air inquiet. Posé ici, donc sous la
+       crinière : la crête en recouvre l'attache. -->
+  ${sourcil(d.CRAYON, "M226 57.5C231 54.5 236.5 53.5 241.5 54.5", 2.2)}
 
   <!-- 9. PAUPIÈRES du clignement : elles recouvrent l'amande entière, donc aussi
        les paupières fixes ci-dessus. -->
@@ -225,7 +256,11 @@ export default (c) => {
        six mèches de la plus profonde à la plus haute, puis le contour de la
        masse RETRACÉ : les mèches débordent toujours un peu. -->
   <path d="${CRETE}" fill="${M[0]}" stroke="${CRIN_T}" stroke-width="3.2"/>
-  <g stroke="${CRIN_T}" stroke-width="2.4">
+  <!-- Les six bandes se touchent SANS liseré : dans la référence il n'y a pas de
+       contour entre deux couleurs de crinière, et le liseré violet foncé du
+       premier jet cernait chaque mèche d'un trait épais qui alourdissait toute
+       la crête. Seule la MASSE garde son contour. -->
+  <g stroke="none">
     ${MECHES_CRETE.map((m, i) => `<path d="${meche(m)}" fill="${M[5 - i]}"/>`).join('')}
   </g>
   <path d="${CRETE}" fill="none" stroke="${CRIN_T}" stroke-width="3.2"/>
@@ -247,8 +282,10 @@ export default (c) => {
   </g>
   <path d="${MECHE}" fill="none" stroke="${CRIN_T}" stroke-width="3.2"/>
 
-  <!-- 13. CILS -->
-  ${cils(d)}
+  <!-- 13. CILS AU COIN HAUT-ARRIÈRE, noirs (convention de la vague 2, désormais
+       partagée). Au coin bas et en magenta, ils se lisaient comme trois
+       griffures sur la joue. -->
+  ${cilsCoinHaut(d, 3, 2.4)}
 
   </g>
 </svg>`;
