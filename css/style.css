@@ -27,7 +27,7 @@ h2 { margin: 28px 0 12px; font-size: 1.3rem; }
   box-shadow: 0 4px 14px #0003; }
 .carte-cadre > svg { display: block; width: 100%; height: auto; }
 .sur-carte { position: absolute; transform: translate(-50%, -50%); background: #fffd;
-  padding: 10px 14px; border-radius: 999px; font-weight: 700; min-height: 44px;
+  padding: 10px 14px; border-radius: 999px; font-weight: 700; min-height: 64px; min-width: 64px;
   display: grid; place-items: center; box-shadow: 0 2px 6px #0003; }
 .poney-carte { background: none; box-shadow: none; padding: 0; width: 76px; height: 76px; }
 .poney-carte svg { width: 100%; height: 100%; }
