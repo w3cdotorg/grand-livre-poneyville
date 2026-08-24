@@ -29,6 +29,7 @@ export const PERSONNAGES = [
       amis: ["twilight", "rainbow-dash", "pinkie-pie", "fluttershy", "rarity"],
       animal: "winona"
     },
+    carte: { x: 18, y: 58 },
     texte: "Applejack est une pouliche terrestre honnête et très forte. Elle travaille dur à la ferme Sweet Apple Acres pour récolter les pommes. Elle aime sa famille par-dessus tout.",
     leSaisTu: "Applejack sait attraper presque n'importe quoi avec son lasso !"
   },
@@ -162,7 +163,7 @@ export const PERSONNAGES = [
     cutieMark: "un soleil gris en spirale",
     lieuId: "hutte-zecora",
     liens: { famille: [], amis: [] },
-    texte: "Zecora est une zèbre sage et gentille qui vit dans la forêt Désenchantée. Elle prépare des potions dans sa hutte et parle toujours en rimes. Les poneys de Poneyville l'apprécient beaucoup."
+    texte: "Zecora vit dans la forêt Désenchantée. Elle prépare des potions dans sa hutte et parle toujours en rimes. Sage et gentille, elle est très appréciée des poneys de Poneyville."
   },
   {
     id: "celestia",
