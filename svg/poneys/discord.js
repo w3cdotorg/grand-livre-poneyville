@@ -163,7 +163,12 @@ export default (c) => {
 
   <!-- 1. LES DEUX AILES, derrière tout le reste : l'aile de CHAUVE-SOURIS
        (sombre, à membranes échancrées) en haut, l'aile d'OISEAU (cyan, à pennes)
-       en dessous. Elles ne vont pas ensemble, et c'est voulu. -->
+       en dessous. Elles ne vont pas ensemble, et c'est voulu.
+       L'aile de chauve-souris est DESCENDUE de 12 : à sa place nominale, son
+       bord d'attaque passait par (183 ; 128) et un éclat sombre entrait dans le
+       coin bas-gauche de la fenêtre de portrait (171 6 124 124), où il se
+       lisait comme une salissure dans la vignette de galerie. -->
+  <g transform="translate(0 12)">
   <path d="M196 140C180 126 156 114 132 108
            C124 106 120 110 123 116 127 125 135 134 145 142
            C133 141 124 142 119 145 126 153 138 161 152 167

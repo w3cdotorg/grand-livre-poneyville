@@ -475,6 +475,249 @@ couleur du template disparaissent donc purement et simplement :
   forcées à `scaleY(1)` et le médaillon**, capturée en Chrome headless. Beaucoup plus
   rapide que Playwright, et elle montre d'un coup les trois cadrages qui comptent.
 
+## 2026-08-25 — vague 3 : princesses, Zecora, Discord, Trixie, Derpy, Cheerilee
+
+Sept personnages, **vingt dessins sur vingt-six** : il ne reste que les six
+animaux en placeholder. Plus deux retouches héritées de la revue (corps de
+Spike, chapeau d'Applejack).
+
+### Références plein pied utilisées (toutes via l'API MediaWiki, toutes dans `refs/`)
+
+| Personnage | Plein pied | Complément |
+| --- | --- | --- |
+| Celestia | [`File:Princess Celestia ID S2E09.png`](https://mlp.fandom.com/wiki/File:Princess_Celestia_ID_S2E09.png) (517 × 537, debout, ailes rangées — **la seule utile**) | `File:Princess Celestia ID S4E01.png` (600 × 700, gros plan du visage et des bijoux) |
+| Luna | [`File:Princess Luna ID S4E02.png`](https://mlp.fandom.com/wiki/File:Princess_Luna_ID_S4E02.png) (558 × 558, **tête à droite : la pose du template exactement**) | `File:Princess Luna ID S5E04.png` |
+| Zecora | [`File:Zecora id.png`](https://mlp.fandom.com/wiki/File:Zecora_id.png) (400 × 500, tête à droite) | — |
+| Discord | [`File:Discord ID S4E26.png`](https://mlp.fandom.com/wiki/File:Discord_ID_S4E26.png) (370 × 630) | `File:Discord ID.png` (397 × 663) |
+| Trixie | [`File:Trixie id S1E06.png`](https://mlp.fandom.com/wiki/File:Trixie_id_S1E06.png) (612 × 612, avec la cape) | `File:Trixie ID S6E6.png` (686 × 706, sans costume : crinière, queue et marque dégagées) |
+| Derpy | [`File:Derpy ID S02E14.png`](https://mlp.fandom.com/wiki/File:Derpy_ID_S02E14.png) (283 × 279, debout) | `File:Derpy id.png` (340 × 340, en vol, bouche ouverte) |
+| Cheerilee | [`File:Cheerilee ID S2E17.png`](https://mlp.fandom.com/wiki/File:Cheerilee_ID_S2E17.png) (475 × 494) | — |
+
+Le `aiprefix` reste le seul chemin fiable, et **il faut interroger le nom
+complet du personnage** : `aiprefix=Celestia id` ne renvoie rien,
+`aiprefix=Princess Celestia ID` renvoie les trois fichiers d'infobox. Écarter
+les suffixes `EG`, `EGDS`, `CYOE`.
+
+### LE GABARIT D'ALICORNE — la trouvaille de la vague
+
+Sur la référence debout de Celestia, le rapport **tête / hauteur totale vaut
+21 %** : contre 33 % chez Twilight et 39 % chez une pouliche. Une princesse est
+donc beaucoup plus élancée que le template, et pas d'un peu.
+
+Mais la fenêtre de portrait (`171 6 124 124`) est FIXE et la tête doit la
+remplir : on ne peut ni réduire la tête, ni mettre le personnage entier à
+l'échelle. La solution, et c'est la méthode générale pour tout gabarit à venir :
+**garder la tête EXACTEMENT canonique** — tous les helpers de visage, le
+clignement et le cadrage marchent alors tels quels — et allonger le reste.
+
+| Élément | Canon | Alicorne |
+| --- | --- | --- |
+| bord arrière du cou | (202,100) → (194,126) | (202,100) → **(190,144)** |
+| gorge / poitrail | (243,116) → (216,181) | (243,116) → **(214,192)** |
+| jambes | canoniques | canoniques dans `translate(13.6 -1.8) scale(.92 1.097)` |
+| sabots | y 266 | **y 290** (Luna : y 281, `CADRE_JAMBES_LUNA`) |
+| tête / hauteur totale | 30 % | **26 %** |
+
+Les deux nombres du cadre de jambes sont bornés par deux points : le haut de la
+patte doit rester **caché sous le nouveau ventre** (y 194) et le sabot dans le
+viewBox (y < 300). 26 % est le maximum d'élancement que la fenêtre de portrait
+autorise ; les 21 % de la référence demanderaient de rapetisser la tête.
+
+### LA CRINIÈRE-RUBAN : trois bornes, trois tours perdus
+
+C'est le morceau qui a coûté le plus cher de la vague. Une crinière « qui
+flotte » n'est pas une crinière posée ailleurs, c'est une crinière **posée sur le
+cou** qui s'échappe en bas.
+
+1. **Le TRAJET d'abord.** Premier jet : racine au SOMMET du crâne, ruban filant
+   vers l'arrière-bas jusqu'à x 72, avec trente unités de fond entre lui et
+   l'encolure. Rendu en grand, crinière et queue se chaînaient en **UNE SEULE
+   GRANDE ANSE** au-dessus du dos — une poignée d'arc-en-ciel accrochée à la
+   tête. Le bord intérieur du ruban doit mordre sur le cou (bord arrière de cou
+   à x 201 vers y 110, x 190 vers y 144) sur toute sa longueur.
+2. **Il doit s'ARRÊTER AU GARROT.** Poussé jusqu'à y 192, il recouvrait le tronc,
+   l'aile et la marque de beauté : la princesse n'était plus qu'une masse de
+   crinière sur quatre jambes.
+3. **Il ne peut pas dépasser ~30 unités de large le long du cou.** À 45, il
+   débordait de cinquante unités dans le vide à gauche de l'encolure et se
+   lisait comme une **saucisse** posée contre la tête.
+
+Et deux corollaires :
+- **la queue doit rester nettement plus étroite que lui**, sinon les deux rubans
+  parallèles se lisent comme deux tuyaux jumeaux ;
+- **une queue de largeur constante se lit comme une FEUILLE.** Elle part étroite
+  au dock (12 unités) et s'évase vers le bas jusqu'à 40.
+
+Les bandes de couleur sont des **traits épais parallèles le long de l'axe du
+ruban** (quatre chez Celestia, deux chez Luna). C'est le cas où la technique
+marche : un faisceau de largeur à peu près constante. Décalage perpendiculaire
+de 6,5 à 11 unités par bande selon leur nombre.
+
+### La couronne et la corne se battent pour la même boîte
+
+Vrai pour les deux princesses, et invisible avant le comparateur : la
+`couronne` de `_commun.js` a sa bande en x 226 → 277 et sa pointe centrale en
+x 247 → 262 / y 11 → 33, c'est-à-dire **exactement la boîte de la corne**
+(233 → 248 / 19 → 46). Posée à sa place nominale, elle faisait disparaître la
+corne entièrement — au premier tour, Celestia n'avait plus de corne du tout.
+Correctif : le diadème est **réduit à 85 % et reculé** (`translate(13.8 14)
+scale(.85)`), si bien que sa bande passe sous la base de la corne et sa pointe
+reste à sa gauche ; et la **corne est allongée de 26 %** sur pivot de BASE
+(`translate(0 -11.96) scale(1 1.26)`, qui laisse la base à y 46 et porte la
+pointe de y 19 à y 12 — relevé : la corne d'une alicorne fait 0,45 hauteur de
+tête, celle d'une licorne 0,36).
+
+Borne à retenir : le bord bas de la bande du diadème (y 54 après recul) doit
+rester **au-dessus des cils du coin haut** (y 57,7).
+
+### LE MÊME PIÈGE DE CHAPEAU, DEUX FOIS LE MÊME JOUR
+
+Trixie et Applejack, indépendamment : **un chapeau se dessine BORD D'ABORD,
+calotte ensuite.** Dans l'autre ordre — l'ordre intuitif, « le bord ferme la
+calotte » — le bord recouvre la calotte sur toute la hauteur qu'ils partagent et
+il ne reste que huit à dix unités de calotte visibles : la silhouette est celle
+d'une **casquette**, et aucune retouche de forme ne la rattrape.
+
+Un chapeau vu de trois quarts par le dessus, c'est une **ellipse** (le bord) sur
+laquelle POSE une calotte qui n'en couvre que le milieu : le bord reste visible
+en **anneau**, et c'est cet anneau, et lui seul, qui fait lire « bord plat ».
+
+Deux cotes de plus pour le chapeau de cow-boy : les **pointes du bord
+retroussées** (y 30 et y 28 contre un bord avant affaissé à y 53 — sur un bord
+plat de bout en bout la silhouette redevient un melon) et une calotte **basse à
+PLI central**, avec un **ruban** plus sombre à sa base qui la sépare du bord.
+
+Et une borne de composition pour Trixie : le chapeau doit être **reculé de 18
+unités**, sinon son cône occupe la boîte de la corne et la corne, même dessinée
+par-dessus, se lit comme une décoration **peinte sur le feutre**.
+
+### La frange en BÉRET : le piège se rejoue, et le remède est ailleurs
+
+Cheerilee a coûté quatre tours pour ça. Le diagnostic de la vague 1 (« bord bas
+en simple arc = béret, il faut la pointe vers le bas ») est juste mais
+incomplet. Trois causes s'additionnent, et il faut les trois :
+
+| cause | remède |
+| --- | --- |
+| bord bas en arc régulier | une **pointe vers le bas** au front avant (ici (250,57)) |
+| masse trop PLATE (78 large × 45 haute sur une tête de 100) | resserrer à 68 × 45 : une **pouf ronde**, pas une crêpe |
+| un ruban clair **le long du bord bas** | il se lit comme le BORD du béret : un seul ruban, en travers du DESSUS |
+
+Corollaire : le rouleau avant d'une coiffure ne se dessine **pas en pièce
+séparée**. Son contour retracé se referme en anneau et la pièce se lit comme un
+**donut posé sur le crâne**. Il fait partie de la même silhouette (le bord haut
+se renfle vers l'avant et redescend sur la pointe) et le roulé est rendu par
+**une seule ligne interne**.
+
+### LE CONTRASTE ROBE / CRINIÈRE EST UNE DONNÉE DE DESSIN
+
+Quatre palettes de `js/data.js` sur sept ont dû être recalées, et trois fois
+pour la même raison : **robe et crinière n'étaient qu'à 6 % de luminosité l'une
+de l'autre**, donc la crinière ne se détachait pas — quel que soit le tracé.
+
+| Personnage | Avant | Après | Motif |
+| --- | --- | --- | --- |
+| Zecora | robe `#8e8e99`, rayures `#ededf2` | robe `#dcd6de`, rayures `#5b5b66` | **échange** : à la pipette la robe fait 9 327 pixels de `#dad1db` et les rayures 3 738 de `#686876`. Robe CLAIRE, rayures SOMBRES — le brief et le fichier disaient l'inverse, et Zecora devenait un poney gris moucheté de blanc |
+| Cheerilee | robe `#d57ea5`, crinière `#f581b6` | robe `#bf5895`, crinière `#f4a0cc` / `#f8d2e8` | contraste (relevé : robe `#b64d93`) |
+| Trixie | robe `#99cce8`, crinière `#c8cfe0` | robe `#7fbee9`, crinière `#d3dcea` / `#adb8cf` | contraste (relevé : robe `#74b7e9`) |
+| Luna | robe `#3b4699`, crinière `#3d4fb5` | robe `#383e7c`, crinière `#2748bd` / `#6a86e8` | contraste ; le relevé donne une robe **sombre et désaturée** (`#363a76`) sous une crinière **brillante et saturée** (`#244abf`) |
+| Celestia | 3 bandes, yeux `#d19fe0` | **4 bandes** (+ `#dfa8f7`), yeux `#b07fce` | la 4ᵉ bande violette du relevé manquait ; le lilas très pâle des yeux disparaissait sur une robe blanche |
+
+Clés de couleur ajoutées : `or` (Zecora, pour ses anneaux) et `argent` (Luna,
+pour ses souliers).
+
+### Autres relevés par personnage
+
+- **Zecora — le SIGNE de rotation d'une raie.** `rotate(θ)` envoie le `+y` local
+  sur `(−sin θ, cos θ)` : une raie posée à θ = +76 part donc vers la **gauche**.
+  Trois raies de croupe sortaient ainsi de 37 unités dans le vide, en
+  moustaches. À vérifier systématiquement quand on place une forme par
+  `rotate` : calculer où part l'axe avant de régler la longueur.
+  Ses raies doivent aussi être **larges** (12 unités sur un tronc de 114) :
+  fines, elles se lisent comme des griffures. Sa crête est une **brosse à
+  vallées peu profondes** — en dents détachées elle fait une couronne en carton.
+  Et le visage ne supporte **qu'une seule** raie, sur le chanfrein : deux de plus
+  sur la joue et le menton se lisaient comme un pli d'amertume.
+- **Derpy — c'est la BOUCHE qui sauve les yeux divergents.** Le décalage lui-même
+  est simple (iris rétréci à `.88`, pupille haute côté proche et basse côté
+  lointain, ±5 en y, l'amande jamais touchée). Ce qui décide de la lecture, c'est
+  ce qu'il y a en dessous : sous une bouche fermée, deux pupilles décalées font
+  un personnage **absent** ; sous une paupière rabattue, **endormi** ; sous un
+  sourcil, **hébété**. Il faut un rire franc et aucune paupière.
+  Les deux références ne s'accordent pas sur laquelle des deux pupilles monte —
+  la série non plus. Celle qui marche : **proche en haut, lointain en bas**.
+- **Discord — sa tête n'est pas de la couleur de son corps.** Corps `#7d5227`
+  (brun, 23 679 pixels), tête et museau `#aba798` (gris-beige). Peinte du brun
+  du corps, le visage se noie dedans. Et son œil a le **blanc JAUNE et l'iris
+  ROUGE**, avec un iris **petit** (`.72`) au milieu d'une grande amande : à `.9`
+  le rouge remplissait l'amande et l'œil devenait un gros point de mire, bien
+  plus dur. `oeil()` n'a pas eu besoin d'être touché — on lui passe le jaune
+  comme `BLANC` et un faux `c.yeux` rouge.
+  Son corps serpentin est une **chaîne de traits épais à bouts ronds** de largeur
+  décroissante (42 → 15) : un tracé fermé de largeur variable devrait se
+  recroiser aux inflexions du S. Deux corrections : le premier trajet **bouclait
+  en C** et laissait toute la moitié gauche du viewBox vide (silhouette en fer à
+  cheval, il faut que la QUEUE s'échappe et que le corps descende droit) ; et la
+  crête de queue, essayée en vert, **se confondait avec la jambe de dragon**.
+  Enfin, ses sourcils blancs doivent passer **en dernier** : posés en couche 11
+  puis en 12 bis, le bois de cerf (x 193 → 228) et la corne bleue (x 254 → 278)
+  les recouvraient chaque fois entièrement. Et le bois doit être franchement
+  **tan** (`#e2d1a4`) : au crème `#eee2c2` le sourcil blanc s'y noyait.
+- **Trixie — la cape recouvre le flanc.** Sur la référence costumée sa marque de
+  beauté n'est pas visible du tout ; elle n'est donc pas dessinée sur le corps,
+  seul le médaillon la porte. Ce n'est pas un oubli.
+- **Cheerilee — sa marque n'est pas « trois fleurs ».** Ce sont trois fleurs à
+  huit pétales pâles, cœur crème, portant chacune un **visage souriant** (deux
+  points et un arc). Sans le visage ce sont trois marguerites quelconques.
+
+### Additions à `_commun.js` (toutes additives)
+
+`sourireDoux` (le sourire fermé long et régulier que quatre références montrent
+à l'identique), `sourireRavi` (sourire ouvert à dents dont le coin ARRIÈRE monte
+plus haut que le coin avant), `AILE_ALICORNE` / `aileAlicorne`, `souliersFond` /
+`souliersProches`, `PEYTRAL` / `peytral`, `couronne`, `CORPS_ALICORNE`,
+`CADRE_JAMBES`, `CADRE_JAMBES_LUNA`.
+Contrôle de non-régression : les **17 personnages non touchés** rendent des SVG
+rigoureusement identiques (hachage du dessin et du médaillon avant / après).
+
+### Contours dérivés : la table des exceptions s'allonge
+
+`CRIN_T` et `TRAIT` du template échouent dès que la robe ou la crinière sort du
+milieu de gamme. Les cas de la vague, tous documentés dans leur fichier :
+
+| Cas | Symptôme | Correctif |
+| --- | --- | --- |
+| crinière rose vif (Cheerilee) | tube cerné d'un trait FLUO | `ton(M0, .9, -.2)` |
+| ruban à 4 pastels (Celestia) | liseré violet vif autour des trois autres bandes | `ton(M3, .5, -.14)`, dérivé de la bande la plus SOMBRE |
+| crinière bleu vif sur robe bleu nuit (Luna) | plus de bord du tout | constante **violette** `#8478c9` — la référence montre un halo lilas, et c'est lui qui détache la crinière |
+| aile blanche sur robe blanche (Celestia) | aile invisible | `ton(robe, .4, -.44)` |
+| aile sombre sur robe bleu nuit (Luna) | aile invisible | contour **plus CLAIR** que la robe : `ton(robe, .55, .14)` |
+| robe presque blanche (Zecora) | silhouette entière invisible | `ton(robe, .5, -.42)` |
+| crinière gris-bleu très pâle (Trixie) | pas de bord | `ton(M0, 1.2, -.3)` |
+| cils sur œil bleu-vert pâle et robe sombre (Luna) | cils invisibles | constante noire `#0d0d14` |
+
+### Réserves de la vague
+
+1. **La pose reste celle du template** (trois quarts côté, tête relevée) alors
+   que la plupart des références sont de trois quarts *avant*. La comparaison
+   s'est faite sur des rapports relevés à la grille. Seule Luna avait une
+   référence dans la pose exacte du template.
+2. **Le rapport tête / hauteur totale des alicornes plafonne à 26 %** au lieu des
+   21 % du relevé : la fenêtre de portrait interdit de rapetisser la tête.
+   Celestia est bien la plus grande des deux, comme demandé, mais l'écart avec
+   les poneys reste plus faible que dans la série.
+3. **La marque de beauté de Trixie n'est pas sur le corps** (la cape la couvre,
+   comme sur la référence). Le médaillon la porte.
+4. **La crête de Zecora garde une lecture un peu « couronne »** en vignette de
+   galerie : à cette taille, une brosse rayée de 30 unités de haut et trois
+   pointes sont difficiles à distinguer. Les raies claires la rattrapent en
+   grand.
+5. **Les rubans de crinière des princesses n'ont pas de mèches**, seulement des
+   bandes parallèles : c'est la limite de la technique du faisceau (même réserve
+   que les crinières monochromes de la vague 1).
+6. Les **six placeholders d'animaux** restent (Angel, Gummy, Winona, Opale, Tank,
+   Owlowiscious), et les dix dessins de lieux sont toujours des placeholders.
+
 ## 2026-08-24 — passe expressions : un visage par personnage
 
 - **Les cinq poneys de la vague Mane ont chacun leur visage.** Finding du
