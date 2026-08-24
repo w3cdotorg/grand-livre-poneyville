@@ -8,12 +8,12 @@
 
 | Sujet | Décision |
 |---|---|
-| Visuels | SVG dessinés main, style inspiré de FiM (aplats, silhouettes simples, cutie marks) — 100 % originaux, aucun asset officiel Hasbro. |
+| Visuels | SVG dessinés main, style inspiré de FiM (aplats, silhouettes simples, marques de beauté) — 100 % originaux, aucun asset officiel Hasbro. |
 | Texte | 2-3 phrases par fiche, lues par le parent. Pas de synthèse vocale. |
 | Périmètre | Large d'emblée : 25 personnages (dont 6 animaux de compagnie) et 10 lieux. |
 | Navigation | Accueil = carte dessinée + boutons galerie « Les poneys » / « Les lieux ». Navigation croisée fiche ↔ fiche. |
 | Technique | Option A : statique, vanilla JS modules ES, zéro dépendance, zéro build, GitHub Pages. |
-| Langue | Tout en français. Terminologie VF (« forêt Désenchantée ») ; les poneys gardent leurs noms de la VF (Twilight Sparkle, Rainbow Dash…). « Poneyville » s'écrit avec « poney ». |
+| Langue | Tout en français. Terminologie VF (« forêt Désenchantée ») ; les poneys gardent leurs noms de la VF (Twilight Sparkle, Rainbow Dash…). « Poneyville » s'écrit avec « poney ». "marque de beauté" (amendement 24/08). |
 | Titre | « Le Grand livre de Poneyville » (capitalisation française : pas de majuscule à chaque mot). |
 | Repo | `w3cdotorg/grand-livre-poneyville`, public, Pages servi depuis `master`. |
 
@@ -86,7 +86,7 @@ Les tests d'intégrité garantissent : toute référence (lieuId, liens, habitan
 1. **Accueil (`#/`)** — le titre, puis la grande carte SVG : Poneyville au centre (mairie, chaumières), Sweet Apple Acres à l'ouest, la forêt Désenchantée au sud (sombre mais pas effrayante), Canterlot accroché à sa montagne au nord-est, Cloudsdale dans le ciel. Chaque lieu est une zone cliquable → sa fiche ; quelques poneys posés sur la carte, cliquables aussi. Deux gros boutons au-dessus : **Les poneys**, **Les lieux**.
 2. **Galerie poneys (`#/poneys`)** — grille de gros portraits (tête + prénom), les animaux de compagnie dans une rangée séparée en bas.
 3. **Galerie lieux (`#/lieux`)** — grille de vignettes des scènes.
-4. **Fiche personnage (`#/poney/<id>`)** — le personnage en grand, plein pied, clignement des yeux en boucle ; pictogramme d'espèce ; cutie mark en médaillon ; le texte + le « Le sais-tu ? » ; vignettes cliquables : son lieu, sa famille, ses amis, son animal (ou son propriétaire).
+4. **Fiche personnage (`#/poney/<id>`)** — le personnage en grand, plein pied, clignement des yeux en boucle ; pictogramme d'espèce ; marque de beauté en médaillon ; le texte + le « Le sais-tu ? » ; vignettes cliquables : son lieu, sa famille, ses amis, son animal (ou son propriétaire).
 5. **Fiche lieu (`#/lieu/<id>`)** — la scène en grand, texte court, vignettes des habitants.
 
 **Navigation** : bouton 🏠 permanent (retour carte), tout écran atteignable en ≤ 2 taps depuis l'accueil, cibles tactiles ≥ 64 px, transitions CSS douces, pas de scroll horizontal. Cible principale : iPad (Safari), mais responsive desktop/mobile.
@@ -102,7 +102,7 @@ Ton des textes : simple, chaleureux, factuel-univers (« Twilight adore les livr
 ## Dessin des SVG
 
 - Style commun documenté dans NOTES.md dès le premier poney validé : proportions FiM simplifiées (grosse tête ~40 % de la hauteur, gros yeux, corps rond, pattes courtes), viewBox commun `0 0 300 300` pour les personnages, palette par personnage dans `data.js` (source unique des couleurs, les SVG l'importent).
-- Chaque personnage : pose plein pied 3/4, cutie mark visible, paupières animables (CSS `@keyframes` sur un groupe `#paupieres`).
+- Chaque personnage : pose plein pied 3/4, marque de beauté visible, paupières animables (CSS `@keyframes` sur un groupe `#paupieres`).
 - Portraits de galerie : recadrage du même SVG via `viewBox` réduit (pas de second dessin).
 - Lieux : scènes simples et lisibles (bâtiment + 2-3 éléments de contexte), même style d'aplats.
 
@@ -114,7 +114,7 @@ Ton des textes : simple, chaleureux, factuel-univers (« Twilight adore les livr
 ## Tests et vérification
 
 - **Tests node** (`node --test`, zéro dépendance) : intégrité des données (cf. modèle), présence et validité de base des SVG (parse, viewBox, groupe paupières pour les poneys), routes générées.
-- **Vérification visuelle Playwright** à chaque vague de dessins : screenshot de chaque nouvelle fiche, contrôle à l'œil (couleurs, proportions, cutie mark). Pas de WebGL ici → screenshots fiables directement. Piège connu (projet Paris) : cache agressif des modules ES → `page.route()` no-cache.
+- **Vérification visuelle Playwright** à chaque vague de dessins : screenshot de chaque nouvelle fiche, contrôle à l'œil (couleurs, proportions, marque de beauté). Pas de WebGL ici → screenshots fiables directement. Piège connu (projet Paris) : cache agressif des modules ES → `page.route()` no-cache.
 - **Test final sur iPad réel** (à la charge de willow).
 
 ## Phases de réalisation

@@ -1,7 +1,7 @@
 // Twilight Sparkle — dessin de référence : il fixe le style de tous les poneys.
 // Voir NOTES.md § « Guide de style poneys » pour les coordonnées et l'ordre des couches.
 
-// Grande étoile à 6 branches (la cutie mark de Twilight), dans un carré 60x60.
+// Grande étoile à 6 branches (la marque de beauté de Twilight), dans un carré 60x60.
 const ETOILE6 = "M30 4 35.5 20.5 52.5 17 41 30 52.5 43 35.5 39.5 30 56 24.5 39.5 7.5 43 19 30 7.5 17 24.5 20.5 Z";
 // Petite étoile à 5 branches, centrée sur (0,0), rayon 10.
 const ETOILE5 = "M0 -10 2.65 -3.64 9.51 -3.09 4.28 1.39 5.88 8.09 0 4.5 -5.88 8.09 -4.28 1.39 -9.51 -3.09 -2.65 -3.64 Z";
@@ -20,7 +20,7 @@ export default (c) => `<svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/
   <!-- corps (volontairement plus petit que la tête : c'est ça qui fait « mignon ») -->
   <ellipse cx="140" cy="202" rx="62" ry="43" fill="${c.robe}"/>
 
-  <!-- cutie mark sur le flanc (côté croupe, jamais côté poitrail) -->
+  <!-- marque de beauté sur le flanc (côté croupe, jamais côté poitrail) -->
   <g transform="translate(88 183) scale(.54)">
     <path d="${ETOILE6}" fill="${c.criniere[1]}"/>
     ${petite(6, 8, .38)}${petite(54, 12, .32)}${petite(50, 52, .3)}

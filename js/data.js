@@ -133,7 +133,7 @@ export const PERSONNAGES = [
       famille: ["applejack", "big-macintosh", "granny-smith"],
       amis: ["sweetie-belle", "scootaloo"]
     },
-    texte: "Apple Bloom est une jeune pouliche terrestre de la famille Apple. Elle n'a pas encore de cutie mark sur son flanc. Avec ses amies Sweetie Belle et Scootaloo, elle fait partie des Chercheuses de talent."
+    texte: "Apple Bloom est une jeune pouliche terrestre de la famille Apple. Elle n'a pas encore de marque de beauté sur son flanc. Avec ses amies Sweetie Belle et Scootaloo, elle fait partie des Chercheuses de talent."
   },
   {
     id: "sweetie-belle",
@@ -143,7 +143,7 @@ export const PERSONNAGES = [
     cutieMark: null,
     lieuId: "carousel-boutique",
     liens: { famille: ["rarity"], amis: ["apple-bloom", "scootaloo"] },
-    texte: "Sweetie Belle est une jeune licorne, la petite sœur de Rarity. Elle chante merveilleusement bien. Avec ses amies Apple Bloom et Scootaloo, elle cherche encore sa cutie mark."
+    texte: "Sweetie Belle est une jeune licorne, la petite sœur de Rarity. Elle chante merveilleusement bien. Avec ses amies Apple Bloom et Scootaloo, elle cherche encore sa marque de beauté."
   },
   {
     id: "scootaloo",

@@ -11,7 +11,7 @@ test('chaque personnage a son module SVG conforme', async () => {
     assert.ok(svg.includes('class="paupieres"'), p.id);
     if (p.cutieMark) {
       const cm = mod.cutieMark(p.couleurs);
-      assert.ok(cm.includes('viewBox="0 0 60 60"'), `cutie mark ${p.id}`);
+      assert.ok(cm.includes('viewBox="0 0 60 60"'), `marque de beauté ${p.id}`);
     }
   }
 });

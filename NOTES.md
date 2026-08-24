@@ -6,7 +6,7 @@ Journal des découvertes techniques et choix de dessin, au fil de l'eau.
 
 Établi en dessinant Twilight Sparkle (`svg/poneys/twilight.js`), qui sert de **modèle de
 référence** : les 24 autres poneys reprennent ces coordonnées et ne changent que la
-crinière, la queue, la cutie mark et l'attribut d'espèce (corne / ailes / rien).
+crinière, la queue, la marque de beauté et l'attribut d'espèce (corne / ailes / rien).
 
 Le plus simple pour démarrer un nouveau poney est de copier `twilight.js` et de ne
 retoucher que ces quatre blocs.
@@ -42,7 +42,7 @@ retoucher que ces quatre blocs.
 | Ligne de cils | `M121 96 Q124 84 137 81`, épaisseur 5, couleur `criniere[0]` |
 | Oreille | `M106 70 Q100 32 122 40 Q138 48 132 72 Z` + conque `#000 / .13` |
 | Corne (licornes) | `M164 62 Q170 40 191 22 Q195 46 192 68 Q176 72 164 62 Z` + reflet `#fff / .22` + 3 stries `#000 / .16` |
-| Cutie mark (flanc) | `translate(88 183) scale(.54)` d'un motif dessiné dans un carré 60×60 |
+| Marque de beauté (flanc) | `translate(88 183) scale(.54)` d'un motif dessiné dans un carré 60×60 |
 | Queue | masse `M96 174 Q56 194 48 246 Q54 262 72 258 Q90 250 98 226 Q104 198 104 176 Z` + 2 mèches en `stroke` |
 
 ### Ordre des couches (strict)
@@ -50,7 +50,7 @@ retoucher que ces quatre blocs.
 1. **queue** (derrière tout : masse `criniere[0]`, puis mèches `criniere[1]` et `criniere[2]` en `stroke-linecap="round"`)
 2. **pattes du fond** — dessinées deux fois : robe, puis le même `rect` en `#000` opacité `.1`. C'est ce voile qui les fait lire « derrière » alors qu'elles sont de la même couleur que le corps.
 3. **corps**
-4. **cutie mark** (sur le corps, sous les pattes de devant)
+4. **marque de beauté** (sur le corps, sous les pattes de devant)
 5. **pattes de devant** + sabots
 6. **cou**, puis **tête**
 7. **museau**, naseau, sourire
@@ -109,7 +109,7 @@ retoucher que ces quatre blocs.
   Elles sont dessinées comme des formes fermées qui longent la ligne de cheveux ; leur
   extrémité droite a dû être rentrée de ~10 unités (198 → 188 → 180) parce qu'elles
   dépassaient en pointe hors de la masse sombre.
-- **La cutie mark va sur la croupe**, côté queue (x≈88..120), pas côté poitrail. Le
+- **La marque de beauté va sur la croupe**, côté queue (x≈88..120), pas côté poitrail. Le
   point de départ du brief la plaçait à droite, c'est-à-dire sur l'épaule.
 - **Ombres portables d'un poney à l'autre** : utiliser `fill="#000" fill-opacity="…"`
   plutôt que d'assombrir une couleur, pour que ça marche avec n'importe quelle robe

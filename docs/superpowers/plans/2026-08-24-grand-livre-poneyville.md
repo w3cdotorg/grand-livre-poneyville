@@ -164,7 +164,7 @@ Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>"
 
 **Contenu à rédiger** (textes : prose simple et chaleureuse à partir de ces faits ; couleurs = point de départ, affinées au dessin) :
 
-| id | nom | espèce | robe / crinière / yeux | cutie mark | lieuId | liens & faits pour le texte |
+| id | nom | espèce | robe / crinière / yeux | marque de beauté | lieuId | liens & faits pour le texte |
 |---|---|---|---|---|---|---|
 | twilight | Twilight Sparkle | licorne | #c9a7e0 / [#2a2f6e,#ec5fa4,#7147a8] / #7b3fa0 | étoile rose + petites étoiles | bibliotheque | animal: owlowiscious ; amis: mane 6 + spike ; studieuse, adore les livres, élève de Celestia. Le sais-tu : elle deviendra une princesse alicorne. |
 | applejack | Applejack | terrestre | #f8a65d / [#f3dc79] / #4cb157 (+ chapeau #a9742f) | trois pommes rouges | sweet-apple-acres | animal: winona ; famille: big-macintosh, apple-bloom, granny-smith ; honnête, forte, récolte les pommes. Le sais-tu : elle attrape tout au lasso. |
@@ -348,7 +348,7 @@ test('chaque personnage a son module SVG conforme', async () => {
     assert.ok(svg.includes('class="paupieres"'), p.id);
     if (p.cutieMark) {
       const cm = mod.cutieMark(p.couleurs);
-      assert.ok(cm.includes('viewBox="0 0 60 60"'), `cutie mark ${p.id}`);
+      assert.ok(cm.includes('viewBox="0 0 60 60"'), `marque de beauté ${p.id}`);
     }
   }
 });
@@ -528,7 +528,7 @@ const ECRANS = {
         <figure class="fiche-dessin">${mod.default(p.couleurs)}</figure>
         <div class="fiche-infos">
           <p class="espece">${ESPECES[p.espece]}</p>
-          ${p.cutieMark ? `<p class="medaillon">${mod.cutieMark(p.couleurs)}<span>Sa cutie mark : ${p.cutieMark}.</span></p>` : ''}
+          ${p.cutieMark ? `<p class="medaillon">${mod.cutieMark(p.couleurs)}<span>Sa marque de beauté : ${p.cutieMark}.</span></p>` : ''}
           <p class="texte">${p.texte}</p>
           ${p.leSaisTu ? `<p class="le-sais-tu">💡 Le sais-tu ? ${p.leSaisTu}</p>` : ''}
         </div>
@@ -651,7 +651,7 @@ Expected : `1` (réessayer, le premier build Pages peut prendre quelques minutes
 
 **Interfaces:**
 - Consumes: contrat SVG (Task 3).
-- Produces: le **guide de style** que toutes les vagues suivantes copient : pose 3/4 plein pied, proportions, position de la tête (portrait), groupe paupières, cutie mark sur le flanc.
+- Produces: le **guide de style** que toutes les vagues suivantes copient : pose 3/4 plein pied, proportions, position de la tête (portrait), groupe paupières, marque de beauté sur le flanc.
 
 - [ ] **Step 1 : dessiner Twilight**
 
@@ -667,7 +667,7 @@ export default (c) => `<svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/
   <rect x="180" y="212" width="24" height="62" rx="12" fill="${c.robe}"/>
   <!-- corps -->
   <ellipse cx="150" cy="205" rx="72" ry="48" fill="${c.robe}"/>
-  <!-- cutie mark sur le flanc -->
+  <!-- marque de beauté sur le flanc -->
   <g transform="translate(178 196) scale(.55)">
     <path d="M30 4 39 24 60 24 43 37 49 58 30 45 11 58 17 37 0 24 21 24 Z" fill="${c.criniere[1]}"/>
   </g>
@@ -704,9 +704,9 @@ export const cutieMark = (c) => `<svg viewBox="0 0 60 60" xmlns="http://www.w3.o
 </svg>`;
 ```
 
-- [ ] **Step 2 : itérer visuellement** — `npm test` PASS, puis Playwright : screenshots de `#/poney/twilight` (fiche), `#/poneys` (portrait recadré) et `#/` (mini-portrait sur carte). Contrôler : silhouette lisible, tête bien cadrée dans le portrait (`60 15 180 180`), cutie mark visible, paupières alignées sur les yeux (vérifier le clignement en attendant ~5 s entre deux screenshots). Ajuster jusqu'à satisfaction.
+- [ ] **Step 2 : itérer visuellement** — `npm test` PASS, puis Playwright : screenshots de `#/poney/twilight` (fiche), `#/poneys` (portrait recadré) et `#/` (mini-portrait sur carte). Contrôler : silhouette lisible, tête bien cadrée dans le portrait (`60 15 180 180`), marque de beauté visible, paupières alignées sur les yeux (vérifier le clignement en attendant ~5 s entre deux screenshots). Ajuster jusqu'à satisfaction.
 
-- [ ] **Step 3 : documenter le style dans `NOTES.md`** — ajouter une section « Guide de style poneys » : coordonnées clés retenues (tête, yeux, flanc), ordre des couches (queue → pattes arrière → corps → cutie mark → cou/tête → museau → oreille/corne-ou-ailes → crinière → yeux → paupières), variantes par espèce (corne / ailes / ni l'un ni l'autre), et tout piège rencontré.
+- [ ] **Step 3 : documenter le style dans `NOTES.md`** — ajouter une section « Guide de style poneys » : coordonnées clés retenues (tête, yeux, flanc), ordre des couches (queue → pattes arrière → corps → marque de beauté → cou/tête → museau → oreille/corne-ou-ailes → crinière → yeux → paupières), variantes par espèce (corne / ailes / ni l'un ni l'autre), et tout piège rencontré.
 
 - [ ] **Step 4 : commit**
 
@@ -723,7 +723,7 @@ Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>"
 **Files:**
 - Modify: `svg/poneys/applejack.js`, `rainbow-dash.js`, `pinkie-pie.js`, `fluttershy.js`, `rarity.js`, `spike.js`
 
-- [ ] **Step 1 : dessiner les 6**, en copiant la structure de `twilight.js` (Task 6) et en suivant le guide de style de NOTES.md. Particularités : Applejack = chapeau (`c.chapeau`) + queue liée ; Rainbow Dash = ailes déployées + crinière 6 mèches arc-en-ciel ; Pinkie Pie = crinière très bouclée (arcs de cercles) ; Fluttershy = crinière longue qui tombe, ailes repliées ; Rarity = crinière en volute élégante ; Spike = bipède petit, crête verte, ventre clair (`c.ventre`), pas de cutie mark (pas d'export `cutieMark`, mais garder le groupe `paupieres`).
+- [ ] **Step 1 : dessiner les 6**, en copiant la structure de `twilight.js` (Task 6) et en suivant le guide de style de NOTES.md. Particularités : Applejack = chapeau (`c.chapeau`) + queue liée ; Rainbow Dash = ailes déployées + crinière 6 mèches arc-en-ciel ; Pinkie Pie = crinière très bouclée (arcs de cercles) ; Fluttershy = crinière longue qui tombe, ailes repliées ; Rarity = crinière en volute élégante ; Spike = bipède petit, crête verte, ventre clair (`c.ventre`), pas de marque de beauté (pas d'export `cutieMark`, mais garder le groupe `paupieres`).
 - [ ] **Step 2 :** `npm test` PASS (le test de complétude valide le contrat pour chacun).
 - [ ] **Step 3 : vérification Playwright** — screenshot des 6 fiches + la galerie `#/poneys` entière ; contrôler couleurs, silhouettes différenciées, portraits bien cadrés. Corriger.
 - [ ] **Step 4 : commit** — `feat(dessins): Mane 6 au complet + Spike` (+ trailer Co-Authored-By).

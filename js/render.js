@@ -61,7 +61,7 @@ const ECRANS = {
         <figure class="fiche-dessin">${mod.default(p.couleurs)}</figure>
         <div class="fiche-infos">
           <p class="espece">${ESPECES[p.espece]}</p>
-          ${p.cutieMark ? `<p class="medaillon">${mod.cutieMark(p.couleurs)}<span>Sa cutie mark : ${p.cutieMark}.</span></p>` : ''}
+          ${p.cutieMark ? `<p class="medaillon">${mod.cutieMark(p.couleurs)}<span>Sa marque de beauté : ${p.cutieMark}.</span></p>` : ''}
           <p class="texte">${p.texte}</p>
           ${p.leSaisTu ? `<p class="le-sais-tu">💡 Le sais-tu ? ${p.leSaisTu}</p>` : ''}
         </div>
