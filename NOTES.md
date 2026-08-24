@@ -285,6 +285,105 @@ couleur du template disparaissent donc purement et simplement :
   forcées à `scaleY(1)` et le médaillon**, capturée en Chrome headless. Beaucoup plus
   rapide que Playwright, et elle montre d'un coup les trois cadrages qui comptent.
 
+## Carte d'accueil
+
+`svg/carte.js` (viewBox `0 0 1000 700`) est le **fond** de l'écran d'accueil ; par-dessus,
+`js/render.js` pose 16 liens HTML positionnés en pourcentage : les 10 pastilles de lieux
+(`LIEUX[].carte`) et les 6 mini-portraits des Mane 6 (`PERSONNAGES[].carte`, **décalés de
+−8 en y**). Un point `carte: { x, y }` tombe donc sur le point SVG `(x · 10, y · 7)`, et
+un poney dont le portrait doit atterrir sur la rangée `y` se déclare à `y + 8`.
+
+### La géométrie des pastilles commande le dessin, pas l'inverse
+
+C'est **la** trouvaille de la tâche. Les pastilles sont dimensionnées en **pixels CSS
+fixes** (`.sur-carte` : texte à 1 rem, `min-height: 64px`) alors que la carte, elle,
+s'échelonne avec la largeur du cadre. Mesuré au navigateur :
+
+| Cadre | Pastille la plus large | En unités SVG | Hauteur en unités SVG |
+| --- | --- | --- | --- |
+| 1024 × 768 (cadre 977 × 684) | 239 px | 245 | 65 |
+| 768 × 1024 (cadre 736 × 515) | 239 px | **325** | **87** |
+
+En portrait, les dix étiquettes couvrent ~40 % du cadre : **aucun bâtiment posé sous sa
+pastille n'y est visible**. La composition part donc du placement des liens, en rangées :
+
+    rangée 1  y = 10 %   Cloudsdale (20) · Rainbow Dash (36) · Canterlot (84)
+    rangée 2  y = 27 %   Sweet Apple Acres (13) · Carousel Boutique (48) · Sugarcube (74)
+    rangée 3  y = 43 %   Applejack (10) · Twilight (30) · Rarity (52) · Pinkie (74)
+    rangée 4  y = 59 %   bibliothèque (30) · école (62) · Fluttershy (88)
+    rangée 5  y = 75 %   hutte de Zecora (18) · forêt (46) · chaumière (78)
+
+L'écart de rangée (16 %, soit 82 px dans le cadre portrait) est choisi **juste au-dessus
+du besoin** : demi-hauteur d'étiquette (6,2 %) + demi-hauteur de portrait (7,4 %) =
+13,6 %. Conséquence : deux éléments de rangées différentes ne peuvent plus se chevaucher,
+et il ne reste qu'un problème de rangement **horizontal** dans chaque rangée. C'est ce qui
+règle les deux findings de la vague : l'école était sous le portrait de Fluttershy et la
+bibliothèque mordait sur Twilight parce que leurs y ne différaient que de 5 à 8 points.
+
+Corollaire pour les portraits : un poney posé **directement au-dessus ou au-dessous** de
+sa pastille (même x, une rangée d'écart) reste « chez lui » sans jamais gêner le clic —
+Twilight sur son chêne, Applejack dans le verger, Pinkie au coin de la pâtisserie.
+
+### Une étiquette près du bord se rétrécit et passe à la ligne
+
+`.sur-carte` est en `position: absolute` sans largeur : sa boîte est un *shrink-to-fit*
+borné par la place restante jusqu'au bord droit du cadre. « La chaumière de Fluttershy »
+mesure **242 px** au centre, **215 px** à `left: 78 %` en paysage et **162 px** (sur deux
+lignes, donc 66 px de haut) dans le cadre portrait. Une table de largeurs figées est donc
+fausse : le seul juge est `getBoundingClientRect()` dans le navigateur, aux deux tailles.
+
+### Vérification des 16 clics
+
+Deux étages, tous les deux en une seule `browser_evaluate` :
+1. **blocage** — `document.elementFromPoint` sur 5 points par lien (centre + 4 points
+   internes) : 80 points doivent tous renvoyer le lien attendu. C'est ce test, et pas la
+   comparaison des boîtes, qui prouve qu'un mini-portrait (carré de 76 px **entièrement
+   cliquable**, même là où le SVG est transparent) ne vole pas le clic du voisin.
+2. **routage** — un `MouseEvent('click', { bubbles: true })` dispatché sur l'élément
+   réellement au-dessus du point, puis lecture de `location.hash` et du `<h1>` rendu.
+   16/16 aux deux tailles. (`elementFromPoint` renvoie souvent un nœud **SVG**, qui n'a
+   pas de méthode `.click()` en Firefox : passer par `dispatchEvent`.)
+
+### Pièges de dessin propres à la carte
+
+- **L'ordre des couches doit tenir compte de la bande de forêt.** Dessiné avant elle, le
+  chêne Golden Oak (base à y 556) était avalé par les sapins. Il passe **après** `foret()`
+  et se plante dans une clairière (`ellipse` d'herbe) : il se lit alors comme l'arbre en
+  lisière du village. Même logique pour la hutte de Zecora et la chaumière, posées sur des
+  clairières découpées dans la bande sombre.
+- **Les six bandes de l'arc-en-ciel sont des `Q` parallèles décalés de 10 en y**, tracés
+  *avant* le nuage de premier plan qui doit masquer leurs départs. Sans ce nuage posé par
+  dessus, la bande violette dépasse en moignon sous la cité.
+- **Un bâtiment n'est identifiable que par un détail qui survit à la pastille.** La cloche
+  rouge de l'école est donc doublée : clocheton sur le toit (masqué en portrait) **et**
+  cloche dans une arche sur la façade, à y 472, hors de toute pastille.
+- La bande de forêt fait un tiers de la carte et reste **fraîche, pas effrayante** :
+  aplats bleu-vert (`#2f5f56` / `#38736a`), trois rangs de sapins pour la profondeur, et
+  douze lucioles (halo `#ffef9f` à 22 % + cœur blanc). Aucun œil, aucune branche griffue.
+- Le validateur d'arité de la vague 1 se rejoue tel quel sur la carte (226 tracés), avec
+  **une correction du motif de capture** : `d="…"` attrape aussi la fin de `id="…"` (le
+  gradient `c-ciel` était compté comme un tracé invalide). Exiger un blanc ou un guillemet
+  devant : `/[\s"]d="([^"]+)"/g`.
+
+## 2026-08-24 — la carte d'accueil dessinée
+
+- **`svg/carte.js` remplace son placeholder** : ciel dégradé et soleil, Cloudsdale et son
+  arc-en-ciel en haut à gauche, massif et château d'or de Canterlot en haut à droite,
+  trois plans de collines, rivière et petit pont, Sweet Apple Acres (grange rouge, onze
+  pommiers) à gauche, le village (manège de Rarity, pâtisserie à cupcake, mairie ronde à
+  horloge, école à cloche, quatre maisons), le chêne Golden Oak, la forêt Désenchantée et
+  ses lucioles, la hutte de Zecora et la chaumière de Fluttershy. Mêmes aplats et mêmes
+  contours que les personnages, palette gaie et douce.
+- **Les 16 `carte: { x, y }` de `js/data.js` ont été recalés** (mandat du lead) sur la
+  grille de rangées ci-dessus. Avant → après : bibliothèque (48,55) → (30,59) ; école
+  (65,60) → (62,59) ; Twilight (48,55) → (30,51) ; Fluttershy (68,72) → (88,67) ;
+  chaumière (68,72) → (78,75) ; Sweet Apple Acres (18,58) → (13,27) ; Applejack (18,58) →
+  (10,51) ; Carousel Boutique (40,48) → (48,27) ; Rarity (40,48) → (52,51) ; Sugarcube
+  (58,50) → (74,27) ; Pinkie (58,50) → (74,51) ; Cloudsdale (20,12) → (20,10) ;
+  Rainbow Dash (20,12) → (36,18) ; Canterlot (80,18) → (84,10) ; forêt (55,88) → (46,75) ;
+  hutte de Zecora (42,90) → (18,75). Les deux findings en attente (école recouverte par
+  Fluttershy, bibliothèque mordant sur Twilight) sont clos.
+
 ## 2026-08-24 — vague 1 : les cinq autres Mane 6 + Spike
 
 - **Applejack, Rainbow Dash, Pinkie Pie, Fluttershy, Rarity et Spike dessinés**
