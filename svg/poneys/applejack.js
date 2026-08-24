@@ -86,24 +86,42 @@ const MECHE = "M199 90C193 104 188 120 186 138"
   + "C213 148 218 138 221 130"
   + "C215 114 207 100 199 90Z";
 
-// ── CHAPEAU, RELEVÉ SUR RÉFÉRENCE. Le premier jet en faisait un melon posé à
-//    plat : bord horizontal descendant jusqu'à y 59, donc tout le front couvert,
-//    et pas une mèche visible devant. Sur la référence le chapeau est posé EN
-//    ARRIÈRE et BASCULÉ, son bord remonte franchement vers l'avant (l'arête
-//    avant passe au-dessus de l'œil, à 0,05 hauteur de tête sous le crâne), la
-//    calotte est HAUTE, et c'est la frange qui occupe le front sous le bord.
-//    Cotes : bord x 184 → 288, arête basse arrière y 46, arête basse avant y 41
-//    (soit 12 unités plus haut que le premier jet) ; calotte y 10 → 40.
-//    Borne dure : la fenêtre de portrait commence à y 6. Calé à y 8, le sommet de
-//    la calotte n'avait plus que 2 unités de marge sur 124 — sur le
-//    mini-portrait de la carte d'accueil (76 px) il affleurait le bord du cadre
-//    et se lisait comme coupé. Tout le chapeau est donc descendu de 3 : sommet à
-//    y 11, cinq unités de marge.
-const CALOTTE = "M211 42C207 32 209 22 216 17 223 12 233 11 244 11"
-  + "C256 11 265 14 271 20 277 27 278 35 277 44"
-  + "C263 48 225 47 211 42Z";
-const BORD = "M195 39C195 32 205 27 219 23 235 19 252 20 265 24 276 28 282 32 282 37"
-  + "C281 42 271 46 256 48 239 49 221 46 208 42 199 39 195 40 195 39Z";
+// ── CHAPEAU, REFAIT LE 25/08/2026 (finding de revue : « le chapeau lit comme une
+//    casquette ronde »). Le finding était juste, et la cause n'était pas la forme
+//    des deux pièces mais LEUR ORDRE : la calotte (y 11 → 44) était dessinée
+//    d'abord et le bord (y 19 → 49) par-dessus. Le bord recouvrait donc la
+//    calotte de y 19 à y 49 et il n'en restait que HUIT unités visibles au-dessus
+//    — exactement la silhouette d'une casquette. C'est le même piège que le
+//    chapeau de Trixie, trouvé le même jour sur elle.
+//
+//    Un chapeau de cow-boy vu de trois quarts par le dessus, c'est une ELLIPSE
+//    (le bord) sur laquelle POSE une calotte qui n'en couvre que le milieu : le
+//    bord reste donc visible en ANNEAU, large devant et sur les deux côtés, et
+//    c'est cet anneau, et lui seul, qui fait lire « bord plat ». Le bord se
+//    dessine donc EN PREMIER, puis la calotte.
+//    Cotes relevées sur `refs/w1-applejack-id.png` : bord x 182 → 285 (soit une
+//    largeur d'une fois la longueur de tête), ellipse centrée (233,39) de demi-axes
+//    51 × 15 ; calotte BASSE (30 unités de haut pour 68 de large, contre 33 × 66
+//    au premier jet) avec un PLI central — sans le pli la calotte reste une bosse
+//    lisse et le chapeau redevient un melon.
+//    Borne de cadrage inchangée : sommet de calotte à y 13, cinq unités sous le
+//    bord haut de la fenêtre de portrait (y 6). À y 8 il affleurait le cadre du
+//    mini-portrait de la carte d'accueil et se lisait comme coupé.
+// LES DEUX POINTES DU BORD SONT RETROUSSÉES, et c'est LE signe du chapeau de
+// cow-boy : sur un bord plat de bout en bout, la silhouette redevient celle d'un
+// melon quelle que soit la calotte. Pointe gauche à y 30, pointe droite à y 28,
+// et le bord AVANT qui s'affaisse jusqu'à y 53 entre les deux.
+const BORD = "M180 30"
+  + "C186 41 200 49 224 53"
+  + "C248 56 272 47 288 28"
+  + "C282 24 264 22 240 23"
+  + "C214 24 192 26 180 30Z";
+const CALOTTE = "M202 39"
+  + "C200 28 205 19 216 15"
+  + "C226 12 240 11 252 13"
+  + "C266 16 275 23 276 33"
+  + "C276 38 275 42 274 45"
+  + "C250 49 224 48 202 39Z";
 
 // ── POMME de la marque de beauté (rayon ≈ 10, centrée sur 0,0) : disque à
 //    creux supérieur, plus une petite feuille. Rouge, vert et brun sont des
@@ -222,16 +240,28 @@ export default (c) => {
   <path d="${MECHE}" fill="none" stroke="${CRIN_T}" stroke-width="3.2"/>
 
   <!-- 12 bis. CHAPEAU, par-dessus la crinière : la frange sort de sous le bord.
-       Calotte d'abord, bord ensuite — l'arête avant du bord ferme la calotte. -->
-  <path d="${CALOTTE}" fill="${CHAPEAU}" stroke="${CHAP_T}" stroke-width="3"/>
-  <path d="M219 23C226 27 237 29 248 27 257 25 264 22 268 19" fill="none"
-        stroke="${CHAP_T}" stroke-width="2.4"/>
-  <path d="M221 18C228 15 236 14 244 15 251 16 257 18 262 21" fill="none"
-        stroke="${CHAP_H}" stroke-width="4"/>
-  <path d="M216 32C227 37 258 37 271 32" fill="none" stroke="${CHAP_T}" stroke-width="3.5"/>
+       LE BORD D'ABORD, la calotte ensuite (cf. l'en-tête du bloc CHAPEAU) : dans
+       l'autre ordre le bord avale la calotte et le chapeau devient une
+       casquette. Puis, sur la calotte : le RUBAN à sa base, le PLI central, et
+       une arête éclairée. -->
   <path d="${BORD}" fill="${CHAPEAU}" stroke="${CHAP_T}" stroke-width="3"/>
-  <path d="M202 36C214 30 231 26 247 27 263 28 275 32 280 35" fill="none"
-        stroke="${CHAP_H}" stroke-width="4"/>
+  <path d="M184 33C192 43 206 50 224 52 246 55 268 47 283 32" fill="none"
+        stroke="${CHAP_H}" stroke-width="3.4" stroke-opacity=".7"/>
+  <path d="${CALOTTE}" fill="${CHAPEAU}" stroke="${CHAP_T}" stroke-width="3"/>
+  <!-- le RUBAN : une bande plus sombre au ras de la calotte. C'est lui qui
+       sépare visuellement la calotte du bord ; sans lui les deux pièces se
+       fondent en une seule bosse. -->
+  <path d="M204 37C214 43 226 45 239 45 252 45 265 42 275 37" fill="none"
+        stroke="${CHAP_T}" stroke-width="6" stroke-opacity=".55"/>
+  <!-- le PLI central de la calotte, et les deux creux de côté -->
+  <path d="M240 13C238 22 238 31 240 40" fill="none" stroke="${CHAP_T}"
+        stroke-width="2.4"/>
+  <g fill="none" stroke="${CHAP_T}" stroke-width="1.8" stroke-opacity=".65">
+    <path d="M223 17C221 24 221 32 223 39"/>
+    <path d="M258 18C260 25 260 33 258 40"/>
+  </g>
+  <path d="M220 21C228 16 240 14 251 16" fill="none"
+        stroke="${CHAP_H}" stroke-width="3.6"/>
 
   <!-- 13. CILS AU COIN HAUT-ARRIÈRE (convention de la vague 2, désormais
        partagée) : la référence en montre TROIS, en éventail vers le haut et

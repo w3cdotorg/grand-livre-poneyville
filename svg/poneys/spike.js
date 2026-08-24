@@ -103,49 +103,57 @@ const AILERON = "M192 52C184 44 168 38 150 42"
   + "C180 83 188 84 191 78"
   + "C194 70 193 60 192 52Z";
 
-// ── QUEUE : trapue, en arrière-bas, avec deux pointes vertes sur le dessus.
-// ── QUEUE : trapue, en arrière-bas, terminée par un FER DE LANCE. Relevé sur la
-//    référence : la queue de Spike ne s'effile pas en cône, elle finit sur une
-//    pointe élargie en losange. Sans elle, la queue se lisait comme un simple
-//    boudin coupé net.
-const QUEUE = "M190 190C176 197 157 208 143 220"
-  + "C136 226 131 233 130 240"
-  + "C124 240 118 242 114 246"
-  + "C120 250 126 252 132 252"
-  + "C131 258 133 264 137 267"
-  + "C142 262 146 255 147 248"
-  + "C160 241 178 228 189 216"
-  + "C195 209 196 197 190 190Z";
-const POINTES_DOS = [
-  "M182 164L177 184 154 166Z",
-  "M177 188L179 208 148 196Z",
-  "M160 210L172 226 138 226Z",
+// ── CORPS (bras, jambes, queue) — REPRIS SUR RÉFÉRENCE LE 25/08/2026, finding
+//    de revue : « bras mal rattaché à l'épaule, jambe en fût de botte, queue
+//    d'un autre style que le reste ». Les trois défauts avaient la même cause :
+//    ces quatre membres étaient des TRACÉS FERMÉS dont l'attache au torse ne
+//    faisait que 7 à 10 unités de large. Un membre attaché sur 10 unités se lit
+//    comme un bâton collé, quelle que soit sa forme.
+//
+//    Ils sont maintenant dessinés comme des TUBES — trait épais à bouts ronds
+//    passé deux fois, contour large puis remplissage plus fin, la technique des
+//    volutes de Rarity et du corps de Discord. Trois bénéfices, et c'est
+//    exactement ce que le finding demandait :
+//      · l'attache disparaît : le bout rond du tube démarre À L'INTÉRIEUR du
+//        torse et le contour du corps, retracé après, la recouvre ;
+//      · le membre peut S'AFFINER en chaînant des segments de largeur
+//        décroissante (impossible sur un tracé fermé sans le recroiser) ;
+//      · la queue prend le même vocabulaire graphique que le reste du dessin.
+//
+//    Cotes relevées sur `refs/v1-spike-pp.png` (341 × 487), en fraction de la
+//    LARGEUR DU TORSE (130 px sur la référence) :
+//      | bras (épaisseur)        | 0,21 |  attache juste sous la mâchoire |
+//      | jambe (épaisseur)       | 0,34 |  courte : 23 % de la hauteur totale |
+//      | pied (largeur)          | 0,42 |  PLUS LARGE que la jambe, 3 orteils |
+//      | queue (base / pointe)   | 0,26 → 0,14 | fer de lance au bout |
+const BRAS_FOND_SEG = [["M198 138C188 146 180 154 177 164", 22], ["M177 164C174 172 175 180 179 186", 17]];
+const BRAS_SEG = [["M222 140C236 146 248 152 252 164", 25], ["M252 164C255 176 250 186 245 190", 19]];
+const JAMBE_FOND_SEG = [["M196 200C193 216 192 232 194 246", 27]];
+const JAMBE_SEG = [["M220 200C223 218 224 236 224 252", 31]];
+// La queue part de la CROUPE et file en ARRIÈRE avant de descendre. Au premier
+// tour du reprise elle plongeait à 45° dès la sortie du torse et se lisait comme
+// une TROISIÈME JAMBE ; sur la référence elle sort presque à l'horizontale.
+const QUEUE_SEG = [
+  ["M198 190C182 192 166 196 154 202", 33],
+  ["M154 202C142 208 133 216 128 226", 25],
+  ["M128 226C125 232 124 238 124 244", 17],
 ];
-
-// ── MEMBRES. Le bras et la jambe du fond sont en robe assombrie, comme les
-//    membres du fond des poneys : c'est le voile plus sombre, pas la position,
-//    qui les fait lire « derrière ».
-const BRAS_FOND = "M194 134C184 140 176 152 174 165"
-  + "C173 174 177 181 184 182"
-  + "C191 183 195 178 196 170"
-  + "C197 158 200 146 204 138Z";
-const JAMBE_FOND = "M196 206C191 220 189 238 191 252"
-  + "C192 261 197 266 206 266"
-  + "C214 266 219 261 218 252"
-  + "C217 238 216 220 218 208Z";
-const BRAS = "M224 138C234 146 244 156 249 168"
-  + "C253 177 251 186 243 188"
-  + "C235 189 230 183 228 175"
-  + "C225 163 220 151 215 144Z";
-const JAMBE = "M216 210C211 226 209 242 212 256"
-  + "C214 264 220 269 229 269"
-  + "C239 269 245 264 244 255"
-  + "C243 240 240 224 241 210Z";
-// Pieds larges à trois orteils : sans eux les jambes se lisent comme deux
-// tuyaux coupés net.
-const PIED = "M209 250C203 257 203 268 214 271"
-  + "C226 274 241 272 247 264"
-  + "C251 257 248 249 241 248Z";
+// FER DE LANCE du bout de queue : la queue de Spike ne s'effile pas en cône, elle
+// finit sur une pointe élargie en losange (relevé). Sans elle, le tube se lit
+// comme un boudin coupé net.
+const FER = "M124 238L135 250 124 266 113 250Z";
+// PIEDS : plus LARGES que les jambes, à trois orteils. Sans eux les jambes se
+// lisent comme deux fûts de botte — c'est le deuxième point du finding.
+const PIED_FOND = "M181 240C176 246 176 254 183 256"
+  + "C192 259 203 258 207 252 210 247 208 240 202 239Z";
+const PIED = "M206 246C200 253 200 264 210 267"
+  + "C223 270 237 268 242 261 246 254 243 245 236 244Z";
+// Les trois pointes vertes du DOS suivent maintenant le dessus du tube de queue.
+const POINTES_DOS = [
+  "M188 174L180 190 162 172Z",
+  "M170 180L164 197 143 182Z",
+  "M152 190L148 208 126 196Z",
+];
 
 // Intérieur de gueule et langue : constantes documentées. Le `BOUCHE` rose du
 // template (#c7096e) est un rose de poney, incohérent sur un dragon.
@@ -158,6 +166,14 @@ export default (c) => {
   const VENTRE_C = c.ventre ?? M0;                 // gardé : la clé est optionnelle
   const VENTRE_T = ton(VENTRE_C, .8, -.2);
   const oe = oeil(c, d);
+  // TUBE : le membre passé deux fois, contour large puis remplissage plus fin,
+  // à bouts ronds. Chaîner des segments de largeur décroissante affine le
+  // membre, et les jonctions disparaissent sous les bouts ronds.
+  const tube = (segs, colT, col) =>
+    segs.map(([t, w]) => `<path d="${t}" fill="none" stroke="${colT}"
+        stroke-width="${w}" stroke-linecap="round"/>`).join('')
+    + segs.map(([t, w]) => `<path d="${t}" fill="none" stroke="${col}"
+        stroke-width="${w - 6}" stroke-linecap="round"/>`).join('');
   // Positions d'œil propres à Spike. La face d'un dragon bipède est FRONTALE
   // aux trois quarts, pas en profil comme un chanfrein de poney : les deux yeux
   // sont côte à côte sur l'avant du crâne, celui de gauche (le lointain)
@@ -191,16 +207,19 @@ export default (c) => {
        se compose (déjà vérifié au navigateur sur les pouliches de la vague 2). -->
   <g transform="translate(31 25.4) scale(.87)" stroke-linejoin="round" stroke-linecap="round">
 
-  <!-- 1. QUEUE et POINTES DU DOS, derrière tout -->
+  <!-- 1. QUEUE et POINTES DU DOS, derrière tout. La queue est un TUBE de largeur
+       décroissante (33 → 17) terminé par un fer de lance ; son bout rond de
+       départ est noyé dans la croupe. -->
   <g fill="${M0}" stroke="${CRIN_T}" stroke-width="3">
     ${POINTES_DOS.map(p => `<path d="${p}"/>`).join('')}
   </g>
-  <path d="${QUEUE}" fill="${c.robe}" stroke="${TRAIT}" stroke-width="3.2"/>
+  <path d="${FER}" fill="${c.robe}" stroke="${TRAIT}" stroke-width="3"/>
+  ${tube(QUEUE_SEG, TRAIT, c.robe)}
 
-  <!-- 2. MEMBRES DU FOND, en robe assombrie -->
-  <g fill="${FOND}" stroke="${FOND_T}" stroke-width="3.2">
-    <path d="${BRAS_FOND}"/><path d="${JAMBE_FOND}"/>
-  </g>
+  <!-- 2. MEMBRES DU FOND, en robe assombrie : pied d'abord, puis les tubes -->
+  <path d="${PIED_FOND}" fill="${FOND}" stroke="${FOND_T}" stroke-width="3"/>
+  ${tube(BRAS_FOND_SEG, FOND_T, FOND)}
+  ${tube(JAMBE_FOND_SEG, FOND_T, FOND)}
 
   <!-- 3. AILERON D'OREILLE, avant la tête : c'est le contour de la tête,
        dessiné ensuite, qui creuse son attache. Vert PÂLE (celui du ventre) et
@@ -226,18 +245,25 @@ export default (c) => {
     <path d="M211 188C219 192 228 192 236 189"/>
   </g>
 
-  <!-- 6. MEMBRES PROCHES : bras droit tendu et jambe droite -->
-  <g fill="${c.robe}" stroke="${TRAIT}" stroke-width="3.2">
-    <path d="${BRAS}"/><path d="${JAMBE}"/><path d="${PIED}"/>
-    <circle cx="245" cy="183" r="10"/>
-  </g>
-  <!-- griffes : trois doigts sur la main, trois orteils sur le pied -->
+  <!-- 6. MEMBRES PROCHES : bras et jambe, tubes affinés, pieds larges. Le PIED
+       se dessine AVANT le tube de jambe pour que le tube en recouvre le haut :
+       c'est ce recouvrement qui fait la cheville. -->
+  <path d="${PIED}" fill="${c.robe}" stroke="${TRAIT}" stroke-width="3.2"/>
+  ${tube(JAMBE_SEG, TRAIT, c.robe)}
+  ${tube(BRAS_SEG, TRAIT, c.robe)}
+  <circle cx="247" cy="192" r="10.5" fill="${c.robe}" stroke="${TRAIT}" stroke-width="3"/>
+  <!-- griffes : trois doigts sur la main, trois orteils sur chaque pied -->
   <g fill="none" stroke="${TRAIT}" stroke-width="2.2">
-    <path d="M248 174C251 176 254 176 256 175"/>
-    <path d="M253 181C256 182 259 182 261 181"/>
-    <path d="M251 189C254 191 257 191 259 190"/>
-    <path d="M222 262C222 266 223 269 224 271"/>
-    <path d="M232 261C233 265 234 269 235 271"/>
+    <path d="M251 184C254 185 257 186 259 186"/>
+    <path d="M255 191C258 192 261 193 263 193"/>
+    <path d="M252 199C255 201 258 202 260 202"/>
+    <path d="M217 262C217 265 217 267 218 269"/>
+    <path d="M226 262C227 265 228 267 229 269"/>
+    <path d="M235 259C236 262 237 264 238 266"/>
+  </g>
+  <g fill="none" stroke="${FOND_T}" stroke-width="2">
+    <path d="M188 253C188 255 188 257 189 258"/>
+    <path d="M196 253C197 255 197 257 198 258"/>
   </g>
 
   <!-- 7. NASEAU + BOUCHE OUVERTE. Deux petits crocs pendent de la lèvre
