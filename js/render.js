@@ -1,22 +1,18 @@
-import { PERSONNAGES, LIEUX, PERSONNAGE, LIEU } from './data.js';
+import { PERSONNAGES, LIEUX, PERSONNAGE, LIEU, ESPECES } from './data.js';
 
 const app = document.getElementById('app');
-const ESPECES = {
-  terrestre: "Poney terrestre 🍎", pegase: "Pégase 🪽", licorne: "Licorne 🦄",
-  alicorne: "Alicorne 👑", dragon: "Dragon 🔥", zebre: "Zèbre 🌿",
-  draconequus: "Draconequus 🌀", lapin: "Lapin 🥕", alligator: "Alligator 🦷",
-  chien: "Chien 🦴", chat: "Chat 🧶", tortue: "Tortue 🚁", hibou: "Hibou 🌙",
-};
 
 const svgDe = async (p) => (await import(`../svg/poneys/${p.id}.js`)).default(p.couleurs);
 const svgLieu = async (l) => (await import(`../svg/lieux/${l.id}.js`)).default();
 // Fenêtre de recadrage des portraits de galerie : elle cadre la tête du modèle
-// show-accurate (voir NOTES.md § « Guide de style poneys »).
-const portrait = (svg) => svg.replace('viewBox="0 0 300 300"', 'viewBox="171 6 124 124"');
+// show-accurate (voir NOTES.md § « Guide de style poneys »). Certains personnages
+// (Tank, Angel) dérogent à cette fenêtre partagée via `p.portrait` dans data.js,
+// quand leur tête tombe mal dans le cadrage canonique.
+const portrait = (svg, p) => svg.replace('viewBox="0 0 300 300"', `viewBox="${p?.portrait ?? '171 6 124 124'}"`);
 
 const vignettePoney = async (id) => {
   const p = PERSONNAGE[id];
-  return `<a class="vignette" href="#/poney/${id}">${portrait(await svgDe(p))}<span>${p.nom}</span></a>`;
+  return `<a class="vignette" href="#/poney/${id}">${portrait(await svgDe(p), p)}<span>${p.nom}</span></a>`;
 };
 const vignetteLieu = async (id) => {
   const l = LIEU[id];
@@ -30,9 +26,10 @@ const ECRANS = {
     const carte = (await import('../svg/carte.js')).default();
     const lieux = LIEUX.map(l =>
       `<a class="sur-carte" href="#/lieu/${l.id}" style="left:${l.carte.x}%;top:${l.carte.y}%"><span>${l.nom}</span></a>`).join('');
-    const poneys = await toutes(PERSONNAGES.filter(p => p.carte).map(p => p.id), async (id) => {
-      const p = PERSONNAGE[id];
-      return `<a class="sur-carte poney-carte" href="#/poney/${id}" style="left:${p.carte.x}%;top:${p.carte.y - 8}%">${portrait(await svgDe(p))}</a>`;
+    const poneys = await toutes(PERSONNAGES.filter(p => p.carte), async (p) => {
+      // `- 8` : décale le mini-portrait de 8 % vers le haut, sinon il recouvre
+      // la pastille de lieu posée au même point de la carte.
+      return `<a class="sur-carte poney-carte" href="#/poney/${p.id}" style="left:${p.carte.x}%;top:${p.carte.y - 8}%">${portrait(await svgDe(p), p)}</a>`;
     });
     return `<header class="accueil-titre"><h1>Le Grand livre de Poneyville</h1></header>
       <nav class="gros-boutons">
@@ -69,7 +66,7 @@ const ECRANS = {
         </div>
       </div>
       ${p.lieuId ? `<h2>Où ça se passe</h2><div class="grille">${await vignetteLieu(p.lieuId)}</div>` : ''}
-      ${proches.length ? `<h2>Sa famille et ses amis</h2><div class="grille">${await toutes(proches, vignettePoney)}</div>` : ''}`;
+      ${proches.length ? `<h2>${p.liens.proprietaire ? 'Son poney' : 'Sa famille et ses amis'}</h2><div class="grille">${await toutes(proches, vignettePoney)}</div>` : ''}`;
   },
   async lieu(id) {
     const l = LIEU[id];

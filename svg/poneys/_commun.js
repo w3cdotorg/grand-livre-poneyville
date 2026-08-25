@@ -72,11 +72,6 @@ export const derives = (c) => {
 // Le même tracé sert de blanc de l'œil ET de paupière.
 export const AMANDE = "M-19.5 -3.9C-16 -11.5-9.5 -16.8-1.5 -16.5 8.5 -16 17.5 -3 19.9 9.5"
   + "C18 14 14 16.5 8.5 16.4 -1 16-13 10-19.5 -3.9Z";
-// Les deux moitiés de l'amande, en tracés OUVERTS. Elles servent de plis de
-// paupière : c'est en reprenant le bord même de l'œil qu'un pli reste parallèle
-// à l'œil au lieu de le barrer d'un trait étranger.
-export const AMANDE_BAS = "M19.9 9.5C18 14 14 16.5 8.5 16.4 -1 16-13 10-19.5 -3.9";
-export const AMANDE_HAUT = "M-19.5 -3.9C-16 -11.5-9.5 -16.8-1.5 -16.5 8.5 -16 17.5 -3 19.9 9.5";
 // Iris : disque aplati le long du bord haut-droit de l'amande, qu'il affleure.
 // C'est ce contact qui produit le liseré sombre caractéristique du regard MLP.
 export const IRIS = "M-12 -2C-11.2 -9-6 -14.6-1 -15 7 -14 15.2 -6 17.6 2"
@@ -390,13 +385,13 @@ const enBezierInverse = (p) => `C${p[5]} ${p[4]} ${p[3]}C${p[2]} ${p[1]} ${p[0]}
 
 // Paupière SUPÉRIEURE : de `BORD_HAUT` vers `BORD_BAS`. `ouv` est la fraction
 // d'œil qui reste OUVERTE : 1 = grand ouvert, .6 = mi-clos, .5 = plissé, 0 = fermé.
-export const PLI_H = (ouv) => enBezier(melange(BORD_HAUT, BORD_BAS, 1 - ouv));
-export const PAUPIERE_H = (ouv) =>
+const PLI_H = (ouv) => enBezier(melange(BORD_HAUT, BORD_BAS, 1 - ouv));
+const PAUPIERE_H = (ouv) =>
   `${enBezier(BORD_HAUT)}${enBezierInverse(melange(BORD_HAUT, BORD_BAS, 1 - ouv))}Z`;
 // Paupière INFÉRIEURE : de `BORD_BAS` vers `BORD_HAUT`. `mange` est la fraction
 // d'œil qu'elle remonte par le bas — .1 à .2, pas plus.
-export const PLI_B = (mange) => enBezier(melange(BORD_BAS, BORD_HAUT, mange));
-export const PAUPIERE_B = (mange) =>
+const PLI_B = (mange) => enBezier(melange(BORD_BAS, BORD_HAUT, mange));
+const PAUPIERE_B = (mange) =>
   `${enBezier(BORD_BAS)}${enBezierInverse(melange(BORD_BAS, BORD_HAUT, mange))}Z`;
 
 // `e` accompagne le facteur d'échelle des YEUX quand un personnage déroge à
@@ -577,10 +572,10 @@ export const pattePouliche = (x, l, yAv, yAr, y1) =>
 // jet — des pattes d'adulte sous un tronc d'enfant.
 // Et ÉPAISSES : sur les références plein pied les pattes d'une pouliche sont
 // des petits fûts trapus, pas les colonnes galbées d'une adulte.
-export const PATTE_AR_FOND_P = pattePouliche(166, 8.5, 142, 146, 214);
-export const PATTE_AV_FOND_P = pattePouliche(219, 8.5, 138, 142, 214);
-export const PATTE_AR_BORD_P = pattePouliche(150, 10, 148, 152, 218);
-export const PATTE_AV_BORD_P = pattePouliche(203, 10, 150, 156, 218);
+const PATTE_AR_FOND_P = pattePouliche(166, 8.5, 142, 146, 214);
+const PATTE_AV_FOND_P = pattePouliche(219, 8.5, 138, 142, 214);
+const PATTE_AR_BORD_P = pattePouliche(150, 10, 148, 152, 218);
+const PATTE_AV_BORD_P = pattePouliche(203, 10, 150, 156, 218);
 
 // ── OREILLE DE POULICHE : la feuille adulte écrasée à 65 % en hauteur (pointe
 //    basse ramenée de y 101 à y 85). Relevé sur les références : l'oreille d'une
@@ -743,7 +738,7 @@ export const TACHES_JOUE = [[236.5, 97.5, 1.7], [243.5, 98.6, 1.7], [240, 103, 1
 
 // Aile REPLIÉE (Fluttershy) : elle épouse le flanc, pointe vers la croupe.
 // Trois pennes visibles, dessinées comme des entailles du bord bas.
-export const AILE_REPLIEE = "M209 137C201 137 190 141 180 148"
+const AILE_REPLIEE = "M209 137C201 137 190 141 180 148"
   + "C170 155 162 163 158 170 161 172 166 172 171 170"
   + "C168 175 166 179 166 182 171 182 177 179 182 175"
   + "C182 179 183 182 184 184 189 181 194 176 198 170"
@@ -765,7 +760,7 @@ export const ailePliee = (c, { TRAIT }) => `<g>
 // Borne : son bord avant reste à x > 152, sinon elle recouvre la marque de beauté
 // (canoniquement centrée sur x 141, rayon ~18, donc jusqu'à x 159 à y 152 — à
 // cette hauteur le bord de l'aile est à x 168, la marque passe).
-export const AILE_ALICORNE = "M212 129C203 128 191 132 179 140"
+const AILE_ALICORNE = "M212 129C203 128 191 132 179 140"
   + "C167 148 157 158 152 167 156 170 162 171 169 169"
   + "C165 174 162 179 162 183 168 184 175 181 181 176"
   + "C181 181 182 185 183 188 189 185 196 179 201 172"
@@ -783,7 +778,7 @@ export const aileAlicorne = (c, { TRAIT }) => `<g>
 // Aile DÉPLOYÉE (Rainbow Dash) : elle part du garrot (196,130) et se déploie
 // vers le haut-arrière jusqu'à (124,64). Le bord bas est festonné : quatre
 // pennes. La pointe reste à x < 171 pour rester HORS de la fenêtre de portrait.
-export const AILE_DEPLOYEE = "M198 132C186 122 168 106 148 92"
+const AILE_DEPLOYEE = "M198 132C186 122 168 106 148 92"
   + "C136 84 127 78 124 76 122 79 124 85 129 93"
   + "C122 90 116 88 113 88 115 93 121 100 129 108"
   + "C122 108 117 108 114 109 119 115 127 121 137 127"

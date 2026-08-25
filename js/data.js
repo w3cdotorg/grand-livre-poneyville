@@ -1,5 +1,13 @@
 // Le Grand livre de Poneyville — données des personnages et des lieux.
 
+// Libellé affiché sous le portrait de chaque personnage, par espèce.
+export const ESPECES = {
+  terrestre: "Poney terrestre 🍎", pegase: "Pégase 🪽", licorne: "Licorne 🦄",
+  alicorne: "Alicorne 👑", dragon: "Dragon 🔥", zebre: "Zèbre 🌿",
+  draconequus: "Draconequus 🌀", lapin: "Lapin 🥕", alligator: "Alligator 🦷",
+  chien: "Chien 🦴", chat: "Chat 🧶", tortue: "Tortue 🚁", hibou: "Hibou 🌙",
+};
+
 export const PERSONNAGES = [
   {
     id: "twilight",
@@ -252,6 +260,10 @@ export const PERSONNAGES = [
     espece: "lapin",
     couleurs: { robe: "#f6faf9", criniere: [], yeux: "#1b232a" },
     cutieMark: null,
+    // Fenêtre de portrait dédiée (§ finding 8) : la tête d'Angel est plus basse et
+    // plus étroite que celle d'un poney, la fenêtre partagée laisse trop de vide
+    // au-dessus et rogne le bas du museau.
+    portrait: "165 20 120 120",
     lieuId: "chaumiere-fluttershy",
     liens: { famille: [], amis: [], proprietaire: "fluttershy" },
     texte: "Angel est le petit lapin blanc de Fluttershy. Il a un caractère bien trempé, mais Fluttershy l'aime beaucoup. Il vit avec elle dans sa chaumière."
@@ -292,6 +304,10 @@ export const PERSONNAGES = [
     espece: "tortue",
     couleurs: { robe: "#60ae7f", carapace: "#539e70", ecailles: "#cfee95", criniere: [], yeux: "#22412e" },
     cutieMark: null,
+    // Fenêtre de portrait dédiée (§ finding 8) : la fenêtre partagée « 171 6 124 124 »
+    // cadre l'emplacement de la tête d'un poney, pas celle — bien plus petite et
+    // décalée à droite — de Tank. Cadre resserré sur sa tête (museau + œil + bec).
+    portrait: "190 30 110 110",
     lieuId: "cloudsdale",
     liens: { famille: [], amis: [], proprietaire: "rainbow-dash" },
     texte: "Tank est la tortue de compagnie de Rainbow Dash. Il est tranquille et prend son temps, mais grâce à une petite hélice, il peut voler. Il vit à Cloudsdale avec elle."
