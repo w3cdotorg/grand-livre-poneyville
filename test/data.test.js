@@ -59,10 +59,3 @@ test('tout personnage avec lieuId figure dans les habitants de ce lieu', () => {
 test('ESPECES couvre toutes les espèces', () => {
   for (const p of PERSONNAGES) assert.ok(Object.hasOwn(ESPECES, p.espece), p.id);
 });
-
-test('portrait, quand il est fourni, est une fenêtre "x y w h" valide', () => {
-  for (const p of PERSONNAGES) {
-    if (p.portrait === undefined) continue;
-    assert.match(p.portrait, /^-?\d+(\.\d+)? -?\d+(\.\d+)? \d+(\.\d+)? \d+(\.\d+)?$/, p.id);
-  }
-});

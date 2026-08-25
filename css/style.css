@@ -48,39 +48,49 @@ h2 { margin: 28px 0 12px; font-size: 1.3rem; }
    sous 500 px de conteneur, on masque le texte du ruban et on garde la cible
    64 × 64 px cliquable (le lien, pas le `span`, porte le `min-height`/`min-width`). */
 @container (max-width: 500px) { .sur-carte > span { display: none; } }
+/* Les mini-portraits de la carte sont les PNG plein pied : `contain` les met à
+   l'échelle sans les déformer, quel que soit le rapport de l'image d'origine. */
 .poney-carte { width: 76px; height: 76px; }
-.poney-carte svg { width: 100%; height: 100%; }
+.poney-carte img { width: 100%; height: 100%; object-fit: contain; }
 .grille { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 16px; }
 .vignette { background: var(--carton); border-radius: var(--rayon); padding: 12px;
   display: grid; justify-items: center; gap: 8px; box-shadow: 0 2px 8px #0002;
   font-weight: 700; text-align: center; transition: transform .15s; }
 .vignette:active { transform: scale(.96); }
-.vignette svg { width: 110px; height: 110px; }
+/* Case carrée de 110 px pour les personnages : les PNG plein pied détourés y
+   tiennent en entier (`contain`), plus besoin de recadrer la tête. */
+.vignette img { width: 110px; height: 110px; object-fit: contain; }
 .vignette-lieu svg { width: 100%; height: auto; border-radius: 12px; }
 .fiche { display: grid; grid-template-columns: minmax(240px, 1fr) 1.2fr; gap: 24px;
   background: var(--carton); border-radius: var(--rayon); padding: 24px;
   box-shadow: 0 4px 14px #0002; align-items: center; }
 .fiche-dessin svg { width: 100%; height: auto; }
+/* `display: block` : sans lui la ligne de base de l'image ajoute quelques pixels
+   sous le dessin, et le balancement fait « tremper » le personnage dans ce vide. */
+.fiche-dessin img { width: 100%; height: auto; display: block;
+  transform-origin: bottom center; animation: respire 4s ease-in-out infinite; }
 .fiche-lieu { background: var(--carton); border-radius: var(--rayon); padding: 16px;
   box-shadow: 0 4px 14px #0002; }
 .espece { font-weight: 700; color: var(--accent); font-size: 1.1rem; }
-.medaillon { display: flex; align-items: center; gap: 12px; margin: 12px 0; }
-.medaillon svg { width: 64px; height: 64px; flex: none; background: var(--fond);
-  border-radius: 50%; padding: 8px; }
+.marque { margin: 12px 0; font-weight: 700; line-height: 1.5; }
 .texte { font-size: 1.15rem; line-height: 1.6; margin: 12px 0; }
 .le-sais-tu { background: #fff7d6; border-radius: 16px; padding: 12px 16px; line-height: 1.5; }
+.mention { margin: 20px 0 4px; text-align: center; font-size: .8rem; opacity: .55; }
 @media (max-width: 640px) { .fiche { grid-template-columns: 1fr; padding: 16px; } }
 /* ------- animations ------- */
 /* Apparition douce à chaque changement d'écran (le routeur réécrit `#app`). */
 #app > * { animation: apparait .25s ease-out; }
 @keyframes apparait { from { opacity: 0; transform: translateY(6px); } }
-/* ------- clignement ------- */
-.paupieres { transform-box: fill-box; transform-origin: center top; animation: cligne 4.5s infinite; }
-@keyframes cligne { 0%, 93%, 100% { transform: scaleY(0); } 95%, 98% { transform: scaleY(1); } }
-/* Mouvement réduit : plus d'apparition ni de clignement. Les paupières gardent leur
-   `scaleY(0)` — sans lui, l'animation coupée les laisserait grandes ouvertes sur l'œil. */
+/* ------- respiration ------- */
+/* Les personnages sont maintenant des images fixes : ce balancement très léger
+   (4 s, 5 px de haut, 1 degré) remplace le clignement que dessinaient les SVG. */
+@keyframes respire {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50%      { transform: translateY(-5px) rotate(-1deg); }
+}
+/* Mouvement réduit : plus d'apparition ni de respiration. */
 @media (prefers-reduced-motion: reduce) {
   #app > * { animation: none; }
-  .paupieres { animation: none; transform: scaleY(0); }
+  .fiche-dessin img { animation: none; }
   .vignette { transition: none; }
 }

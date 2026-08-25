@@ -1,7 +1,9 @@
 // ───────────────────────────────────────────────────────────────────────────────
 // Décor partagé des dix scènes de lieux (viewBox 400 × 300).
 //
-// Ces briques sont l'équivalent, pour les lieux, de `svg/poneys/_commun.js` :
+// Ces briques sont l'anatomie partagée des lieux (l'équivalent de ce que
+// `svg/poneys/_commun.js` était pour les personnages, avant leur passage en
+// images officielles détourées le 25/08) :
 // elles garantissent que les dix fiches partagent une seule palette, un seul
 // ciel, un seul feuillage — et que cette palette est CELLE DE LA CARTE
 // (`svg/carte.js`), pour qu'un enfant reconnaisse le même endroit d'un écran à
