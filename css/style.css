@@ -65,10 +65,12 @@ h2 { margin: 28px 0 12px; font-size: 1.3rem; }
   background: var(--carton); border-radius: var(--rayon); padding: 24px;
   box-shadow: 0 4px 14px #0002; align-items: center; }
 .fiche-dessin svg { width: 100%; height: auto; }
-/* `display: block` : sans lui la ligne de base de l'image ajoute quelques pixels
-   sous le dessin, et le balancement fait « tremper » le personnage dans ce vide. */
-.fiche-dessin img { width: 100%; height: auto; display: block;
-  transform-origin: bottom center; animation: respire 4s ease-in-out infinite; }
+/* Boîte de HAUTEUR FIXE + `contain` : les 26 PNG vont de 201 × 302 (Gummy) à
+   671 × 684 (Trixie) et de 0,5 à 1,7 de rapport. À `width: 100%` Discord, tout
+   en hauteur, occupait 760 px et poussait son texte hors de l'écran. La boîte
+   commune leur donne la même taille perçue d'une fiche à l'autre. */
+.fiche-dessin img { width: 100%; height: clamp(220px, 42vw, 380px); object-fit: contain;
+  display: block; transform-origin: bottom center; animation: respire 4s ease-in-out infinite; }
 .fiche-lieu { background: var(--carton); border-radius: var(--rayon); padding: 16px;
   box-shadow: 0 4px 14px #0002; }
 .espece { font-weight: 700; color: var(--accent); font-size: 1.1rem; }
