@@ -481,6 +481,173 @@ couleur du template disparaissent donc purement et simplement :
   forcées à `scaleY(1)` et le médaillon**, capturée en Chrome headless. Beaucoup plus
   rapide que Playwright, et elle montre d'un coup les trois cadrages qui comptent.
 
+## 2026-08-25 — conversion : les personnages passent en images officielles détourées
+
+Décision du propriétaire (amendement du 25/08, actée dans le spec § « Décisions
+actées ») : les **26 personnages** deviennent des **images officielles de la série**
+détourées sur fond transparent ; la **carte** et les **10 lieux** restent des **SVG
+originaux**. `svg/poneys/` est supprimé en entier — 26 modules plus `_commun.js`.
+
+### Sourcing : ce que l'API de mlp.fandom.com donne vraiment
+
+- **Les fetch de pages font 402/403, l'API répond.** `https://mlp.fandom.com/api.php`
+  sert `list=allimages` (avec `aiprefix` + `aicontinue` : Twilight à elle seule a
+  **4 355 fichiers**), `list=search&srnamespace=6` et `prop=imageinfo`.
+- **`format=original` n'est pas optionnel.** Sans lui, `static.wikia.nocookie.net`
+  renvoie du **WebP redimensionné** (382 × 452 pour un original de même taille, mais
+  ré-encodé et sans canal alpha) — `file` le dit tout de suite. Avec
+  `…/revision/latest?cb=…&format=original`, on récupère le PNG à l'octet près
+  (taille identique à `imageinfo.size`).
+- **Aucune image officielle du wiki n'est détourée.** Les fameuses infobox
+  « `<Nom> ID SxEy.png` » sont des **captures d'écran recadrées**, fond compris
+  (`8-bit/color RGB`, pas d'alpha). Il n'existe pas de jeu transparent officiel :
+  ni catégorie « transparent », ni « official artwork » ; les seuls PNG à fond
+  transparent trouvés sont des `FANMADE …`, écartés. **Le détourage est donc à
+  faire soi-même** — c'est le vrai travail de cette conversion.
+- **La casse du mot « ID » varie.** `aiprefix="Zecora ID"` ne renvoie rien alors que
+  `Zecora id.png` existe ; idem `Big McIntosh id S2E17`, `Winona id S3E11`,
+  `Opalescence id S1E14`, `Owlowiscious id S3E11`, `Apple Bloom id S01E12`. Il faut
+  chercher le nom seul puis filtrer sur `/\bid\b/i`.
+- **Neuf personnages n'ont aucune infobox utilisable** (Twilight en licorne, Rarity,
+  Big Macintosh, Zecora, Gummy, Winona, Opale, Tank, Owlowiscious) : pour ceux-là,
+  la source est une capture d'épisode choisie dans le lot complet du personnage.
+
+### Deux mesures automatiques valent mieux qu'un tri à l'œil
+
+Trier 4 000 fichiers à la main est hors de question. Deux nombres calculés après
+détourage suffisent à remonter les bons candidats en tête de liste :
+
+- **`bords`** — nombre de bords du cadre d'origine que touche la silhouette
+  détourée. `bords = 0` veut dire deux choses à la fois : le personnage est
+  **plein pied** (une capture qui le coupe donne forcément `bords ≥ 1`) **et** le
+  détourage n'a pas ramassé de décor (les morceaux de fond restés accrochés
+  débordent presque toujours jusqu'au cadre). C'est le meilleur signal des deux.
+- **`remplissage`** — part de pixels opaques dans la boîte englobante. Un poney seul
+  en remplit 0,40 à 0,55 ; au-delà de 0,65, le masque a englobé du décor.
+
+Ajouté à ça : écarter tout fichier dont le nom cite un **autre** personnage (scène
+de groupe → deux poneys détourés ensemble), les EG/Equestria Girls (versions
+humaines), Pony Life (autre style), les déguisements et les formes alternatives.
+Twilight se restreint en plus aux saisons 1-3 : elle doit rester **licorne**, la
+fiche promet ses ailes pour plus tard.
+
+### Détourage : Vision (macOS), puis deux nettoyages
+
+1. **Masque de sujet** — `VNGenerateForegroundInstanceMaskRequest` (Vision,
+   macOS 14+, appelé depuis un binaire Swift de 30 lignes), sur **toutes** les
+   instances fusionnées : sinon le chapeau d'Applejack ou la cape de Trixie sortent
+   comme sujets distincts et se font amputer. Rendu `croppedToInstancesExtent:
+   false` — garder le cadre d'origine est ce qui permet de mesurer `bords`.
+2. **Plus grosse tache** — étiquetage en composantes connexes (par plages de ligne
+   + union-find : un parcours pixel par pixel en Python met des secondes sur du
+   1280 × 720), on ne garde que la plus grande. Les îlots de décor tombent.
+3. **Érosion facultative avant étiquetage** — une lisière anti-aliasée d'un ou deux
+   pixels suffit à souder un bout de décor au personnage, et la plus grosse tache
+   les emporte alors tous les deux. Éroder de 1-2 px coupe ces ponts ; la zone
+   gardée est redilatée d'autant + 1 puis réintersectée avec le masque d'origine.
+4. **Gommage ciblé** — pour ce qui reste (un pan de mur, un accoudoir de trône), un
+   remplissage par diffusion depuis une graine donnée en fractions de l'image.
+   Puis mise à la hauteur voulue et `pngquant`.
+
+### Pièges du gommage
+
+- **La graine se lit sur l'image intermédiaire, pas sur le résultat.** Les
+  coordonnées sont relatives à l'image recadrée sur la boîte du masque *avant*
+  gommage. Et **changer `eroder` déplace cette boîte** : les graines réglées à
+  `eroder: 0` deviennent fausses à `eroder: 1`. Régler l'un puis l'autre, jamais
+  les deux dans le même tour.
+- **La tolérance est un couteau à double tranchant.** Le remplissage progresse par
+  proximité de couleur : posé à deux pixels du bord, il franchit la lisière et
+  vide tout le corps. Granny Smith, Big Macintosh et Rarity y sont passés — corps
+  entièrement transparent, contour seul. Le remède : soit une tolérance basse et
+  plusieurs graines, soit le mode **boîte** (effacement par gamme de couleur dans
+  un rectangle, sans propagation), soit — le plus souvent le bon choix — changer
+  de source.
+- **La « tache » suspecte est parfois la marque de beauté.** Le disque brun-orange
+  sur le dos de Granny Smith, gommé deux fois avec acharnement (et laissant un trou
+  dans son flanc, puisqu'il n'y a rien dessous), est **sa tarte aux pommes** —
+  exactement ce que `data.js` annonce. Vérifier la capture d'origine en entier
+  avant de décider que quelque chose est du décor.
+- **Le ciel de Rainbow Dash n'est pas gommable** : son bleu de robe (`#9edbf9`) est
+  trop proche du bleu de ciel, tout remplissage lui mange la tête. Sa source finale
+  est une capture sur fond neutre, pas son infobox.
+
+### Sources retenues, personnage par personnage
+
+Toutes sur `mlp.fandom.com`, © Hasbro, reprises dans un projet de fan non commercial.
+
+| Personnage | Fichier d'origine | Sortie | Poids | Traitement |
+|---|---|---|---|---|
+| Twilight Sparkle | [`Twilight Sparkle Unicorn ID S2E20.png`](https://mlp.fandom.com/wiki/File:Twilight_Sparkle_Unicorn_ID_S2E20.png) | 496 × 462 | 53 Ko | érosion 2 px, 2 graines de gomme |
+| Applejack | [`Applejack "happy to give you a private lesson" S8E12.png`](https://mlp.fandom.com/wiki/File:Applejack_%22happy_to_give_you_a_private_lesson%22_S8E12.png) | 424 × 470 | 53 Ko | érosion 1 px, 2 graines de gomme |
+| Rainbow Dash | [`Rainbow Dash bad day S2E8.png`](https://mlp.fandom.com/wiki/File:Rainbow_Dash_bad_day_S2E8.png) | 399 × 412 | 38 Ko | aucun |
+| Pinkie Pie | [`Pinkie Pie ID S4E11.png`](https://mlp.fandom.com/wiki/File:Pinkie_Pie_ID_S4E11.png) | 436 × 422 | 49 Ko | aucun |
+| Fluttershy | [`Fluttershy ID S4E16.png`](https://mlp.fandom.com/wiki/File:Fluttershy_ID_S4E16.png) | 438 × 423 | 48 Ko | aucun |
+| Rarity | [`Rarity I'll put alittle S1E20.png`](https://mlp.fandom.com/wiki/File:Rarity_I%27ll_put_alittle_S1E20.png) | 359 × 392 | 47 Ko | aucun |
+| Spike | [`Spike ID S4E24.png`](https://mlp.fandom.com/wiki/File:Spike_ID_S4E24.png) | 326 × 472 | 35 Ko | aucun |
+| Big Macintosh | [`Big McIntosh Nope S2E3.png`](https://mlp.fandom.com/wiki/File:Big_McIntosh_Nope_S2E3.png) | 389 × 446 | 40 Ko | érosion 2 px |
+| Apple Bloom | [`Apple Bloom id S01E12.png`](https://mlp.fandom.com/wiki/File:Apple_Bloom_id_S01E12.png) | 417 × 520 | 47 Ko | aucun |
+| Sweetie Belle | [`Sweetie Belle ID S4E19.png`](https://mlp.fandom.com/wiki/File:Sweetie_Belle_ID_S4E19.png) | 563 × 638 | 63 Ko | aucun |
+| Scootaloo | [`Scootaloo ID S6E4.png`](https://mlp.fandom.com/wiki/File:Scootaloo_ID_S6E4.png) | 470 × 440 | 59 Ko | érosion 1 px, 1 graine de gomme |
+| Zecora | [`Zecora Parasprite Worried S1E10.png`](https://mlp.fandom.com/wiki/File:Zecora_Parasprite_Worried_S1E10.png) | 374 × 379 | 36 Ko | aucun |
+| Princesse Celestia | [`Princess Celestia ID S4E01.png`](https://mlp.fandom.com/wiki/File:Princess_Celestia_ID_S4E01.png) | 600 × 694 | 80 Ko | aucun |
+| Princesse Luna | [`Princess Luna ID S4E02.png`](https://mlp.fandom.com/wiki/File:Princess_Luna_ID_S4E02.png) | 558 × 527 | 52 Ko | 11 graines de gomme |
+| Granny Smith | [`Granny Smith winks S3E6.png`](https://mlp.fandom.com/wiki/File:Granny_Smith_winks_S3E6.png) | 304 × 349 | 25 Ko | aucun |
+| Discord | [`Discord ID S4E26.png`](https://mlp.fandom.com/wiki/File:Discord_ID_S4E26.png) | 349 × 606 | 32 Ko | aucun |
+| Trixie | [`Trixie ID S6E6.png`](https://mlp.fandom.com/wiki/File:Trixie_ID_S6E6.png) | 661 × 684 | 98 Ko | érosion 1 px, 1 graine de gomme |
+| Derpy | [`Derpy ID S4E10.png`](https://mlp.fandom.com/wiki/File:Derpy_ID_S4E10.png) | 500 × 623 | 55 Ko | aucun |
+| Cheerilee | [`Cheerilee ID S2E17.png`](https://mlp.fandom.com/wiki/File:Cheerilee_ID_S2E17.png) | 467 × 485 | 41 Ko | aucun |
+| Angel | [`Angel ID S3E10.png`](https://mlp.fandom.com/wiki/File:Angel_ID_S3E10.png) | 224 × 350 | 19 Ko | érosion 1 px, 1 graine de gomme |
+| Gummy | [`Gummy standing.png`](https://mlp.fandom.com/wiki/File:Gummy_standing.png) | 201 × 302 | 19 Ko | aucun |
+| Winona | [`Winona id S3E11.png`](https://mlp.fandom.com/wiki/File:Winona_id_S3E11.png) | 371 × 394 | 37 Ko | érosion 1 px, 1 graine de gomme |
+| Opale | [`Opalescence id S1E14.png`](https://mlp.fandom.com/wiki/File:Opalescence_id_S1E14.png) | 447 × 424 | 35 Ko | aucun |
+| Tank | [`Tank S2E7.png`](https://mlp.fandom.com/wiki/File:Tank_S2E7.png) | 311 × 258 | 27 Ko | aucun |
+| Owlowiscious | [`Owlowiscious raising eyebrow S3E11.png`](https://mlp.fandom.com/wiki/File:Owlowiscious_raising_eyebrow_S3E11.png) | 554 × 505 | 45 Ko | aucun |
+| Diamond Tiara | [`Diamond Tiara ID S4E15.png`](https://mlp.fandom.com/wiki/File:Diamond_Tiara_ID_S4E15.png) | 534 × 640 | 66 Ko | aucun |
+
+Total : **1,2 Mo** pour 26 fichiers, tous plein pied et à fond transparent, hauteur
+plafonnée à 700 px (aucune source n'atteignait ce plafond, la plus grande fait
+694 px). La chaîne complète — recherche, mesures, détourage, gommage, `pngquant` —
+est un jeu de scripts jetables restés hors du dépôt ; ce qui compte pour la
+reproduire est décrit ci-dessus.
+
+### Côté rendu
+
+- `render.js` : `svgDe` et `portrait` disparaissent au profit d'un seul `imgPoney`.
+  Les trois usages (grande image de fiche, vignette de galerie, mini-portrait de
+  carte) partagent **le même PNG**. Plus de fenêtre de recadrage sur la tête, donc
+  plus de champ `portrait` dans `data.js` — Tank et Angel étaient les deux
+  exceptions à la fenêtre partagée `171 6 124 124`, elles n'ont plus d'objet.
+- **Le médaillon de marque de beauté est supprimé** : la marque est visible sur
+  l'image plein pied. Seule la ligne « Sa marque de beauté : … » reste, quand
+  `data.cutieMark` existe. Les champs `couleurs` et `cutieMark` de `data.js` sont
+  gardés : ils documentent le personnage, et `cutieMark` est affiché.
+- **Boîte de hauteur fixe pour l'image de fiche** (`height: clamp(220px, 42vw,
+  380px)` + `object-fit: contain`). Les 26 PNG vont de 201 × 302 (Gummy) à
+  671 × 684 (Trixie) et de 0,5 à 1,7 de rapport : en `width: 100%`, Discord — tout
+  en hauteur — occupait 760 px et poussait son texte hors de l'écran. La boîte
+  commune donne la même taille perçue d'une fiche à l'autre, et le même effet joue
+  en galerie (cases de 110 px) et sur la carte (76 px).
+- **Le clignement des paupières est remplacé par une respiration** : les images sont
+  fixes, la classe `paupieres` et l'animation `cligne` n'ont plus de support. À la
+  place, `respire` — 4 s, 5 px de translation, 1 degré de bascule, origine en bas
+  au centre — sur la seule image de fiche. Coupée sous `prefers-reduced-motion`.
+- **`loading="lazy"` sur les vignettes seulement.** La galerie affiche 26 images ;
+  la carte d'accueil et l'image de fiche sont visibles d'emblée et ne doivent pas
+  attendre. Effet de bord à connaître : une capture pleine page Playwright montre
+  les vignettes du bas vides — ce n'est pas un bug, elles se chargent au défilement
+  (vérifié par `naturalWidth`).
+- **Mention de crédit** en pied d'accueil : « Images des personnages © Hasbro —
+  projet de fan non commercial ».
+
+### Tests
+
+`test/svg.test.js` : la complétude des personnages se vérifie maintenant sur le
+système de fichiers (`img/poneys/<id>.png` existe et pèse plus de 2 Ko — en dessous,
+c'est un fichier tronqué, pas un personnage). Le test des lieux et de la carte est
+inchangé. `test/svg-paths.test.js` ne parcourt plus que les 11 modules dessinés qui
+restent. Le test de format du champ `portrait` est retiré. **13 tests, tous verts.**
+
 ## 2026-08-25 — polissage final (Task 13) : le livre est terminé
 
 Vingt-six personnages, dix lieux, une carte, **plus aucun placeholder** :

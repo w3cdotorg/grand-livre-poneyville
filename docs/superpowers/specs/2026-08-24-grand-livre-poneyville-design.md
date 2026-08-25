@@ -8,7 +8,7 @@
 
 | Sujet | Décision |
 |---|---|
-| Visuels | SVG dessinés main, style inspiré de FiM (aplats, silhouettes simples, marques de beauté) — 100 % originaux, aucun asset officiel Hasbro. |
+| Visuels | **Amendement du 25/08** — les 26 **personnages** sont des **images officielles de la série détourées** sur fond transparent (`img/poneys/<id>.png`, © Hasbro, repris dans un projet de fan non commercial) ; la **carte** et les **10 lieux** restent des **SVG originaux dessinés main** (aplats, silhouettes simples). Décision initiale (24/08), désormais caduque pour les personnages : SVG dessinés main partout, 100 % originaux, aucun asset officiel Hasbro. |
 | Texte | 2-3 phrases par fiche, lues par le parent. Pas de synthèse vocale. |
 | Périmètre | Large d'emblée : 26 personnages (dont 6 animaux de compagnie) et 10 lieux. |
 | Navigation | Accueil = carte dessinée + boutons galerie « Les poneys » / « Les lieux ». Navigation croisée fiche ↔ fiche. |
@@ -28,7 +28,8 @@ grand-livre-poneyville/
   js/app.js                   routing par hash (#/, #/poneys, #/lieux, #/poney/<id>, #/lieu/<id>)
   js/data.js                  TOUT le contenu : personnages, lieux, relations, textes FR
   js/render.js                construit chaque écran à partir de data.js
-  svg/poneys/<id>.js          un module par personnage, exporte une chaîne SVG
+  img/poneys/<id>.png         une image officielle détourée par personnage (amendement 25/08 ;
+                              remplace `svg/poneys/<id>.js`, supprimé)
   svg/lieux/<id>.js           un module par lieu
   svg/carte.js                la grande carte de l'accueil
   test/                       tests node (node --test), sans dépendance
