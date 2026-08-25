@@ -481,6 +481,105 @@ couleur du template disparaissent donc purement et simplement :
   forcées à `scaleY(1)` et le médaillon**, capturée en Chrome headless. Beaucoup plus
   rapide que Playwright, et elle montre d'un coup les trois cadrages qui comptent.
 
+## 2026-08-25 — correctif visuel : Luna, Rarity et Trixie
+
+Trois images reprises après revue visuelle à l'échelle de la vignette de galerie.
+
+### La gomme par gamme de couleur, l'outil qui manquait
+
+Le § conversion ci-dessous raconte les gommages qui ont **vidé** des corps : le
+remplissage par diffusion progresse par proximité de couleur, et posé à deux pixels
+du contour il franchit la lisière. Le correctif utilise un autre outil, **sans
+propagation** : on efface les pixels du masque dont la **teinte n'existe pas dans la
+palette du personnage**, et rien d'autre. Un corps ne peut pas se trouer, puisque
+aucun de ses pixels ne satisfait la condition.
+
+Trois règles ont suffi :
+
+- **chaud** — `R > B + n` : l'or et le brun d'un trône, le beige d'un paravent.
+  Aucune couleur de Luna (bleus, navy, violets, blanc, œil turquoise) ni de Rarity
+  (blanc, crinière violette, yeux bleus) n'est à dominante rouge.
+- **pâle verdâtre** — `G > B + 4 ∧ R > 120 ∧ G > 120` : le mur vert pâle de la salle
+  du trône.
+- **vert** — `G > R + 20 ∧ G > B + 20` : la frange turquoise du mur laissée par
+  l'anti-aliasing le long d'un contour.
+
+**Deux pièges, tous deux vérifiés en zoom :**
+
+1. **Le blanc anti-aliasé tombe dans la gamme.** Un blanc posé sur un mur vert pâle
+   devient `(250, 252, 246)`, qui satisfait `G > B + 4` : la première passe a percé un
+   **trou dans la marque de beauté de Luna**. D'où le **mode boîte** — la règle ne
+   s'applique que dans un rectangle. Pour Luna : `x < 165`, juste avant le blanc de la
+   marque, qui commence à `x = 166`. Pour Rarity : `y > 388` (coordonnées de la source
+   1280 × 720), juste sous sa **bouche rouge**, sinon la règle « chaud » la mange.
+2. **Une garde de luminosité `R > 100` casse tout.** Ajoutée pour protéger les blancs,
+   elle laisse en place l'ornement **sombre** du trône. La bonne protection est la
+   boîte, pas le seuil de clarté.
+
+Reste, dans la boîte de Luna, un dernier éclat du **sol** (`123, 140, 173`, à
+dominante bleue : aucune des trois règles ne l'attrape). Effacé par une quatrième
+règle, encore plus étroite — clair et peu saturé (`min > 110`, `|R − B| < 60`) dans le
+rectangle `110–162 × 326–358`. 82 pixels.
+
+### Les coordonnées de la boîte sont celles de la SOURCE
+
+Le recadrage sur la boîte englobante du masque vient **après** la gomme. La boîte se
+donne donc dans le repère de l'image d'origine, pas du PNG de sortie : pour Rarity,
+l'offset de recadrage était `(190, 128)`, et le `y = 260` repéré sur la sortie valait
+`388` dans la source. Le script de détourage affiche cet offset ; s'en servir.
+
+### Le tri automatique refait, ~800 candidates passées au crible
+
+`bords = 0` et `remplissage` (cf. § conversion) ont été recalculés sur **~200 captures
+de Luna** et **~600 de Rarity** (sources téléchargées, masque Vision, mesures, planches
+contact des retenues). Ce que ça a appris :
+
+- **Vision ne détecte pas toujours de sujet.** `Luna flying S3E6` (Luna devant la
+  lune) : `VNGenerateForegroundInstanceMaskRequest` ne renvoie **aucune instance**.
+  Un poney trop petit ou trop fondu dans le fond n'est pas un « sujet ».
+- **Une crinière translucide emporte le décor avec elle.** La crinière étoilée de
+  Luna est semi-transparente dans la série : le détourage garde le fond *composité
+  dedans*. `Princess Luna ID S5E04` (fond de nébuleuse) sort avec la crinière et la
+  queue **amputées** ; `Luna in the Everfree Forest S2E4`, pose debout parfaite et yeux
+  ouverts, sort avec des **troncs d'arbre et une tache d'herbe verte visibles dans la
+  queue** (716 px verts, dont 574 en un seul bloc — un ré-encrage par diffusion ne l'a
+  pas effacé, la diffusion repuisant dans des olives voisines sous le seuil). Écartée.
+- **La seule source Luna vraiment sans résidu** est `Princess Luna casting sleep magic
+  S5E13` (fond de rêve pastel) : zéro pixel étranger, mais **yeux fermés** et surtout
+  boîte englobante large (mane + ailes déployées) qui, dans la boîte de hauteur fixe de
+  la fiche, fait paraître son corps **plus petit** que celui de Twilight. Écartée aussi.
+- **Conclusion pour Luna : garder la source, refaire le détourage.** La prémisse
+  « le gommage empire les choses, donc changer de source » ne valait que pour le
+  gommage par diffusion. `Princess Luna ID S4E02` reste la meilleure pose (debout,
+  plein pied, yeux ouverts, grande alicorne) ; ses deux résidus tombent proprement à
+  la gamme de couleur.
+- **Rarity, elle, a bien changé de source.** Son ancienne capture `S1E20` la plaçait
+  devant un **paravent beige** : blanc sur beige, le masque ne pouvait pas trancher.
+  La nouvelle, `Rarity "could we spend it together?" S7E6`, est un plan large de
+  face-trois-quarts, quatre pattes, marque visible, sourire, yeux ouverts, sur fond
+  turquoise sombre — le contraste que son corps blanc réclamait.
+
+### Trixie : source fournie, déjà détourée
+
+`refs/trixie-clipartmax.png` (1024 × 1133, clipartmax, **style du film** *My Little
+Pony : le film*, pas celui de la série ; `refs/` est dans le `.gitignore`, la source
+reste donc **locale**, seul le PNG de sortie est publié) : Trixie avec son **grand
+chapeau et sa cape étoilés**, rire joyeux. Alpha déjà propre (608 074 px transparents sur 1 160 192,
+aucun halo blanc). Traitement : recadrage sur la boîte alpha, mise à 700 px de haut,
+`pngquant`. Elle règle la réserve n° 2 du rapport de conversion — le texte de `data.js`
+promettait le chapeau et la cape, l'image ne les montrait pas.
+
+Effet de bord assumé : le chapeau prend le tiers haut de l'image, donc dans la boîte
+de hauteur fixe **son corps paraît plus petit** que celui d'un poney standard. Le
+même compromis que Discord (349 × 606). Le chapeau fait partie du personnage.
+
+### Faux bug à connaître : Playwright et la navigation par ancre
+
+`browser_navigate` vers `#/poney/x` depuis `#/poney/y` (même document) ne redéclenche
+rien côté Playwright : la capture sort **blanche**. Ce n'est pas le routeur — vérifié
+en posant `location.hash` depuis la page, la fiche se rend et `.fiche-dessin img`
+porte le bon `src`. Recharger (`location.reload()`) ou naviguer depuis une autre URL.
+
 ## 2026-08-25 — conversion : les personnages passent en images officielles détourées
 
 Décision du propriétaire (amendement du 25/08, actée dans le spec § « Décisions
@@ -583,7 +682,7 @@ Toutes sur `mlp.fandom.com`, © Hasbro, reprises dans un projet de fan non comme
 | Rainbow Dash | [`Rainbow Dash bad day S2E8.png`](https://mlp.fandom.com/wiki/File:Rainbow_Dash_bad_day_S2E8.png) | 399 × 412 | 38 Ko | aucun |
 | Pinkie Pie | [`Pinkie Pie ID S4E11.png`](https://mlp.fandom.com/wiki/File:Pinkie_Pie_ID_S4E11.png) | 436 × 422 | 49 Ko | aucun |
 | Fluttershy | [`Fluttershy ID S4E16.png`](https://mlp.fandom.com/wiki/File:Fluttershy_ID_S4E16.png) | 438 × 423 | 48 Ko | aucun |
-| Rarity | [`Rarity I'll put alittle S1E20.png`](https://mlp.fandom.com/wiki/File:Rarity_I%27ll_put_alittle_S1E20.png) | 359 × 392 | 47 Ko | aucun |
+| Rarity | [`Rarity "could we spend it together?" S7E6.png`](https://mlp.fandom.com/wiki/File:Rarity_%22could_we_spend_it_together%3F%22_S7E6.png) | 477 × 502 | 79 Ko | gomme par gamme de couleur (voir § correctif du 25/08) |
 | Spike | [`Spike ID S4E24.png`](https://mlp.fandom.com/wiki/File:Spike_ID_S4E24.png) | 326 × 472 | 35 Ko | aucun |
 | Big Macintosh | [`Big McIntosh Nope S2E3.png`](https://mlp.fandom.com/wiki/File:Big_McIntosh_Nope_S2E3.png) | 389 × 446 | 40 Ko | érosion 2 px |
 | Apple Bloom | [`Apple Bloom id S01E12.png`](https://mlp.fandom.com/wiki/File:Apple_Bloom_id_S01E12.png) | 417 × 520 | 47 Ko | aucun |
@@ -591,10 +690,10 @@ Toutes sur `mlp.fandom.com`, © Hasbro, reprises dans un projet de fan non comme
 | Scootaloo | [`Scootaloo ID S6E4.png`](https://mlp.fandom.com/wiki/File:Scootaloo_ID_S6E4.png) | 470 × 440 | 59 Ko | érosion 1 px, 1 graine de gomme |
 | Zecora | [`Zecora Parasprite Worried S1E10.png`](https://mlp.fandom.com/wiki/File:Zecora_Parasprite_Worried_S1E10.png) | 374 × 379 | 36 Ko | aucun |
 | Princesse Celestia | [`Princess Celestia ID S4E01.png`](https://mlp.fandom.com/wiki/File:Princess_Celestia_ID_S4E01.png) | 600 × 694 | 80 Ko | aucun |
-| Princesse Luna | [`Princess Luna ID S4E02.png`](https://mlp.fandom.com/wiki/File:Princess_Luna_ID_S4E02.png) | 558 × 527 | 52 Ko | 11 graines de gomme |
+| Princesse Luna | [`Princess Luna ID S4E02.png`](https://mlp.fandom.com/wiki/File:Princess_Luna_ID_S4E02.png) | 558 × 525 | 53 Ko | gomme par gamme de couleur (voir § correctif du 25/08) |
 | Granny Smith | [`Granny Smith winks S3E6.png`](https://mlp.fandom.com/wiki/File:Granny_Smith_winks_S3E6.png) | 304 × 349 | 25 Ko | aucun |
 | Discord | [`Discord ID S4E26.png`](https://mlp.fandom.com/wiki/File:Discord_ID_S4E26.png) | 349 × 606 | 32 Ko | aucun |
-| Trixie | [`Trixie ID S6E6.png`](https://mlp.fandom.com/wiki/File:Trixie_ID_S6E6.png) | 661 × 684 | 98 Ko | érosion 1 px, 1 graine de gomme |
+| Trixie | `trixie-clipartmax.png` (clipartmax, style du film *My Little Pony : le film*) | 633 × 700 | 66 Ko | aucun — source déjà détourée (voir § correctif du 25/08) |
 | Derpy | [`Derpy ID S4E10.png`](https://mlp.fandom.com/wiki/File:Derpy_ID_S4E10.png) | 500 × 623 | 55 Ko | aucun |
 | Cheerilee | [`Cheerilee ID S2E17.png`](https://mlp.fandom.com/wiki/File:Cheerilee_ID_S2E17.png) | 467 × 485 | 41 Ko | aucun |
 | Angel | [`Angel ID S3E10.png`](https://mlp.fandom.com/wiki/File:Angel_ID_S3E10.png) | 224 × 350 | 19 Ko | érosion 1 px, 1 graine de gomme |
@@ -606,8 +705,8 @@ Toutes sur `mlp.fandom.com`, © Hasbro, reprises dans un projet de fan non comme
 | Diamond Tiara | [`Diamond Tiara ID S4E15.png`](https://mlp.fandom.com/wiki/File:Diamond_Tiara_ID_S4E15.png) | 534 × 640 | 66 Ko | aucun |
 
 Total : **1,2 Mo** pour 26 fichiers, tous plein pied et à fond transparent, hauteur
-plafonnée à 700 px (aucune source n'atteignait ce plafond, la plus grande fait
-694 px). La chaîne complète — recherche, mesures, détourage, gommage, `pngquant` —
+plafonnée à 700 px (seule Trixie, reprise le 25/08, atteint le plafond ; ensuite
+Celestia à 694 px). La chaîne complète — recherche, mesures, détourage, gommage, `pngquant` —
 est un jeu de scripts jetables restés hors du dépôt ; ce qui compte pour la
 reproduire est décrit ci-dessus.
 
