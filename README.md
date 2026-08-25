@@ -17,9 +17,9 @@ En ligne : <https://w3cdotorg.github.io/grand-livre-poneyville/>
   Boutique, Sugarcube Corner, la chaumière de Fluttershy, la forêt Désenchantée,
   la hutte de Zecora, Canterlot, Cloudsdale et l'école de Poneyville.
 
-Chaque fiche donne l'espèce, la marque de beauté, un texte de trois phrases et un
-« Le sais-tu ? ». Les cibles tactiles font toutes au moins 64 px : le livre se lit
-au doigt sur un iPad.
+Chaque fiche donne l'espèce, un texte court, et selon les cas la marque de beauté
+et un « Le sais-tu ? ». Les cibles tactiles font toutes au moins 64 px : le livre
+se lit au doigt sur un iPad.
 
 ## Comment c'est fait
 
@@ -41,5 +41,5 @@ NOTES.md          journal des trouvailles et des choix de dessin
 ```
 
 - Dev : `./serve.sh` puis <http://localhost:8123>
-- Tests : `npm test` (node --test, zéro dépendance) — 10 tests, cohérence des
-  données et conformité des modules SVG.
+- Tests : `npm test` (node --test, zéro dépendance) — 15 tests, cohérence des
+  données, conformité des modules SVG et validateur d'arité des tracés.

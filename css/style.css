@@ -43,9 +43,11 @@ h2 { margin: 28px 0 12px; font-size: 1.3rem; }
    (« La chaumière de Fluttershy ») ; il s'allonge plutôt, ce qui gêne beaucoup moins. */
 .sur-carte > span { background: #fffd; border-radius: 999px; box-shadow: 0 2px 6px #0003;
   padding: clamp(2px, 0.7cqw, 8px) clamp(6px, 1.4cqw, 14px); white-space: nowrap; }
-/* Sur une carte étroite (téléphone), un ruban d'un seul tenant sortirait du cadre :
-   on le laisse revenir à la ligne. */
-@container (max-width: 500px) { .sur-carte > span { white-space: normal; max-width: 34cqw; } }
+/* Sur une carte étroite (téléphone), même revenu à la ligne un ruban de texte
+   rogne les bâtiments (jusqu'à 29 px de large) et se recouvre avec ses voisins :
+   sous 500 px de conteneur, on masque le texte du ruban et on garde la cible
+   64 × 64 px cliquable (le lien, pas le `span`, porte le `min-height`/`min-width`). */
+@container (max-width: 500px) { .sur-carte > span { display: none; } }
 .poney-carte { width: 76px; height: 76px; }
 .poney-carte svg { width: 100%; height: 100%; }
 .grille { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 16px; }

@@ -83,6 +83,9 @@ const ECRANS = {
 };
 
 export async function render(ecran, id) {
-  const fab = ECRANS[ecran] ?? ECRANS.accueil;
+  // `Object.hasOwn` (et non `ECRANS[ecran] ?? ECRANS.accueil`) : sinon une route
+  // comme `#/toString` ou `#/constructor` résout une clé héritée d'Object.prototype
+  // au lieu de retomber sur l'accueil.
+  const fab = Object.hasOwn(ECRANS, ecran) ? ECRANS[ecran] : ECRANS.accueil;
   app.innerHTML = await fab(id);
 }
