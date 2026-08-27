@@ -481,6 +481,84 @@ couleur du template disparaissent donc purement et simplement :
   forcées à `scaleY(1)` et le médaillon**, capturée en Chrome headless. Beaucoup plus
   rapide que Playwright, et elle montre d'un coup les trois cadrages qui comptent.
 
+## 2026-08-27 — correctif visuel : Big Macintosh cesse d'avoir l'air fâché
+
+Demande du propriétaire : l'image issue de `Big McIntosh Nope S2E3.png` le montrait
+**énervé** — œil rose-rouge plissé, moue contrariée — plus un **résidu blanchâtre**
+derrière la tête et des sabots teintés de rose par le fond. Or son caractère est
+l'inverse : placide et doux. Référence approuvée : l'image d'infobox du wiki.
+
+### L'infobox n'était pas une solution de repli utilisable
+
+Deux vérifications qui ont fait tomber le plan B avant de l'essayer :
+
+- **Le fichier d'origine EST la vignette.** `Big McIntosh id S2E17.png` fait
+  **176 × 228** dans `imageinfo` — ce n'est pas un rendu réduit, c'est la taille du
+  fichier téléversé. Agrandir ×2 aurait donné 456 px de haut d'une source de 176.
+- **Elle n'est pas détourée.** Le PNG est bien en RGBA, mais son alpha est **plein** :
+  le fond vert de la scène est là, en dur. Le « déjà transparente » du brief était
+  faux. Vérifier l'alpha, pas le mode de couleur.
+
+### Le tri automatique, 982 fichiers ramenés à un
+
+Recherche `list=allimages` sur les deux préfixes **`Big McIntosh` ET `Big Mac`** (le
+wiki nomme ses captures des deux façons, 982 fichiers en tout). Puis le tri du §
+conversion : rejet des noms citant un autre personnage, des EG / Pony Life / costumes,
+et des noms d'**émotion négative** (`nope`, `angry`, `worried`, `sad`, `sigh`,
+`unamused`…) — 387 candidates téléchargées en `format=original`, détourées, mesurées.
+77 avec `bords = 0` et plus de 380 px de haut, présentées en planches contact.
+
+Ce que les planches ont appris :
+
+- **Ses poses calmes les plus nettes sont les moins utilisables.** Sur les captures
+  « eeyup », qui sont légion, il est presque toujours cadré à la tête et aux épaules :
+  `bords ≥ 1`, donc écartées d'office. Les vraies vues plein pied sont les plans de
+  travail (foin, tonneaux, charrette) — et là il a souvent un **objet accroché** que
+  le masque Vision garde comme partie du sujet (seau, arrosoir, fourche).
+- **« Yeux mi-clos » et « sourire léger » ne vont pas ensemble dans la série.** Les
+  captures à paupières basses sont des répliques parlées : la bouche est ouverte et
+  les dents serrées. `Big McIntosh "how committed I am" S9E23` (465 × 557, plus
+  grande, marque visible) a été écartée pour ça — de près, elle se lit *crispée*.
+  Inversement `Big McIntosh grinning happily S8E12` sourit franchement mais est
+  cadrée de face : pas de marque de beauté, pas d'arrière-train, et une ombre grise
+  restée collée derrière l'épaule.
+- **Retenue : `Big McIntosh entering the barn S9E23`** (1280 × 720, sortie
+  440 × 439). Profil trois quarts, **quatre sabots au sol**, œil **vert** grand
+  ouvert et posé, bouche fermée d'un trait doux, joug, et la **moitié de pomme verte
+  bien en évidence** sur le flanc — ce que la fiche annonce en texte.
+
+### Trois résidus de grange, trois boîtes
+
+Le masque avait ramassé trois morceaux de décor. Gomme par gamme de couleur en mode
+boîte (§ du 25/08), jamais par diffusion :
+
+1. **Le mur, coincé entre la queue et la croupe** — une bande mauve `(182, 106, 113)`
+   et une bande gris bleuté `(220, 225, 233)`. Le discriminant n'est ni la teinte ni
+   la clarté mais la **saturation** : aucune couleur de Big Mac dans cette zone ne
+   descend sous 100 (queue orange 142, trait bordeaux 123, robe 164) alors que le
+   mauve est à 76 et le gris à 13.
+2. **L'ombre noire de la grange entre les pattes arrière** — `max < 90` dans sa boîte.
+3. **Un éclat gris-vert au sommet du joug** — `saturation < 60` dans sa boîte.
+
+**Le piège s'est déclenché exactement là où le § du 25/08 le prédit.** Première passe,
+boîte n° 1 tracée large avec la règle « clair dans tous les canaux » (`min > 115`) :
+elle a **percé la marque de beauté**, dont la chair claire est à `(200, 239, 160)`,
+`min = 160`. Compté : 4 984 pixels verts avant, 3 490 après. La boîte a été rabattue à
+`x < 86` — la pomme commence à `x = 89` — et la règle changée pour la saturation.
+Depuis, l'audit automatique (composantes connexes des pixels peu saturés ou très
+sombres, hors œil et sabots) rend **zéro amas de 20 pixels ou plus**.
+
+### Pas d'agrandissement : la boîte de la fiche rend le plafond de 700 px sans objet
+
+`object-fit: contain` dans une boîte de hauteur fixe (`clamp(220px, 42vw, 380px)`)
+fait que **la taille du fichier ne change rien à la taille perçue** : tous les poneys
+sortent à la hauteur de la boîte. Ce qui fait la carrure, c'est donc le **rapport
+largeur/hauteur**. Et c'est là que l'ancienne image trahissait le personnage :
+389 × 446 = **0,87**, plus étroit qu'Applejack (424 × 470 = 0,90) — Big Macintosh
+paraissait *plus fin* que sa sœur. La nouvelle est à **1,00** : à hauteur égale il est
+enfin le plus large des poneys standards. La source native (439 px) dépasse déjà la
+boîte, donc aucun rééchantillonnage — l'image reste à sa netteté d'origine.
+
 ## 2026-08-25 — correctif visuel : Luna, Rarity et Trixie
 
 Trois images reprises après revue visuelle à l'échelle de la vignette de galerie.
@@ -684,7 +762,7 @@ Toutes sur `mlp.fandom.com`, © Hasbro, reprises dans un projet de fan non comme
 | Fluttershy | [`Fluttershy ID S4E16.png`](https://mlp.fandom.com/wiki/File:Fluttershy_ID_S4E16.png) | 438 × 423 | 48 Ko | aucun |
 | Rarity | [`Rarity "could we spend it together?" S7E6.png`](https://mlp.fandom.com/wiki/File:Rarity_%22could_we_spend_it_together%3F%22_S7E6.png) | 477 × 502 | 79 Ko | gomme par gamme de couleur (voir § correctif du 25/08) |
 | Spike | [`Spike ID S4E24.png`](https://mlp.fandom.com/wiki/File:Spike_ID_S4E24.png) | 326 × 472 | 35 Ko | aucun |
-| Big Macintosh | [`Big McIntosh Nope S2E3.png`](https://mlp.fandom.com/wiki/File:Big_McIntosh_Nope_S2E3.png) | 389 × 446 | 40 Ko | érosion 2 px |
+| Big Macintosh | [`Big McIntosh entering the barn S9E23.png`](https://mlp.fandom.com/wiki/File:Big_McIntosh_entering_the_barn_S9E23.png) | 440 × 439 | 60 Ko | gomme par gamme de couleur (voir § correctif du 27/08) |
 | Apple Bloom | [`Apple Bloom id S01E12.png`](https://mlp.fandom.com/wiki/File:Apple_Bloom_id_S01E12.png) | 417 × 520 | 47 Ko | aucun |
 | Sweetie Belle | [`Sweetie Belle ID S4E19.png`](https://mlp.fandom.com/wiki/File:Sweetie_Belle_ID_S4E19.png) | 563 × 638 | 63 Ko | aucun |
 | Scootaloo | [`Scootaloo ID S6E4.png`](https://mlp.fandom.com/wiki/File:Scootaloo_ID_S6E4.png) | 470 × 440 | 59 Ko | érosion 1 px, 1 graine de gomme |
